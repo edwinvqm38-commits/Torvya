@@ -143,7 +143,11 @@
     root.id = 'dc-root'; root.style.display = 'contents';
     host.parentNode.replaceChild(root, host);
 
-    var Component = new Function('DCLogic', scriptEl.textContent + '\n;return Component;')(DCLogic);
+    /* se inyecta como <script> (sin eval) para que funcione con políticas de seguridad estrictas */
+    var inj = document.createElement('script');
+    inj.textContent = 'window.__dcMake=function(DCLogic){' + scriptEl.textContent + '\n;return Component;};';
+    document.head.appendChild(inj);
+    var Component = window.__dcMake(DCLogic);
     var comp = new Component(props);
     var rt = {
       pending: false,
