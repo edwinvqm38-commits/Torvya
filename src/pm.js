@@ -262,6 +262,7 @@ Object.assign(Component.prototype, {
     if (!c) return false;
     return this.areaAncestors(s, pg.area).indexOf(c.area) >= 0;
   },
+  orgSetLvl(d, hex) { this.updOrg(function (org) { var l = (org.lvl || []).slice(); l[d] = hex; org.lvl = l; }); },
   orgSel(id) { this.setState({ orgSel: this.st().orgSel === id ? null : id }); },
   updOrg(fn, logText) { var s = this.st(); var org = clone(s.org); if (fn(org) === false) return; var patch = { org: org }; if (logText) patch.log = this.addLog(s, logText); this.setState(patch); },
   orgAddChild(pid) {
@@ -282,40 +283,72 @@ Object.assign(Component.prototype, {
     this.updOrg(function (org) { org.areas.push({ id: id, name: 'Nueva área', color: NEW_COLORS[(n + 2) % NEW_COLORS.length], icon: 'i-folder', parent: org.areas[0] ? org.areas[0].id : null }); }, 'creó un área');
     this.setState({ seq: s.seq + 1, orgAreaSel: id });
   },
-  orgData(s, v) {
-    var self = this;
-    var W = 204, H = 98, GX = 22, GY = 56;
-    var cargos = s.org.cargos;
-    var kids = {};
-    cargos.forEach(function (c) { var k = c.parent && self.orgCargo(s, c.parent) ? c.parent : '__root'; (kids[k] = kids[k] || []).push(c); });
+  /* disposición del árbol: posiciones por cargo (x en píxeles, d = nivel) */
+  orgLayout(s, cargos) {
+    var W = 204, H = 98, GX = 22, GY = 56, kids = {}, ids = {};
+    cargos.forEach(function (c) { ids[c.id] = true; });
+    cargos.forEach(function (c) { var k = c.parent && ids[c.parent] ? c.parent : '__root'; (kids[k] = kids[k] || []).push(c); });
     var pos = {}, nextX = 0, depthMax = 0;
     function place(c, d) {
+      if (d > 40 || pos[c.id]) return;
       depthMax = Math.max(depthMax, d);
       var ch = kids[c.id] || [];
       if (!ch.length) { pos[c.id] = { x: nextX, d: d }; nextX += W + GX; return; }
       ch.forEach(function (k) { place(k, d + 1); });
-      pos[c.id] = { x: (pos[ch[0].id].x + pos[ch[ch.length - 1].id].x) / 2, d: d };
+      var f = pos[ch[0].id], l = pos[ch[ch.length - 1].id];
+      pos[c.id] = { x: f && l ? (f.x + l.x) / 2 : nextX, d: d };
     }
     (kids.__root || []).forEach(function (c) { place(c, 0); });
+    return { pos: pos, kids: kids, nextX: nextX, depthMax: depthMax, W: W, H: H, GX: GX, GY: GY };
+  },
+  orgLvlColor(s, d) { var l = s.org && s.org.lvl; return (l && l[d]) || ORG_LVL[d % ORG_LVL.length]; },
+  /* simula mover un cargo: 'child' = pasa a depender de target, 'above' = queda como jefe de target, 'before'/'after' = junto a target */
+  orgSimMove(cargos, cid, target, zone) {
+    var arr = cargos.map(function (c) { return Object.assign({}, c); });
+    var it = arr.filter(function (c) { return c.id === cid; })[0], tc = arr.filter(function (c) { return c.id === target; })[0];
+    if (!it || !tc) return arr;
+    arr.splice(arr.indexOf(it), 1);
+    if (zone === 'child') { it.parent = target; arr.push(it); }
+    else if (zone === 'above') { it.parent = tc.parent || null; tc.parent = it.id; arr.splice(arr.indexOf(tc), 0, it); }
+    else { it.parent = tc.parent || null; var j = arr.indexOf(tc); arr.splice(zone === 'after' ? j + 1 : j, 0, it); }
+    return arr;
+  },
+  orgData(s, v) {
+    var self = this;
+    var cargos = s.org.cargos, dr = s.orgDrag || null;
+    var sim = !!(dr && dr.target && !dr.bad && !dr.commit);
+    var layCargos = sim ? this.orgSimMove(cargos, dr.cid, dr.target, dr.zone) : cargos;
+    var lay = this.orgLayout(s, layCargos), pos = lay.pos, kids = lay.kids, W = lay.W, H = lay.H, GX = lay.GX, GY = lay.GY, nextX = lay.nextX, depthMax = lay.depthMax;
+    this._orgLay = lay;
     var hiArea = s.orgAreaSel;
     var mineC = this.cargoOf(s, v.id);
-    var boxes = cargos.filter(function (c) { return pos[c.id]; }).map(function (c) {
+    var HINT = { child: 'Pasa a depender de este cargo', above: 'Quedará por encima de este cargo', before: 'Quedará a su izquierda', after: 'Quedará a su derecha' };
+    var boxes = cargos.slice().sort(function (x, y) { return x.id < y.id ? -1 : x.id > y.id ? 1 : 0; }).filter(function (c) { return pos[c.id]; }).map(function (c) {
       var a = self.orgArea(s, c.area) || { name: 'Sin área', color: '#8C8C86', icon: 'i-folder' };
       var m = c.person ? self.memberById(s, c.person) : null;
-      var p = pos[c.id];
-      var cls = (s.orgSel === c.id ? 'on ' : '') + (hiArea && hiArea !== c.area ? 'dim ' : '') + (mineC && mineC.id === c.id ? 'me ' : '') + (m ? '' : 'vacant');
-      return { id: c.id, x: p.x, y: p.d * (H + GY), w: W, h: H, raw: c, name: c.name, areaName: a.name, color: a.color, icon: ICON[a.icon] || ICON.db, style: 'left: ' + p.x + 'px; top: ' + (p.d * (H + GY)) + 'px; width: ' + W + 'px; height: ' + H + 'px; --c: ' + a.color,
-        cls: cls, hasPerson: !!m, vacant: !m, person: m ? m.name : 'Vacante', initials: m ? initialsOf(m.name) : '', avatar: m ? m.color : '#8C8C86',
+      var p = pos[c.id], lc = self.orgLvlColor(s, p.d);
+      var held = !!(dr && dr.cid === c.id && !dr.commit);
+      var bx = held ? dr.ox : p.x, by = held ? dr.oy : p.d * (H + GY);
+      var isT = !!(dr && dr.target === c.id && !dr.commit);
+      var cls = (s.orgSel === c.id ? 'on ' : '') + (hiArea && hiArea !== c.area ? 'dim ' : '') + (mineC && mineC.id === c.id ? 'me ' : '') + (m ? '' : 'vacant ')
+        + (held ? 'dragging ' : '') + (isT ? (dr.bad ? 'tgt-bad ' : 'tgt tz-' + dr.zone + ' ') : '') + (s.orgLanded === c.id ? 'landed ' : '') + (v.role === 'admin' ? 'can-drag' : '');
+      return { id: c.id, key: 'n-' + c.id, x: p.x, y: p.d * (H + GY), w: W, h: H, raw: c, name: c.name, areaName: a.name, color: lc, areaColor: a.color, icon: ICON[a.icon] || ICON.db,
+        lvl: 'N' + (p.d + 1), hint: isT ? (dr.bad ? 'No se puede: depende del cargo que mueves' : HINT[dr.zone]) : '',
+        style: 'left: ' + bx + 'px; top: ' + by + 'px; width: ' + W + 'px; height: ' + H + 'px; --c: ' + lc + '; --a: ' + a.color + (dr && dr.cid === c.id && dr.commit ? '; transition: none' : ''),
+        cls: cls.trim(), hasPerson: !!m, vacant: !m, person: m ? m.name : 'Vacante', initials: m ? initialsOf(m.name) : '', avatar: m ? m.color : '#8C8C86',
         nKids: (kids[c.id] || []).length, kidsTxt: (kids[c.id] || []).length ? String((kids[c.id] || []).length) : '', hasKids: (kids[c.id] || []).length > 0,
-        pick: function () { self.orgSel(c.id); }, aria: c.name + (m ? ', ' + m.name : ', vacante') };
+        pick: function () { if (self._noClick && Date.now() - self._noClick < 350) return; self.orgSel(c.id); }, aria: c.name + (m ? ', ' + m.name : ', vacante') };
     });
     var links = [];
-    cargos.forEach(function (c) {
+    layCargos.slice().sort(function (x, y) { return x.id < y.id ? -1 : x.id > y.id ? 1 : 0; }).forEach(function (c) {
       if (!c.parent || !pos[c.id] || !pos[c.parent]) return;
       var a = pos[c.parent], b = pos[c.id];
       var x1 = a.x + W / 2, y1 = a.d * (H + GY) + H, x2 = b.x + W / 2, y2 = b.d * (H + GY), ym = y1 + GY / 2;
-      links.push({ x1: x1, y1: y1, x2: x2, y2: y2, ym: ym, d: 'M' + x1 + ' ' + y1 + ' V' + ym + ' H' + x2 + ' V' + y2, cls: (s.orgSel === c.id || s.orgSel === c.parent) ? 'hi' : '' });
+      var dd = 'M' + x1 + ' ' + y1 + ' V' + ym + ' H' + x2 + ' V' + y2;
+      links.push({ id: c.id, key: 'l-' + c.id, x1: x1, y1: y1, x2: x2, y2: y2, ym: ym, d: dd, cd: "path('" + dd + "')", cls: (s.orgSel === c.id || s.orgSel === c.parent) ? 'hi' : '' });
     });
+    var ghost = { has: false, style: '' };
+    if (sim && pos[dr.cid]) { var gp = pos[dr.cid]; ghost = { has: true, style: 'left: ' + gp.x + 'px; top: ' + gp.d * (H + GY) + 'px; width: ' + W + 'px; height: ' + H + 'px; --c: ' + this.orgLvlColor(s, gp.d) }; }
     var width = Math.max(nextX - GX, W), height = (depthMax + 1) * (H + GY) - GY;
     var sel = s.orgSel ? this.orgCargo(s, s.orgSel) : null;
     var isAdmin = v.role === 'admin';
@@ -358,8 +391,17 @@ Object.assign(Component.prototype, {
         icons: DB_ICONS.slice(0, 24).map(function (k) { return { icon: ICON[k], cls: selArea.icon === k ? 'on' : '', on: selArea.icon === k, aria: 'Icono ' + k.slice(2), pick: function () { self.updOrg(function (org) { org.areas.forEach(function (a) { if (a.id === selArea.id) a.icon = k; }); }); } }; }),
         newPage: function () { self.newPage(selArea.id); } };
     }
+    var lvRows = [];
+    for (var di = 0; di <= depthMax; di++) (function (d) {
+      var cur = self.orgLvlColor(s, d);
+      lvRows.push({ n: 'Nivel ' + (d + 1), tag: 'N' + (d + 1), color: cur,
+        opts: ORG_LVL_PAL.map(function (h) { var on = cur.toLowerCase() === h.toLowerCase(); return { hex: h, cls: on ? 'on' : '', on: on, aria: 'Color ' + h + ' para el nivel ' + (d + 1), pick: function () { self.orgSetLvl(d, h); } }; }),
+        custom: function (e) { self.orgSetLvl(d, e.target.value); } });
+    })(di);
+    var lv = { canEdit: isAdmin, open: !!s.orgLvlOpen, toggle: function () { self.setState({ orgLvlOpen: !s.orgLvlOpen }); }, rows: lvRows,
+      reset: function () { self.updOrg(function (org) { delete org.lvl; }, 'restableció los colores por nivel'); } };
     var vac = cargos.filter(function (c) { return !c.person; }).length;
-    return { w: width, h: height, boxes: boxes, links: links, style: 'width: ' + width + 'px; height: ' + height + 'px', vb: '0 0 ' + width + ' ' + height, panel: panel, areas: areas, ap: ap, isAdmin: isAdmin,
+    return { w: width, h: height, boxes: boxes, links: links, ghost: ghost, hasGhost: ghost.has, lv: lv, style: 'width: ' + width + 'px; height: ' + height + 'px', vb: '0 0 ' + width + ' ' + height, panel: panel, areas: areas, ap: ap, isAdmin: isAdmin,
       stats: cargos.length + ' cargos · ' + (cargos.length - vac) + ' ocupados · ' + vac + (vac === 1 ? ' vacante' : ' vacantes') + ' · ' + s.org.areas.length + ' áreas',
       addRoot: function () { self.orgAddChild(s.orgSel || (cargos[0] ? cargos[0].id : null)); }, addArea: function () { self.orgAddArea(); } };
   },

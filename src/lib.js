@@ -51,6 +51,8 @@ var MONTHS = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oc
 var MONTHS_LONG = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
 var DOW = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'];
 var NEW_COLORS = ['#0F766E', '#6D28D9', '#9A3412', '#1D4ED8', '#BE185D', '#4D7C0F', '#0E7490', '#B45309', '#4F46E5', '#047857'];
+var ORG_LVL = ['#6366F1', '#0EA5E9', '#14B8A6', '#F59E0B', '#EC4899', '#A855F7'];
+var ORG_LVL_PAL = ['#6366F1', '#0EA5E9', '#14B8A6', '#22C55E', '#F59E0B', '#F97316', '#EF4444', '#EC4899', '#A855F7', '#64748B'];
 var DB_ICONS = Object.keys(ICON).filter(function (k) { return k.indexOf('i-') === 0; });
 var COMPUTED = { formula: 1, rollup: 1, created_time: 1, created_by: 1, last_edited_time: 1, last_edited_by: 1, id: 1 };
 var SHEET_COLS = 'ABCDEFGHIJ'.split('');

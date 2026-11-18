@@ -433,9 +433,26 @@
       </div>
       <div class="org-areas">
         <sc-for list="{{org.areas}}" as="oa" hint-placeholder-count="4">
-          <button type="button" class="org-area {{oa.cls}}" style="--c: {{oa.color}}" onClick="{{oa.pick}}" aria-pressed="{{oa.on}}" onDragOver="{{oa.dragOver}}" onDragLeave="{{oa.dragLeave}}" onDrop="{{oa.drop}}"><span class="tico sm">[[ics:oa.icon]]</span><span class="ab-txt"><strong>{{oa.name}}</strong><span>{{oa.meta}}</span></span></button>
+          <button type="button" class="org-area {{oa.cls}}" data-aid="{{oa.aid}}" style="--c: {{oa.color}}" onClick="{{oa.pick}}" aria-pressed="{{oa.on}}"><span class="tico sm">[[ics:oa.icon]]</span><span class="ab-txt"><strong>{{oa.name}}</strong><span>{{oa.meta}}</span></span></button>
         </sc-for>
       </div>
+      <div class="org-lv">
+        <span class="org-lv-t">Niveles</span>
+        <sc-for list="{{org.lv.rows}}" as="lg" hint-placeholder-count="3"><span class="lv-chip" style="--c: {{lg.color}}"><i></i>{{lg.n}}</span></sc-for>
+        <sc-if value="{{org.lv.canEdit}}" hint-placeholder-val="{{true}}"><button type="button" class="btn btn-sm" onClick="{{org.lv.toggle}}" aria-expanded="{{org.lv.open}}">[[ics:ICON.palette]]Colores por nivel</button></sc-if>
+      </div>
+      <sc-if value="{{org.lv.open}}" hint-placeholder-val="{{false}}">
+        <div class="card org-lvedit">
+          <p class="muted sm">Cada nivel del organigrama usa su propio color. Elige uno de la paleta o uno personalizado.</p>
+          <sc-for list="{{org.lv.rows}}" as="lr" hint-placeholder-count="3">
+            <div class="lv-row"><span class="lv-chip" style="--c: {{lr.color}}"><i></i>{{lr.n}}</span>
+              <div class="swatches sm"><sc-for list="{{lr.opts}}" as="lo" hint-placeholder-count="8"><button type="button" class="swatch {{lo.cls}}" style="background: {{lo.hex}}" onClick="{{lo.pick}}" aria-label="{{lo.aria}}" aria-pressed="{{lo.on}}"></button></sc-for></div>
+              <input type="color" class="lv-color" value="{{lr.color}}" onChange="{{lr.custom}}" aria-label="Color personalizado para {{lr.n}}">
+            </div>
+          </sc-for>
+          <button type="button" class="btn btn-sm" onClick="{{org.lv.reset}}">Restablecer colores</button>
+        </div>
+      </sc-if>
       <sc-if value="{{org.ap.has}}" hint-placeholder-val="{{false}}">
         <div class="card org-areaedit">
           <sc-if value="{{org.ap.canEdit}}" hint-placeholder-val="{{true}}">
@@ -449,10 +466,11 @@
       <div class="org-wrap">
         <div class="map-scroll org-scroll">
           <div class="org-chart" style="{{org.style}}">
-            <sc-for list="{{org.links}}" as="ol" hint-placeholder-count="5"><svg class="map-svg" viewBox="{{org.vb}}" aria-hidden="true"><path class="org-ln {{ol.cls}}" d="{{ol.d}}"></path></svg></sc-for>
+            <sc-for list="{{org.links}}" as="ol" hint-placeholder-count="5"><svg class="map-svg" data-key="{{ol.key}}" viewBox="{{org.vb}}" aria-hidden="true"><path class="org-ln {{ol.cls}}" d="{{ol.d}}" style="d: {{ol.cd}}"></path></svg></sc-for>
+            <sc-if value="{{org.hasGhost}}" hint-placeholder-val="{{false}}"><div class="org-ghost" data-key="ghost" style="{{org.ghost.style}}" aria-hidden="true"></div></sc-if>
             <sc-for list="{{org.boxes}}" as="ob" hint-placeholder-count="6">
-              <button type="button" class="org-node {{ob.cls}}" style="{{ob.style}}" onClick="{{ob.pick}}" aria-label="{{ob.aria}}" draggable="{{ob.canDrag}}" onDragStart="{{ob.dragStart}}" onDragEnd="{{ob.dragEnd}}" onDragOver="{{ob.dragOver}}" onDragLeave="{{ob.dragLeave}}" onDrop="{{ob.drop}}">
-                <span class="on-area"><span class="tico xs">[[icx:ob.icon]]</span><span class="on-areatxt">{{ob.areaName}}</span></span>
+              <button type="button" class="org-node {{ob.cls}}" data-key="{{ob.key}}" data-hint="{{ob.hint}}" style="{{ob.style}}" onClick="{{ob.pick}}" onPointerDown="{{ob.ptrDown}}" aria-label="{{ob.aria}}">
+                <span class="on-top"><span class="on-area"><span class="tico xs">[[icx:ob.icon]]</span><span class="on-areatxt">{{ob.areaName}}</span></span><span class="on-lv">{{ob.lvl}}</span></span>
                 <strong class="on-name">{{ob.name}}</strong>
                 <span class="on-person"><sc-if value="{{ob.hasPerson}}" hint-placeholder-val="{{true}}"><span class="av xs" style="background: {{ob.avatar}}">{{ob.initials}}</span></sc-if><sc-if value="{{ob.vacant}}" hint-placeholder-val="{{false}}"><span class="vac-dot"></span></sc-if><span class="on-pname">{{ob.person}}</span></span>
                 <sc-if value="{{ob.hasLoad}}" hint-placeholder-val="{{true}}"><span class="on-load {{ob.loadCls}}">{{ob.load}}</span></sc-if>

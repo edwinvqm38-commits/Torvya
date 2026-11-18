@@ -313,40 +313,124 @@ Object.assign(Component.prototype, {
 
   /* ---------- arrastrar cargos ---------- */
   orgDescends(s, cid, target) { var c = this.orgCargo(s, target), g = 0; while (c && g++ < 50) { if (c.id === cid) return true; c = this.orgCargo(s, c.parent); } return false; },
-  orgDragStart(cid, e) { this._dragCargo = cid; try { e.dataTransfer.setData('text/plain', 'cargo:' + cid); e.dataTransfer.effectAllowed = 'move'; } catch (err) { } },
-  orgDragEnd() { this._dragCargo = null; try { document.querySelectorAll('.drop-child, .drop-before, .drop-after, .drop-area').forEach(function (n) { n.classList.remove('drop-child', 'drop-before', 'drop-after', 'drop-area'); }); } catch (err) { } },
-  orgZone(e) { try { var r = e.currentTarget.getBoundingClientRect(), f = (e.clientX - r.left) / r.width; return f < 0.22 ? 'before' : f > 0.78 ? 'after' : 'child'; } catch (err) { return 'child'; } },
-  orgDragOver(cid, e) {
-    if (!this._dragCargo || this._dragCargo === cid) return;
-    try { e.preventDefault(); var z = this.orgZone(e), el = e.currentTarget; el.classList.toggle('drop-child', z === 'child'); el.classList.toggle('drop-before', z === 'before'); el.classList.toggle('drop-after', z === 'after'); } catch (err) { }
+  orgMoveOK(s, cid, target, zone) {
+    if (!cid || cid === target) return false;
+    var tc = this.orgCargo(s, target); if (!tc) return false;
+    if (zone === 'above') return !this.orgDescends(s, cid, target);
+    var np = zone === 'child' ? target : tc.parent;
+    return !(np && this.orgDescends(s, cid, np));
   },
-  orgDragLeave(e) { try { e.currentTarget.classList.remove('drop-child', 'drop-before', 'drop-after', 'drop-area'); } catch (err) { } },
-  orgDrop(target, e) {
-    var cid = this._dragCargo, zone = this.orgZone(e);
-    this.orgDragEnd(); try { e.preventDefault(); } catch (err) { }
-    if (!cid || cid === target) return;
-    var s = this.st();
-    var tc = this.orgCargo(s, target);
-    if (!tc) return;
-    var newParent = zone === 'child' ? target : tc.parent;
-    if (newParent && this.orgDescends(s, cid, newParent)) { this.toastMsg('No se puede: ese cargo depende del que estás moviendo.'); return; }
-    var c = this.orgCargo(s, cid);
-    this.updOrg(function (org) {
-      var arr = org.cargos, i = arr.map(function (x) { return x.id; }).indexOf(cid), it = arr.splice(i, 1)[0];
-      it.parent = newParent || null;
-      var j = arr.map(function (x) { return x.id; }).indexOf(target);
-      if (zone === 'child') arr.push(it); else arr.splice(zone === 'after' ? j + 1 : j, 0, it);
-    }, 'reorganizó el organigrama: «' + c.name + '» ahora ' + (zone === 'child' ? 'reporta a «' + tc.name + '»' : 'está junto a «' + tc.name + '»'));
-    this.toastMsg(zone === 'child' ? '«' + c.name + '» ahora reporta a «' + tc.name + '»' : '«' + c.name + '» se movió junto a «' + tc.name + '»');
+  orgMoveCommit(cid, target, zone) {
+    var self = this, s = this.st(), c = this.orgCargo(s, cid), tc = this.orgCargo(s, target);
+    if (!c || !tc) return;
+    var txt = zone === 'child' ? '«' + c.name + '» ahora reporta a «' + tc.name + '»' : zone === 'above' ? '«' + c.name + '» quedó por encima de «' + tc.name + '»' : '«' + c.name + '» se movió junto a «' + tc.name + '»';
+    this.updOrg(function (org) { org.cargos = self.orgSimMove(org.cargos, cid, target, zone); }, 'reorganizó el organigrama: ' + txt);
+    this.toastMsg(txt);
   },
-  orgDropArea(aid, e) {
-    var cid = this._dragCargo; this.orgDragEnd(); try { e.preventDefault(); } catch (err) { }
-    if (!cid) return;
-    var s = this.st(), a = this.orgArea(s, aid);
-    this.updOrg(function (org) { org.cargos.forEach(function (x) { if (x.id === cid) x.area = aid; }); }, 'cambió de área un cargo');
-    this.toastMsg('Cargo movido al área ' + (a ? a.name : ''));
+  /* puntero: pulsar, mover más de 6 px = arrastrar */
+  orgPtrDown(cid, e) {
+    if (this._od) return;
+    if (e.button != null && e.button !== 0) return;
+    var el = e.currentTarget, chart = el && el.closest ? el.closest('.org-chart') : null;
+    if (!chart) return;
+    var self = this;
+    this._od = { cid: cid, el: el, chart: chart, sx: e.clientX, sy: e.clientY, px: e.clientX, py: e.clientY, started: false, cx: 0, cy: 0, rot: 0, rv: 0, kx: 1, ky: 1, kxv: 0, kyv: 0 };
+    this._omv = function (ev) { self.orgPtrMove(ev); };
+    this._oup = function (ev) { self.orgPtrUp(ev, false); };
+    this._okd = function (ev) { if (ev.key === 'Escape') self.orgPtrUp(ev, true); };
+    window.addEventListener('pointermove', this._omv); window.addEventListener('pointerup', this._oup);
+    window.addEventListener('pointercancel', this._oup); window.addEventListener('keydown', this._okd);
   },
-  orgAreaOver(e) { if (!this._dragCargo) return; try { e.preventDefault(); e.currentTarget.classList.add('drop-area'); } catch (err) { } },
+  orgPtrUnbind() {
+    window.removeEventListener('pointermove', this._omv); window.removeEventListener('pointerup', this._oup);
+    window.removeEventListener('pointercancel', this._oup); window.removeEventListener('keydown', this._okd);
+  },
+  orgPtrMove(ev) {
+    var d = this._od; if (!d || d.landing) return;
+    d.px = ev.clientX; d.py = ev.clientY;
+    if (!d.started) { if (Math.hypot(d.px - d.sx, d.py - d.sy) < 6) return; this.orgDragBegin(); }
+    this.orgHitUpdate();
+  },
+  orgDragBegin() {
+    var d = this._od, s = this.st(), lay = this._orgLay || this.orgLayout(s, s.org.cargos), p = lay.pos[d.cid];
+    if (!p) { this.orgPtrUnbind(); this._od = null; return; }
+    d.ox = p.x; d.oy = p.d * (lay.H + lay.GY); d.r0 = d.chart.getBoundingClientRect(); d.started = true;
+    document.body.classList.add('org-dragging');
+    this.setState({ orgDrag: { cid: d.cid, ox: d.ox, oy: d.oy, target: null, zone: null, bad: false, area: null }, orgLanded: null });
+    this.orgLoop();
+  },
+  orgLoop() {
+    var self = this, d = this._od; if (!d || !d.started || d.landing) return;
+    var rn = d.chart.getBoundingClientRect();
+    var tx = (d.px - d.sx) + (d.r0.left - rn.left), ty = (d.py - d.sy) + (d.r0.top - rn.top);
+    d.cx += (tx - d.cx) * 0.3; d.cy += (ty - d.cy) * 0.3;
+    var lx = tx - d.cx, ly = ty - d.cy;
+    var cl = function (v, a, b) { return Math.max(a, Math.min(b, v)); };
+    var rt = cl(lx * 0.14, -10, 10);
+    d.rv = (d.rv + (rt - d.rot) * 0.2) * 0.76; d.rot += d.rv;
+    var kxT = 1.05 + cl(Math.abs(lx) * 0.004, 0, 0.09) - cl(Math.abs(ly) * 0.002, 0, 0.05);
+    var kyT = 1.05 + cl(Math.abs(ly) * 0.004, 0, 0.09) - cl(Math.abs(lx) * 0.002, 0, 0.05);
+    d.kxv = (d.kxv + (kxT - d.kx) * 0.22) * 0.74; d.kx += d.kxv;
+    d.kyv = (d.kyv + (kyT - d.ky) * 0.22) * 0.74; d.ky += d.kyv;
+    d.el.style.transform = 'translate3d(' + d.cx.toFixed(1) + 'px,' + d.cy.toFixed(1) + 'px,0) rotate(' + d.rot.toFixed(2) + 'deg) scale(' + d.kx.toFixed(3) + ',' + d.ky.toFixed(3) + ')';
+    try {
+      var sc = d.chart.parentNode, rr = sc.getBoundingClientRect();
+      if (d.px < rr.left + 50) sc.scrollLeft -= 12; else if (d.px > rr.right - 50) sc.scrollLeft += 12;
+      if (d.py < 70) window.scrollBy(0, -14); else if (d.py > window.innerHeight - 70) window.scrollBy(0, 14);
+    } catch (err) { }
+    d.raf = requestAnimationFrame(function () { self.orgLoop(); });
+  },
+  orgHitUpdate() {
+    var d = this._od, s = this.st(), lay = this._orgLay; if (!d || !d.started || !lay) return;
+    var dr = s.orgDrag || {}, self = this;
+    var setDr = function (patch) { self.setState({ orgDrag: Object.assign({}, dr, patch) }); };
+    var aid = null;
+    try { var els = document.elementsFromPoint(d.px, d.py); for (var i = 0; i < els.length; i++) { var a = els[i].getAttribute && els[i].getAttribute('data-aid'); if (a) { aid = a; break; } } } catch (err) { }
+    if (aid) { if (dr.area !== aid || dr.target) setDr({ area: aid, target: null, zone: null, bad: false }); return; }
+    var r = d.chart.getBoundingClientRect(), px = d.px - r.left, py = d.py - r.top, step = lay.H + lay.GY, W = lay.W, H = lay.H;
+    var gp = lay.pos[d.cid];
+    if (gp && px >= gp.x && px <= gp.x + W && py >= gp.d * step && py <= gp.d * step + H) { if (dr.area) setDr({ area: null }); return; }
+    var hit = null;
+    for (var id in lay.pos) {
+      if (id === d.cid) continue;
+      var p = lay.pos[id], x = p.x, y = p.d * step;
+      if (px >= x && px <= x + W && py >= y && py <= y + H) { hit = { id: id, x: x, y: y }; break; }
+    }
+    if (!hit) { if (dr.area) setDr({ area: null }); return; }
+    var fx = (px - hit.x) / W, fy = (py - hit.y) / H;
+    var zone = fy < 0.24 ? 'above' : fx < 0.24 ? 'before' : fx > 0.76 ? 'after' : 'child';
+    if (dr.target === hit.id && dr.zone === zone && !dr.area) return;
+    setDr({ target: hit.id, zone: zone, bad: !this.orgMoveOK(s, d.cid, hit.id, zone), area: null });
+  },
+  orgPtrUp(ev, cancel) {
+    var d = this._od; this.orgPtrUnbind();
+    if (!d) return;
+    if (!d.started) { this._od = null; return; }
+    if (d.landing) return;
+    d.landing = true; cancelAnimationFrame(d.raf);
+    this._noClick = Date.now();
+    var self = this, s = this.st(), dr = s.orgDrag || {}, lay = this._orgLay;
+    var okMove = !cancel && dr.target && !dr.bad, okArea = !cancel && dr.area, el = d.el;
+    var tx = 0, ty = 0;
+    if (okMove && lay && lay.pos[d.cid]) { var p = lay.pos[d.cid]; tx = p.x - d.ox; ty = p.d * (lay.H + lay.GY) - d.oy; }
+    el.style.transition = 'transform .5s cubic-bezier(.3,1.6,.5,1)';
+    el.style.transform = 'translate3d(' + tx + 'px,' + ty + 'px,0) rotate(0deg) scale(1,1)';
+    if (!okMove) this.setState({ orgDrag: { cid: d.cid, ox: d.ox, oy: d.oy, target: null, zone: null, bad: false, area: null } });
+    setTimeout(function () {
+      document.body.classList.remove('org-dragging');
+      if (okMove) {
+        self.orgMoveCommit(d.cid, dr.target, dr.zone);
+        self.setState({ orgDrag: { cid: d.cid, commit: true }, orgLanded: d.cid });
+        setTimeout(function () { self.setState({ orgDrag: null }); }, 90);
+        setTimeout(function () { if (self.st().orgLanded === d.cid) self.setState({ orgLanded: null }); }, 900);
+      } else {
+        el.style.transition = ''; el.style.transform = '';
+        if (okArea) { var ar = self.orgArea(self.st(), dr.area); self.updOrg(function (org) { org.cargos.forEach(function (x) { if (x.id === d.cid) x.area = dr.area; }); }, 'cambió de área un cargo'); self.toastMsg('Cargo movido al área ' + (ar ? ar.name : '')); self.setState({ orgDrag: null, orgLanded: d.cid }); setTimeout(function () { if (self.st().orgLanded === d.cid) self.setState({ orgLanded: null }); }, 900); }
+        else self.setState({ orgDrag: null });
+      }
+      self._od = null;
+    }, 460);
+  },
 
   /* ---------- solicitudes y aprobaciones ---------- */
   bossOf(s, mid) {
@@ -416,12 +500,10 @@ Object.assign(Component.prototype, {
       b.hasLoad = !!wl; b.load = wl ? (wl.n ? wl.h + ' h · ' + wl.n + (wl.n === 1 ? ' tarea' : ' tareas') : 'Sin tareas abiertas') : '';
       b.loadCls = !wl ? '' : wl.h > 80 ? 'bad' : wl.h > 40 ? 'warn' : 'ok';
       b.hasAlerts = !!wl && wl.al > 0; b.alerts = wl ? String(wl.al) : ''; b.alertsAria = wl ? wl.al + ' recomendaciones PMBOK pendientes' : '';
-      b.canDrag = isAdmin;
-      b.dragStart = function (e) { self.orgDragStart(c.id, e); }; b.dragEnd = function () { self.orgDragEnd(); };
-      b.dragOver = function (e) { self.orgDragOver(c.id, e); }; b.dragLeave = function (e) { self.orgDragLeave(e); }; b.drop = function (e) { self.orgDrop(c.id, e); };
+      b.ptrDown = isAdmin ? function (e) { self.orgPtrDown(c.id, e); } : null;
       delete b.raw;
     });
-    d.areas.forEach(function (a) { a.dragOver = function (e) { self.orgAreaOver(e); }; a.dragLeave = function (e) { self.orgDragLeave(e); }; a.drop = function (e) { self.orgDropArea(a.id, e); }; });
+    var dra = s.orgDrag; d.areas.forEach(function (a) { a.aid = a.id; if (dra && dra.area === a.id) a.cls = (a.cls + ' drop-area').trim(); });
     d.exPng = function () { self.orgExport('png'); }; d.exSvg = function () { self.orgExport('svg'); };
     d.exPdf = function () { self.orgExport('pdf'); }; d.exPptx = function () { self.orgExport('pptx'); };
     if (d.panel.has) {

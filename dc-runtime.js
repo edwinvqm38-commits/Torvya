@@ -72,7 +72,7 @@
     }
     var c = [];
     for (i = 0; i < kids.length; i++) build(kids[i], scope, c);
-    out.push({ t: tag, ns: node.namespaceURI, a: a, h: h, c: c });
+    out.push({ t: tag, ns: node.namespaceURI, a: a, h: h, c: c, k: a['data-key'] });
   }
 
   /* ---------- nodos virtuales → DOM real ---------- */
@@ -85,7 +85,7 @@
     for (k in prev) if (!(k in a)) { el.removeAttribute(k); }
     for (k in a) {
       if (k === 'value' && (vn.t === 'input' || vn.t === 'textarea' || vn.t === 'select')) continue;
-      if (el.getAttribute(k) !== a[k]) el.setAttribute(k, a[k]);
+      if (!(k in prev) || prev[k] !== a[k]) el.setAttribute(k, a[k]);
     }
     el._a = a;
     var ph = el._h || {}, hh = {}, ev;
@@ -103,13 +103,37 @@
   function create(vn) {
     if (vn.t === '#text') return document.createTextNode(vn.v);
     var el = vn.ns && vn.ns !== 'http://www.w3.org/1999/xhtml' ? document.createElementNS(vn.ns, vn.t) : document.createElement(vn.t);
+    if (vn.k != null) el._k = vn.k;
     setAttrs(el, vn);
     for (var i = 0; i < vn.c.length; i++) el.appendChild(create(vn.c[i]));
     setValue(el, vn);
     return el;
   }
+  var PASS = 0;
+  function sameKind(el, vn) { return el.nodeType === 1 && el.localName === vn.t && (el.namespaceURI || '') === (vn.ns || ''); }
+  function patchKeyed(parent, vs) {
+    var old = {}, i, n;
+    for (i = 0; i < parent.childNodes.length; i++) { n = parent.childNodes[i]; if (n._k != null) old[n._k] = n; }
+    var pass = ++PASS, cur = parent.firstChild;
+    for (i = 0; i < vs.length; i++) {
+      var vn = vs[i], el = old[vn.k];
+      if (el && sameKind(el, vn)) { setAttrs(el, vn); patch(el, vn.c); setValue(el, vn); }
+      else { el = create(vn); }
+      el._u = pass;
+      if (cur === el) cur = cur.nextSibling; else parent.insertBefore(el, cur);
+    }
+    for (i = parent.childNodes.length - 1; i >= 0; i--) { n = parent.childNodes[i]; if (n._u !== pass) parent.removeChild(n); }
+  }
   function patch(parent, vnodes) {
-    var kids = parent.childNodes, i;
+    var kids, i, keyed = vnodes.length > 0, vs = [];
+    for (i = 0; i < vnodes.length; i++) {
+      var q = vnodes[i];
+      if (q.t === '#text') { if (/\S/.test(q.v)) { keyed = false; break; } continue; }
+      if (q.k == null) { keyed = false; break; }
+      vs.push(q);
+    }
+    if (keyed && vs.length) { patchKeyed(parent, vs); return; }
+    kids = parent.childNodes;
     for (i = 0; i < vnodes.length; i++) {
       var vn = vnodes[i], el = kids[i];
       if (!el) { parent.appendChild(create(vn)); continue; }

@@ -1001,17 +1001,21 @@ button.pmp-row:hover{background:var(--hover)}
 .org-wrap{display:flex;gap:16px;align-items:flex-start}
 .org-scroll{flex:1;min-width:0}
 .org-chart{position:relative;margin:0 auto}
-.org-ln{fill:none;stroke:var(--muted);stroke-width:1.4;opacity:.55}
+.org-ln{fill:none;stroke:var(--muted);stroke-width:1.4;opacity:.55;transition:d .5s var(--spring,ease)}
 .org-ln.hi{stroke:var(--acc);stroke-width:2.4;opacity:1}
-.org-node{position:absolute;z-index:2;display:flex;flex-direction:column;align-items:flex-start;gap:3px;padding:8px 10px 8px 12px;border:1px solid var(--line);border-top:3px solid var(--c);border-radius:10px;background:var(--panel);box-shadow:0 2px 8px rgba(20,20,16,.06);text-align:left;color:var(--text);overflow:hidden}
-.org-node:hover{box-shadow:0 4px 14px rgba(20,20,16,.12)}
-.org-node.on{box-shadow:0 0 0 2px var(--acc),0 4px 14px rgba(20,20,16,.12)}
+.org-chart{--spring:cubic-bezier(.34,1.45,.5,1)}
+.org-node{position:absolute;z-index:2;display:flex;flex-direction:column;align-items:flex-start;gap:3px;padding:9px 11px;border:1px solid color-mix(in srgb,var(--c) 30%,var(--line));border-radius:12px;background:linear-gradient(155deg,color-mix(in srgb,var(--c) 14%,var(--panel)) 0%,color-mix(in srgb,var(--c) 4%,var(--panel)) 72%);box-shadow:0 1px 2px rgba(20,20,16,.05),0 5px 14px color-mix(in srgb,var(--c) 11%,transparent);text-align:left;color:var(--text);overflow:hidden;user-select:none;-webkit-user-select:none;transition:left .5s var(--spring),top .5s var(--spring),box-shadow .2s,opacity .2s,border-color .2s}
+.org-node:hover{box-shadow:0 2px 4px rgba(20,20,16,.06),0 8px 20px color-mix(in srgb,var(--c) 20%,transparent)}
+.org-node.on{border-color:var(--acc);box-shadow:0 0 0 2px var(--acc),0 8px 20px color-mix(in srgb,var(--c) 18%,transparent)}
 .org-node.me{outline:2px dashed color-mix(in srgb,var(--acc) 55%,transparent);outline-offset:3px}
 .org-node.dim{opacity:.35}
-.org-node.vacant{border-style:dashed;border-top-style:solid}
+.org-node.vacant{border-style:dashed}
 .on-area{display:flex;align-items:center;gap:5px;font-size:10.5px;color:var(--muted);font-weight:600;max-width:100%}
 .on-areatxt,.on-pname{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.on-area .tico{color:var(--c);background:color-mix(in srgb,var(--c) 13%,transparent)}
+.on-area .tico{color:var(--a,var(--c));background:color-mix(in srgb,var(--a,var(--c)) 14%,transparent)}
+.on-top{display:flex;align-items:center;justify-content:space-between;gap:6px;width:100%}
+.on-top .on-area{min-width:0;flex:1 1 auto}
+.on-lv{flex:none;font-size:10px;font-weight:700;letter-spacing:.03em;padding:1px 7px;border-radius:999px;color:color-mix(in srgb,var(--c) 70%,var(--text));background:color-mix(in srgb,var(--c) 16%,transparent)}
 .on-name{font-size:13px;line-height:1.25;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .on-person{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);max-width:100%}
 .vac-dot{width:10px;height:10px;border-radius:50%;border:1.5px dashed var(--muted);flex:none}
@@ -1032,10 +1036,6 @@ button.pmp-row:hover{background:var(--hover)}
 .org-bar{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px}
 .org-hint{display:inline-flex;align-items:center;gap:6px;max-width:560px}
 .org-ex{display:flex;flex-wrap:wrap;align-items:center;gap:6px}
-.org-node[draggable="true"]{cursor:grab}
-.org-node.drop-child{box-shadow:0 0 0 3px var(--acc);background:var(--soft)}
-.org-node.drop-before{box-shadow:-5px 0 0 0 var(--acc)}
-.org-node.drop-after{box-shadow:5px 0 0 0 var(--acc)}
 .org-area.drop-area{border-color:var(--acc);background:var(--soft)}
 .on-load{font-size:11px;font-weight:600;padding:1px 7px;border-radius:999px;background:var(--chip);color:var(--muted);margin-top:2px}
 .on-load.ok{background:#E3F4E8;color:#1E6B3C}.on-load.warn{background:#FDF0D5;color:#8A5300}.on-load.bad{background:#FBE2DF;color:#972216}
@@ -1396,6 +1396,39 @@ button.cos-tr:hover{background:var(--hover)}
 .cos-impact{display:flex;flex-direction:column;gap:12px}
 .cos-iform{display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end}
 @media (max-width:980px){.cos-grid{grid-template-columns:1fr}.cos-list{position:static;max-height:none}.cos-tr,.cos-tr.k,.cos-tr.h,.cos-tr.c,.cos-tr.i{grid-template-columns:1fr 1fr}.cos-th{display:none}}
+
+/* ---------- organigrama: arrastrar con efecto gelatina ---------- */
+.org-node.can-drag{cursor:grab;touch-action:none}
+.org-node.dragging{z-index:60;cursor:grabbing;transition:none;will-change:transform;border-color:var(--c);box-shadow:0 24px 46px rgba(20,20,16,.3),0 8px 16px rgba(20,20,16,.14)}
+body.org-dragging,body.org-dragging *{cursor:grabbing!important;user-select:none;-webkit-user-select:none}
+.org-ghost{position:absolute;z-index:1;border-radius:12px;border:2px dashed color-mix(in srgb,var(--c) 65%,transparent);background:color-mix(in srgb,var(--c) 9%,transparent);transition:left .5s var(--spring,ease),top .5s var(--spring,ease);animation:orgGhost .28s ease-out}
+@keyframes orgGhost{from{opacity:0;transform:scale(.92)}to{opacity:1;transform:scale(1)}}
+.org-node.tgt{border-color:var(--acc);box-shadow:0 0 0 3px color-mix(in srgb,var(--acc) 32%,transparent),0 10px 24px color-mix(in srgb,var(--acc) 18%,transparent)}
+.org-node.tgt-bad{border-color:#DC2626;box-shadow:0 0 0 3px rgba(220,38,38,.25)}
+.org-node.tgt::after,.org-node.tgt-bad::after{content:attr(data-hint);position:absolute;left:8px;right:8px;bottom:6px;padding:3px 8px;border-radius:999px;background:var(--acc);color:var(--on-acc);font-size:10.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-align:center}
+.org-node.tgt-bad::after{background:#DC2626;color:#fff}
+.org-node.tz-above::after{bottom:auto;top:6px}
+.org-node.landed{animation:orgJelly .7s ease-out}
+@keyframes orgJelly{0%{transform:scale(1.07,.94)}22%{transform:scale(.95,1.06)}44%{transform:scale(1.035,.975)}66%{transform:scale(.99,1.01)}100%{transform:scale(1)}}
+.org-lv{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin-bottom:12px}
+.org-lv-t{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-right:4px}
+.lv-chip{display:inline-flex;align-items:center;gap:6px;height:24px;padding:0 10px 0 8px;border-radius:999px;font-size:11.5px;font-weight:600;color:color-mix(in srgb,var(--c) 70%,var(--text));background:color-mix(in srgb,var(--c) 14%,transparent);border:1px solid color-mix(in srgb,var(--c) 28%,transparent)}
+.lv-chip i{width:8px;height:8px;border-radius:50%;background:var(--c)}
+.org-lvedit{display:flex;flex-direction:column;gap:10px;margin-bottom:14px;max-width:640px}
+.lv-row{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.lv-row .lv-chip{min-width:84px}
+.lv-color{width:34px;height:28px;padding:0;border:1px solid var(--line);border-radius:8px;background:var(--panel)}
+@media (prefers-reduced-motion:reduce){.org-node,.org-ghost,.org-ln{transition:none!important}.org-node.landed{animation:none}}
+
+/* ---------- distintivos de color modernos (sin línea lateral) ---------- */
+.pm-item{--sv:#8C8C86;grid-template-columns:auto minmax(0,1fr) auto;padding:11px 13px;border:1px solid color-mix(in srgb,var(--sv) 24%,var(--line2));border-radius:var(--r-sm);background:color-mix(in srgb,var(--sv) 6%,var(--panel))}
+.pm-item.sev-alta{--sv:#C2410C;border-left-color:color-mix(in srgb,var(--sv) 24%,var(--line2))}.pm-item.sev-media{--sv:#D08A1E;border-left-color:color-mix(in srgb,var(--sv) 24%,var(--line2))}.pm-item.sev-baja{--sv:#3B6FD8;border-left-color:color-mix(in srgb,var(--sv) 24%,var(--line2))}
+.pm-item.sev-alta,.pm-item.sev-media,.pm-item.sev-baja{background:color-mix(in srgb,var(--sv) 6%,var(--panel))}
+.pm-sev{justify-self:start;white-space:nowrap;padding:2px 9px;border-radius:999px;background:color-mix(in srgb,var(--sv) 14%,transparent)}
+.tr.row.is-sel,.li.is-sel{box-shadow:none;background:color-mix(in srgb,var(--acc) 9%,transparent)}
+.cos-ver.isA{box-shadow:none;border-color:#94A3B8;background:color-mix(in srgb,#94A3B8 10%,var(--panel))}
+.cos-ver.isB{box-shadow:none;border-color:var(--acc);background:color-mix(in srgb,var(--acc) 8%,var(--panel))}
+.frow.f-cond{border-left:0;margin-left:-10px;padding:8px 10px;border-radius:var(--r-sm);background:color-mix(in srgb,var(--acc) 6%,transparent)}
 </style>
 </helmet>
 <div class="app theme-{{mode}} acc-{{accent}} dens-{{density}} rad-{{corners}} font-{{font}}">
@@ -2525,9 +2558,26 @@ button.cos-tr:hover{background:var(--hover)}
       </div>
       <div class="org-areas">
         <sc-for list="{{org.areas}}" as="oa" hint-placeholder-count="4">
-          <button type="button" class="org-area {{oa.cls}}" style="--c: {{oa.color}}" onClick="{{oa.pick}}" aria-pressed="{{oa.on}}" onDragOver="{{oa.dragOver}}" onDragLeave="{{oa.dragLeave}}" onDrop="{{oa.drop}}"><span class="tico sm"><svg class="ic ic-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="{{oa.icon}}"></path></svg></span><span class="ab-txt"><strong>{{oa.name}}</strong><span>{{oa.meta}}</span></span></button>
+          <button type="button" class="org-area {{oa.cls}}" data-aid="{{oa.aid}}" style="--c: {{oa.color}}" onClick="{{oa.pick}}" aria-pressed="{{oa.on}}"><span class="tico sm"><svg class="ic ic-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="{{oa.icon}}"></path></svg></span><span class="ab-txt"><strong>{{oa.name}}</strong><span>{{oa.meta}}</span></span></button>
         </sc-for>
       </div>
+      <div class="org-lv">
+        <span class="org-lv-t">Niveles</span>
+        <sc-for list="{{org.lv.rows}}" as="lg" hint-placeholder-count="3"><span class="lv-chip" style="--c: {{lg.color}}"><i></i>{{lg.n}}</span></sc-for>
+        <sc-if value="{{org.lv.canEdit}}" hint-placeholder-val="{{true}}"><button type="button" class="btn btn-sm" onClick="{{org.lv.toggle}}" aria-expanded="{{org.lv.open}}"><svg class="ic ic-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.palette}}"></path></svg>Colores por nivel</button></sc-if>
+      </div>
+      <sc-if value="{{org.lv.open}}" hint-placeholder-val="{{false}}">
+        <div class="card org-lvedit">
+          <p class="muted sm">Cada nivel del organigrama usa su propio color. Elige uno de la paleta o uno personalizado.</p>
+          <sc-for list="{{org.lv.rows}}" as="lr" hint-placeholder-count="3">
+            <div class="lv-row"><span class="lv-chip" style="--c: {{lr.color}}"><i></i>{{lr.n}}</span>
+              <div class="swatches sm"><sc-for list="{{lr.opts}}" as="lo" hint-placeholder-count="8"><button type="button" class="swatch {{lo.cls}}" style="background: {{lo.hex}}" onClick="{{lo.pick}}" aria-label="{{lo.aria}}" aria-pressed="{{lo.on}}"></button></sc-for></div>
+              <input type="color" class="lv-color" value="{{lr.color}}" onChange="{{lr.custom}}" aria-label="Color personalizado para {{lr.n}}">
+            </div>
+          </sc-for>
+          <button type="button" class="btn btn-sm" onClick="{{org.lv.reset}}">Restablecer colores</button>
+        </div>
+      </sc-if>
       <sc-if value="{{org.ap.has}}" hint-placeholder-val="{{false}}">
         <div class="card org-areaedit">
           <sc-if value="{{org.ap.canEdit}}" hint-placeholder-val="{{true}}">
@@ -2541,10 +2591,11 @@ button.cos-tr:hover{background:var(--hover)}
       <div class="org-wrap">
         <div class="map-scroll org-scroll">
           <div class="org-chart" style="{{org.style}}">
-            <sc-for list="{{org.links}}" as="ol" hint-placeholder-count="5"><svg class="map-svg" viewBox="{{org.vb}}" aria-hidden="true"><path class="org-ln {{ol.cls}}" d="{{ol.d}}"></path></svg></sc-for>
+            <sc-for list="{{org.links}}" as="ol" hint-placeholder-count="5"><svg class="map-svg" data-key="{{ol.key}}" viewBox="{{org.vb}}" aria-hidden="true"><path class="org-ln {{ol.cls}}" d="{{ol.d}}" style="d: {{ol.cd}}"></path></svg></sc-for>
+            <sc-if value="{{org.hasGhost}}" hint-placeholder-val="{{false}}"><div class="org-ghost" data-key="ghost" style="{{org.ghost.style}}" aria-hidden="true"></div></sc-if>
             <sc-for list="{{org.boxes}}" as="ob" hint-placeholder-count="6">
-              <button type="button" class="org-node {{ob.cls}}" style="{{ob.style}}" onClick="{{ob.pick}}" aria-label="{{ob.aria}}" draggable="{{ob.canDrag}}" onDragStart="{{ob.dragStart}}" onDragEnd="{{ob.dragEnd}}" onDragOver="{{ob.dragOver}}" onDragLeave="{{ob.dragLeave}}" onDrop="{{ob.drop}}">
-                <span class="on-area"><span class="tico xs"><svg class="ic ic-xs" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ob.icon}}"></path></svg></span><span class="on-areatxt">{{ob.areaName}}</span></span>
+              <button type="button" class="org-node {{ob.cls}}" data-key="{{ob.key}}" data-hint="{{ob.hint}}" style="{{ob.style}}" onClick="{{ob.pick}}" onPointerDown="{{ob.ptrDown}}" aria-label="{{ob.aria}}">
+                <span class="on-top"><span class="on-area"><span class="tico xs"><svg class="ic ic-xs" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ob.icon}}"></path></svg></span><span class="on-areatxt">{{ob.areaName}}</span></span><span class="on-lv">{{ob.lvl}}</span></span>
                 <strong class="on-name">{{ob.name}}</strong>
                 <span class="on-person"><sc-if value="{{ob.hasPerson}}" hint-placeholder-val="{{true}}"><span class="av xs" style="background: {{ob.avatar}}">{{ob.initials}}</span></sc-if><sc-if value="{{ob.vacant}}" hint-placeholder-val="{{false}}"><span class="vac-dot"></span></sc-if><span class="on-pname">{{ob.person}}</span></span>
                 <sc-if value="{{ob.hasLoad}}" hint-placeholder-val="{{true}}"><span class="on-load {{ob.loadCls}}">{{ob.load}}</span></sc-if>
@@ -4223,6 +4274,8 @@ var MONTHS = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oc
 var MONTHS_LONG = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
 var DOW = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'];
 var NEW_COLORS = ['#0F766E', '#6D28D9', '#9A3412', '#1D4ED8', '#BE185D', '#4D7C0F', '#0E7490', '#B45309', '#4F46E5', '#047857'];
+var ORG_LVL = ['#6366F1', '#0EA5E9', '#14B8A6', '#F59E0B', '#EC4899', '#A855F7'];
+var ORG_LVL_PAL = ['#6366F1', '#0EA5E9', '#14B8A6', '#22C55E', '#F59E0B', '#F97316', '#EF4444', '#EC4899', '#A855F7', '#64748B'];
 var DB_ICONS = Object.keys(ICON).filter(function (k) { return k.indexOf('i-') === 0; });
 var COMPUTED = { formula: 1, rollup: 1, created_time: 1, created_by: 1, last_edited_time: 1, last_edited_by: 1, id: 1 };
 var SHEET_COLS = 'ABCDEFGHIJ'.split('');
@@ -8056,6 +8109,7 @@ Object.assign(Component.prototype, {
     if (!c) return false;
     return this.areaAncestors(s, pg.area).indexOf(c.area) >= 0;
   },
+  orgSetLvl(d, hex) { this.updOrg(function (org) { var l = (org.lvl || []).slice(); l[d] = hex; org.lvl = l; }); },
   orgSel(id) { this.setState({ orgSel: this.st().orgSel === id ? null : id }); },
   updOrg(fn, logText) { var s = this.st(); var org = clone(s.org); if (fn(org) === false) return; var patch = { org: org }; if (logText) patch.log = this.addLog(s, logText); this.setState(patch); },
   orgAddChild(pid) {
@@ -8076,40 +8130,72 @@ Object.assign(Component.prototype, {
     this.updOrg(function (org) { org.areas.push({ id: id, name: 'Nueva área', color: NEW_COLORS[(n + 2) % NEW_COLORS.length], icon: 'i-folder', parent: org.areas[0] ? org.areas[0].id : null }); }, 'creó un área');
     this.setState({ seq: s.seq + 1, orgAreaSel: id });
   },
-  orgData(s, v) {
-    var self = this;
-    var W = 204, H = 98, GX = 22, GY = 56;
-    var cargos = s.org.cargos;
-    var kids = {};
-    cargos.forEach(function (c) { var k = c.parent && self.orgCargo(s, c.parent) ? c.parent : '__root'; (kids[k] = kids[k] || []).push(c); });
+  /* disposición del árbol: posiciones por cargo (x en píxeles, d = nivel) */
+  orgLayout(s, cargos) {
+    var W = 204, H = 98, GX = 22, GY = 56, kids = {}, ids = {};
+    cargos.forEach(function (c) { ids[c.id] = true; });
+    cargos.forEach(function (c) { var k = c.parent && ids[c.parent] ? c.parent : '__root'; (kids[k] = kids[k] || []).push(c); });
     var pos = {}, nextX = 0, depthMax = 0;
     function place(c, d) {
+      if (d > 40 || pos[c.id]) return;
       depthMax = Math.max(depthMax, d);
       var ch = kids[c.id] || [];
       if (!ch.length) { pos[c.id] = { x: nextX, d: d }; nextX += W + GX; return; }
       ch.forEach(function (k) { place(k, d + 1); });
-      pos[c.id] = { x: (pos[ch[0].id].x + pos[ch[ch.length - 1].id].x) / 2, d: d };
+      var f = pos[ch[0].id], l = pos[ch[ch.length - 1].id];
+      pos[c.id] = { x: f && l ? (f.x + l.x) / 2 : nextX, d: d };
     }
     (kids.__root || []).forEach(function (c) { place(c, 0); });
+    return { pos: pos, kids: kids, nextX: nextX, depthMax: depthMax, W: W, H: H, GX: GX, GY: GY };
+  },
+  orgLvlColor(s, d) { var l = s.org && s.org.lvl; return (l && l[d]) || ORG_LVL[d % ORG_LVL.length]; },
+  /* simula mover un cargo: 'child' = pasa a depender de target, 'above' = queda como jefe de target, 'before'/'after' = junto a target */
+  orgSimMove(cargos, cid, target, zone) {
+    var arr = cargos.map(function (c) { return Object.assign({}, c); });
+    var it = arr.filter(function (c) { return c.id === cid; })[0], tc = arr.filter(function (c) { return c.id === target; })[0];
+    if (!it || !tc) return arr;
+    arr.splice(arr.indexOf(it), 1);
+    if (zone === 'child') { it.parent = target; arr.push(it); }
+    else if (zone === 'above') { it.parent = tc.parent || null; tc.parent = it.id; arr.splice(arr.indexOf(tc), 0, it); }
+    else { it.parent = tc.parent || null; var j = arr.indexOf(tc); arr.splice(zone === 'after' ? j + 1 : j, 0, it); }
+    return arr;
+  },
+  orgData(s, v) {
+    var self = this;
+    var cargos = s.org.cargos, dr = s.orgDrag || null;
+    var sim = !!(dr && dr.target && !dr.bad && !dr.commit);
+    var layCargos = sim ? this.orgSimMove(cargos, dr.cid, dr.target, dr.zone) : cargos;
+    var lay = this.orgLayout(s, layCargos), pos = lay.pos, kids = lay.kids, W = lay.W, H = lay.H, GX = lay.GX, GY = lay.GY, nextX = lay.nextX, depthMax = lay.depthMax;
+    this._orgLay = lay;
     var hiArea = s.orgAreaSel;
     var mineC = this.cargoOf(s, v.id);
-    var boxes = cargos.filter(function (c) { return pos[c.id]; }).map(function (c) {
+    var HINT = { child: 'Pasa a depender de este cargo', above: 'Quedará por encima de este cargo', before: 'Quedará a su izquierda', after: 'Quedará a su derecha' };
+    var boxes = cargos.slice().sort(function (x, y) { return x.id < y.id ? -1 : x.id > y.id ? 1 : 0; }).filter(function (c) { return pos[c.id]; }).map(function (c) {
       var a = self.orgArea(s, c.area) || { name: 'Sin área', color: '#8C8C86', icon: 'i-folder' };
       var m = c.person ? self.memberById(s, c.person) : null;
-      var p = pos[c.id];
-      var cls = (s.orgSel === c.id ? 'on ' : '') + (hiArea && hiArea !== c.area ? 'dim ' : '') + (mineC && mineC.id === c.id ? 'me ' : '') + (m ? '' : 'vacant');
-      return { id: c.id, x: p.x, y: p.d * (H + GY), w: W, h: H, raw: c, name: c.name, areaName: a.name, color: a.color, icon: ICON[a.icon] || ICON.db, style: 'left: ' + p.x + 'px; top: ' + (p.d * (H + GY)) + 'px; width: ' + W + 'px; height: ' + H + 'px; --c: ' + a.color,
-        cls: cls, hasPerson: !!m, vacant: !m, person: m ? m.name : 'Vacante', initials: m ? initialsOf(m.name) : '', avatar: m ? m.color : '#8C8C86',
+      var p = pos[c.id], lc = self.orgLvlColor(s, p.d);
+      var held = !!(dr && dr.cid === c.id && !dr.commit);
+      var bx = held ? dr.ox : p.x, by = held ? dr.oy : p.d * (H + GY);
+      var isT = !!(dr && dr.target === c.id && !dr.commit);
+      var cls = (s.orgSel === c.id ? 'on ' : '') + (hiArea && hiArea !== c.area ? 'dim ' : '') + (mineC && mineC.id === c.id ? 'me ' : '') + (m ? '' : 'vacant ')
+        + (held ? 'dragging ' : '') + (isT ? (dr.bad ? 'tgt-bad ' : 'tgt tz-' + dr.zone + ' ') : '') + (s.orgLanded === c.id ? 'landed ' : '') + (v.role === 'admin' ? 'can-drag' : '');
+      return { id: c.id, key: 'n-' + c.id, x: p.x, y: p.d * (H + GY), w: W, h: H, raw: c, name: c.name, areaName: a.name, color: lc, areaColor: a.color, icon: ICON[a.icon] || ICON.db,
+        lvl: 'N' + (p.d + 1), hint: isT ? (dr.bad ? 'No se puede: depende del cargo que mueves' : HINT[dr.zone]) : '',
+        style: 'left: ' + bx + 'px; top: ' + by + 'px; width: ' + W + 'px; height: ' + H + 'px; --c: ' + lc + '; --a: ' + a.color + (dr && dr.cid === c.id && dr.commit ? '; transition: none' : ''),
+        cls: cls.trim(), hasPerson: !!m, vacant: !m, person: m ? m.name : 'Vacante', initials: m ? initialsOf(m.name) : '', avatar: m ? m.color : '#8C8C86',
         nKids: (kids[c.id] || []).length, kidsTxt: (kids[c.id] || []).length ? String((kids[c.id] || []).length) : '', hasKids: (kids[c.id] || []).length > 0,
-        pick: function () { self.orgSel(c.id); }, aria: c.name + (m ? ', ' + m.name : ', vacante') };
+        pick: function () { if (self._noClick && Date.now() - self._noClick < 350) return; self.orgSel(c.id); }, aria: c.name + (m ? ', ' + m.name : ', vacante') };
     });
     var links = [];
-    cargos.forEach(function (c) {
+    layCargos.slice().sort(function (x, y) { return x.id < y.id ? -1 : x.id > y.id ? 1 : 0; }).forEach(function (c) {
       if (!c.parent || !pos[c.id] || !pos[c.parent]) return;
       var a = pos[c.parent], b = pos[c.id];
       var x1 = a.x + W / 2, y1 = a.d * (H + GY) + H, x2 = b.x + W / 2, y2 = b.d * (H + GY), ym = y1 + GY / 2;
-      links.push({ x1: x1, y1: y1, x2: x2, y2: y2, ym: ym, d: 'M' + x1 + ' ' + y1 + ' V' + ym + ' H' + x2 + ' V' + y2, cls: (s.orgSel === c.id || s.orgSel === c.parent) ? 'hi' : '' });
+      var dd = 'M' + x1 + ' ' + y1 + ' V' + ym + ' H' + x2 + ' V' + y2;
+      links.push({ id: c.id, key: 'l-' + c.id, x1: x1, y1: y1, x2: x2, y2: y2, ym: ym, d: dd, cd: "path('" + dd + "')", cls: (s.orgSel === c.id || s.orgSel === c.parent) ? 'hi' : '' });
     });
+    var ghost = { has: false, style: '' };
+    if (sim && pos[dr.cid]) { var gp = pos[dr.cid]; ghost = { has: true, style: 'left: ' + gp.x + 'px; top: ' + gp.d * (H + GY) + 'px; width: ' + W + 'px; height: ' + H + 'px; --c: ' + this.orgLvlColor(s, gp.d) }; }
     var width = Math.max(nextX - GX, W), height = (depthMax + 1) * (H + GY) - GY;
     var sel = s.orgSel ? this.orgCargo(s, s.orgSel) : null;
     var isAdmin = v.role === 'admin';
@@ -8152,8 +8238,17 @@ Object.assign(Component.prototype, {
         icons: DB_ICONS.slice(0, 24).map(function (k) { return { icon: ICON[k], cls: selArea.icon === k ? 'on' : '', on: selArea.icon === k, aria: 'Icono ' + k.slice(2), pick: function () { self.updOrg(function (org) { org.areas.forEach(function (a) { if (a.id === selArea.id) a.icon = k; }); }); } }; }),
         newPage: function () { self.newPage(selArea.id); } };
     }
+    var lvRows = [];
+    for (var di = 0; di <= depthMax; di++) (function (d) {
+      var cur = self.orgLvlColor(s, d);
+      lvRows.push({ n: 'Nivel ' + (d + 1), tag: 'N' + (d + 1), color: cur,
+        opts: ORG_LVL_PAL.map(function (h) { var on = cur.toLowerCase() === h.toLowerCase(); return { hex: h, cls: on ? 'on' : '', on: on, aria: 'Color ' + h + ' para el nivel ' + (d + 1), pick: function () { self.orgSetLvl(d, h); } }; }),
+        custom: function (e) { self.orgSetLvl(d, e.target.value); } });
+    })(di);
+    var lv = { canEdit: isAdmin, open: !!s.orgLvlOpen, toggle: function () { self.setState({ orgLvlOpen: !s.orgLvlOpen }); }, rows: lvRows,
+      reset: function () { self.updOrg(function (org) { delete org.lvl; }, 'restableció los colores por nivel'); } };
     var vac = cargos.filter(function (c) { return !c.person; }).length;
-    return { w: width, h: height, boxes: boxes, links: links, style: 'width: ' + width + 'px; height: ' + height + 'px', vb: '0 0 ' + width + ' ' + height, panel: panel, areas: areas, ap: ap, isAdmin: isAdmin,
+    return { w: width, h: height, boxes: boxes, links: links, ghost: ghost, hasGhost: ghost.has, lv: lv, style: 'width: ' + width + 'px; height: ' + height + 'px', vb: '0 0 ' + width + ' ' + height, panel: panel, areas: areas, ap: ap, isAdmin: isAdmin,
       stats: cargos.length + ' cargos · ' + (cargos.length - vac) + ' ocupados · ' + vac + (vac === 1 ? ' vacante' : ' vacantes') + ' · ' + s.org.areas.length + ' áreas',
       addRoot: function () { self.orgAddChild(s.orgSel || (cargos[0] ? cargos[0].id : null)); }, addArea: function () { self.orgAddArea(); } };
   },
@@ -8672,40 +8767,124 @@ Object.assign(Component.prototype, {
 
   /* ---------- arrastrar cargos ---------- */
   orgDescends(s, cid, target) { var c = this.orgCargo(s, target), g = 0; while (c && g++ < 50) { if (c.id === cid) return true; c = this.orgCargo(s, c.parent); } return false; },
-  orgDragStart(cid, e) { this._dragCargo = cid; try { e.dataTransfer.setData('text/plain', 'cargo:' + cid); e.dataTransfer.effectAllowed = 'move'; } catch (err) { } },
-  orgDragEnd() { this._dragCargo = null; try { document.querySelectorAll('.drop-child, .drop-before, .drop-after, .drop-area').forEach(function (n) { n.classList.remove('drop-child', 'drop-before', 'drop-after', 'drop-area'); }); } catch (err) { } },
-  orgZone(e) { try { var r = e.currentTarget.getBoundingClientRect(), f = (e.clientX - r.left) / r.width; return f < 0.22 ? 'before' : f > 0.78 ? 'after' : 'child'; } catch (err) { return 'child'; } },
-  orgDragOver(cid, e) {
-    if (!this._dragCargo || this._dragCargo === cid) return;
-    try { e.preventDefault(); var z = this.orgZone(e), el = e.currentTarget; el.classList.toggle('drop-child', z === 'child'); el.classList.toggle('drop-before', z === 'before'); el.classList.toggle('drop-after', z === 'after'); } catch (err) { }
+  orgMoveOK(s, cid, target, zone) {
+    if (!cid || cid === target) return false;
+    var tc = this.orgCargo(s, target); if (!tc) return false;
+    if (zone === 'above') return !this.orgDescends(s, cid, target);
+    var np = zone === 'child' ? target : tc.parent;
+    return !(np && this.orgDescends(s, cid, np));
   },
-  orgDragLeave(e) { try { e.currentTarget.classList.remove('drop-child', 'drop-before', 'drop-after', 'drop-area'); } catch (err) { } },
-  orgDrop(target, e) {
-    var cid = this._dragCargo, zone = this.orgZone(e);
-    this.orgDragEnd(); try { e.preventDefault(); } catch (err) { }
-    if (!cid || cid === target) return;
-    var s = this.st();
-    var tc = this.orgCargo(s, target);
-    if (!tc) return;
-    var newParent = zone === 'child' ? target : tc.parent;
-    if (newParent && this.orgDescends(s, cid, newParent)) { this.toastMsg('No se puede: ese cargo depende del que estás moviendo.'); return; }
-    var c = this.orgCargo(s, cid);
-    this.updOrg(function (org) {
-      var arr = org.cargos, i = arr.map(function (x) { return x.id; }).indexOf(cid), it = arr.splice(i, 1)[0];
-      it.parent = newParent || null;
-      var j = arr.map(function (x) { return x.id; }).indexOf(target);
-      if (zone === 'child') arr.push(it); else arr.splice(zone === 'after' ? j + 1 : j, 0, it);
-    }, 'reorganizó el organigrama: «' + c.name + '» ahora ' + (zone === 'child' ? 'reporta a «' + tc.name + '»' : 'está junto a «' + tc.name + '»'));
-    this.toastMsg(zone === 'child' ? '«' + c.name + '» ahora reporta a «' + tc.name + '»' : '«' + c.name + '» se movió junto a «' + tc.name + '»');
+  orgMoveCommit(cid, target, zone) {
+    var self = this, s = this.st(), c = this.orgCargo(s, cid), tc = this.orgCargo(s, target);
+    if (!c || !tc) return;
+    var txt = zone === 'child' ? '«' + c.name + '» ahora reporta a «' + tc.name + '»' : zone === 'above' ? '«' + c.name + '» quedó por encima de «' + tc.name + '»' : '«' + c.name + '» se movió junto a «' + tc.name + '»';
+    this.updOrg(function (org) { org.cargos = self.orgSimMove(org.cargos, cid, target, zone); }, 'reorganizó el organigrama: ' + txt);
+    this.toastMsg(txt);
   },
-  orgDropArea(aid, e) {
-    var cid = this._dragCargo; this.orgDragEnd(); try { e.preventDefault(); } catch (err) { }
-    if (!cid) return;
-    var s = this.st(), a = this.orgArea(s, aid);
-    this.updOrg(function (org) { org.cargos.forEach(function (x) { if (x.id === cid) x.area = aid; }); }, 'cambió de área un cargo');
-    this.toastMsg('Cargo movido al área ' + (a ? a.name : ''));
+  /* puntero: pulsar, mover más de 6 px = arrastrar */
+  orgPtrDown(cid, e) {
+    if (this._od) return;
+    if (e.button != null && e.button !== 0) return;
+    var el = e.currentTarget, chart = el && el.closest ? el.closest('.org-chart') : null;
+    if (!chart) return;
+    var self = this;
+    this._od = { cid: cid, el: el, chart: chart, sx: e.clientX, sy: e.clientY, px: e.clientX, py: e.clientY, started: false, cx: 0, cy: 0, rot: 0, rv: 0, kx: 1, ky: 1, kxv: 0, kyv: 0 };
+    this._omv = function (ev) { self.orgPtrMove(ev); };
+    this._oup = function (ev) { self.orgPtrUp(ev, false); };
+    this._okd = function (ev) { if (ev.key === 'Escape') self.orgPtrUp(ev, true); };
+    window.addEventListener('pointermove', this._omv); window.addEventListener('pointerup', this._oup);
+    window.addEventListener('pointercancel', this._oup); window.addEventListener('keydown', this._okd);
   },
-  orgAreaOver(e) { if (!this._dragCargo) return; try { e.preventDefault(); e.currentTarget.classList.add('drop-area'); } catch (err) { } },
+  orgPtrUnbind() {
+    window.removeEventListener('pointermove', this._omv); window.removeEventListener('pointerup', this._oup);
+    window.removeEventListener('pointercancel', this._oup); window.removeEventListener('keydown', this._okd);
+  },
+  orgPtrMove(ev) {
+    var d = this._od; if (!d || d.landing) return;
+    d.px = ev.clientX; d.py = ev.clientY;
+    if (!d.started) { if (Math.hypot(d.px - d.sx, d.py - d.sy) < 6) return; this.orgDragBegin(); }
+    this.orgHitUpdate();
+  },
+  orgDragBegin() {
+    var d = this._od, s = this.st(), lay = this._orgLay || this.orgLayout(s, s.org.cargos), p = lay.pos[d.cid];
+    if (!p) { this.orgPtrUnbind(); this._od = null; return; }
+    d.ox = p.x; d.oy = p.d * (lay.H + lay.GY); d.r0 = d.chart.getBoundingClientRect(); d.started = true;
+    document.body.classList.add('org-dragging');
+    this.setState({ orgDrag: { cid: d.cid, ox: d.ox, oy: d.oy, target: null, zone: null, bad: false, area: null }, orgLanded: null });
+    this.orgLoop();
+  },
+  orgLoop() {
+    var self = this, d = this._od; if (!d || !d.started || d.landing) return;
+    var rn = d.chart.getBoundingClientRect();
+    var tx = (d.px - d.sx) + (d.r0.left - rn.left), ty = (d.py - d.sy) + (d.r0.top - rn.top);
+    d.cx += (tx - d.cx) * 0.3; d.cy += (ty - d.cy) * 0.3;
+    var lx = tx - d.cx, ly = ty - d.cy;
+    var cl = function (v, a, b) { return Math.max(a, Math.min(b, v)); };
+    var rt = cl(lx * 0.14, -10, 10);
+    d.rv = (d.rv + (rt - d.rot) * 0.2) * 0.76; d.rot += d.rv;
+    var kxT = 1.05 + cl(Math.abs(lx) * 0.004, 0, 0.09) - cl(Math.abs(ly) * 0.002, 0, 0.05);
+    var kyT = 1.05 + cl(Math.abs(ly) * 0.004, 0, 0.09) - cl(Math.abs(lx) * 0.002, 0, 0.05);
+    d.kxv = (d.kxv + (kxT - d.kx) * 0.22) * 0.74; d.kx += d.kxv;
+    d.kyv = (d.kyv + (kyT - d.ky) * 0.22) * 0.74; d.ky += d.kyv;
+    d.el.style.transform = 'translate3d(' + d.cx.toFixed(1) + 'px,' + d.cy.toFixed(1) + 'px,0) rotate(' + d.rot.toFixed(2) + 'deg) scale(' + d.kx.toFixed(3) + ',' + d.ky.toFixed(3) + ')';
+    try {
+      var sc = d.chart.parentNode, rr = sc.getBoundingClientRect();
+      if (d.px < rr.left + 50) sc.scrollLeft -= 12; else if (d.px > rr.right - 50) sc.scrollLeft += 12;
+      if (d.py < 70) window.scrollBy(0, -14); else if (d.py > window.innerHeight - 70) window.scrollBy(0, 14);
+    } catch (err) { }
+    d.raf = requestAnimationFrame(function () { self.orgLoop(); });
+  },
+  orgHitUpdate() {
+    var d = this._od, s = this.st(), lay = this._orgLay; if (!d || !d.started || !lay) return;
+    var dr = s.orgDrag || {}, self = this;
+    var setDr = function (patch) { self.setState({ orgDrag: Object.assign({}, dr, patch) }); };
+    var aid = null;
+    try { var els = document.elementsFromPoint(d.px, d.py); for (var i = 0; i < els.length; i++) { var a = els[i].getAttribute && els[i].getAttribute('data-aid'); if (a) { aid = a; break; } } } catch (err) { }
+    if (aid) { if (dr.area !== aid || dr.target) setDr({ area: aid, target: null, zone: null, bad: false }); return; }
+    var r = d.chart.getBoundingClientRect(), px = d.px - r.left, py = d.py - r.top, step = lay.H + lay.GY, W = lay.W, H = lay.H;
+    var gp = lay.pos[d.cid];
+    if (gp && px >= gp.x && px <= gp.x + W && py >= gp.d * step && py <= gp.d * step + H) { if (dr.area) setDr({ area: null }); return; }
+    var hit = null;
+    for (var id in lay.pos) {
+      if (id === d.cid) continue;
+      var p = lay.pos[id], x = p.x, y = p.d * step;
+      if (px >= x && px <= x + W && py >= y && py <= y + H) { hit = { id: id, x: x, y: y }; break; }
+    }
+    if (!hit) { if (dr.area) setDr({ area: null }); return; }
+    var fx = (px - hit.x) / W, fy = (py - hit.y) / H;
+    var zone = fy < 0.24 ? 'above' : fx < 0.24 ? 'before' : fx > 0.76 ? 'after' : 'child';
+    if (dr.target === hit.id && dr.zone === zone && !dr.area) return;
+    setDr({ target: hit.id, zone: zone, bad: !this.orgMoveOK(s, d.cid, hit.id, zone), area: null });
+  },
+  orgPtrUp(ev, cancel) {
+    var d = this._od; this.orgPtrUnbind();
+    if (!d) return;
+    if (!d.started) { this._od = null; return; }
+    if (d.landing) return;
+    d.landing = true; cancelAnimationFrame(d.raf);
+    this._noClick = Date.now();
+    var self = this, s = this.st(), dr = s.orgDrag || {}, lay = this._orgLay;
+    var okMove = !cancel && dr.target && !dr.bad, okArea = !cancel && dr.area, el = d.el;
+    var tx = 0, ty = 0;
+    if (okMove && lay && lay.pos[d.cid]) { var p = lay.pos[d.cid]; tx = p.x - d.ox; ty = p.d * (lay.H + lay.GY) - d.oy; }
+    el.style.transition = 'transform .5s cubic-bezier(.3,1.6,.5,1)';
+    el.style.transform = 'translate3d(' + tx + 'px,' + ty + 'px,0) rotate(0deg) scale(1,1)';
+    if (!okMove) this.setState({ orgDrag: { cid: d.cid, ox: d.ox, oy: d.oy, target: null, zone: null, bad: false, area: null } });
+    setTimeout(function () {
+      document.body.classList.remove('org-dragging');
+      if (okMove) {
+        self.orgMoveCommit(d.cid, dr.target, dr.zone);
+        self.setState({ orgDrag: { cid: d.cid, commit: true }, orgLanded: d.cid });
+        setTimeout(function () { self.setState({ orgDrag: null }); }, 90);
+        setTimeout(function () { if (self.st().orgLanded === d.cid) self.setState({ orgLanded: null }); }, 900);
+      } else {
+        el.style.transition = ''; el.style.transform = '';
+        if (okArea) { var ar = self.orgArea(self.st(), dr.area); self.updOrg(function (org) { org.cargos.forEach(function (x) { if (x.id === d.cid) x.area = dr.area; }); }, 'cambió de área un cargo'); self.toastMsg('Cargo movido al área ' + (ar ? ar.name : '')); self.setState({ orgDrag: null, orgLanded: d.cid }); setTimeout(function () { if (self.st().orgLanded === d.cid) self.setState({ orgLanded: null }); }, 900); }
+        else self.setState({ orgDrag: null });
+      }
+      self._od = null;
+    }, 460);
+  },
 
   /* ---------- solicitudes y aprobaciones ---------- */
   bossOf(s, mid) {
@@ -8775,12 +8954,10 @@ Object.assign(Component.prototype, {
       b.hasLoad = !!wl; b.load = wl ? (wl.n ? wl.h + ' h · ' + wl.n + (wl.n === 1 ? ' tarea' : ' tareas') : 'Sin tareas abiertas') : '';
       b.loadCls = !wl ? '' : wl.h > 80 ? 'bad' : wl.h > 40 ? 'warn' : 'ok';
       b.hasAlerts = !!wl && wl.al > 0; b.alerts = wl ? String(wl.al) : ''; b.alertsAria = wl ? wl.al + ' recomendaciones PMBOK pendientes' : '';
-      b.canDrag = isAdmin;
-      b.dragStart = function (e) { self.orgDragStart(c.id, e); }; b.dragEnd = function () { self.orgDragEnd(); };
-      b.dragOver = function (e) { self.orgDragOver(c.id, e); }; b.dragLeave = function (e) { self.orgDragLeave(e); }; b.drop = function (e) { self.orgDrop(c.id, e); };
+      b.ptrDown = isAdmin ? function (e) { self.orgPtrDown(c.id, e); } : null;
       delete b.raw;
     });
-    d.areas.forEach(function (a) { a.dragOver = function (e) { self.orgAreaOver(e); }; a.dragLeave = function (e) { self.orgDragLeave(e); }; a.drop = function (e) { self.orgDropArea(a.id, e); }; });
+    var dra = s.orgDrag; d.areas.forEach(function (a) { a.aid = a.id; if (dra && dra.area === a.id) a.cls = (a.cls + ' drop-area').trim(); });
     d.exPng = function () { self.orgExport('png'); }; d.exSvg = function () { self.orgExport('svg'); };
     d.exPdf = function () { self.orgExport('pdf'); }; d.exPptx = function () { self.orgExport('pptx'); };
     if (d.panel.has) {
