@@ -1,6 +1,6 @@
 // Recorrido de prueba v3: ejecuta la lógica y "renderiza" la plantilla para detectar huecos sin resolver.
 const fs = require('fs');
-const src = fs.readFileSync('/home/claude/erp/project/Main.dc.html', 'utf8');
+const src = fs.readFileSync('' + (process.env.APP || '/home/claude/erp/project/Main.dc.html') + '', 'utf8');
 const xm = src.match(/<x-dc>([\s\S]*)<\/x-dc>/)[1].replace(/<helmet>[\s\S]*<\/helmet>/, '');
 const js = src.match(/<script type="text\/x-dc"[^>]*>([\s\S]*?)<\/script>/)[1];
 

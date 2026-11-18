@@ -8,6 +8,7 @@ var BIZ_MODULES = [
   { id: 'maestros', name: 'Recursos, precios y cortes', code: 'M01', icon: 'i-boxes', color: '#7C3AED', desc: 'Maestro único de recursos, equivalencias, importación de cortes Excel e historial de precios con vigencia', tables: ['cor', 'rec', 'prc'] },
   { id: 'acu', name: 'Ingeniería de costos: ACU', code: 'M02', icon: 'i-calc', color: '#B45309', desc: 'ACU por matrícula y versión, comparador que explica variaciones e impacto de un cambio de precio', tables: ['acu', 'acud'], needs: ['maestros'] },
   { id: 'ops', name: 'Contratos, servicios y OT/SST', code: 'M03', icon: 'i-wrench', color: '#0F766E', desc: 'Contratos con modalidad económica, servicios y órdenes de trabajo sin crear proyectos; HH, km y cantidades programada → reconocida', tables: ['ctr', 'srv', 'ot'], needs: ['acu'] },
+  { id: 'tecsur', name: 'Objetivos y procedimientos 2026', code: 'M09', icon: 'i-target', color: '#00468C', desc: 'Objetivos, procedimientos de costos, procedimientos operativos, anexos técnicos sin precios, brechas y decisiones, con vista para Gerencia', tables: ['tobj', 'tpro', 'tpo', 'tli', 'tbr', 'tde'] },
   { id: 'presu', name: 'Presupuestos y control de costos', code: 'M04', icon: 'i-wallet', color: '#475569', desc: 'Presupuesto inicial y vigente, costo real, compromisos, desviaciones y estimado al cierre', soon: true },
   { id: 'epp', name: 'EPP, equipos y transporte', code: 'M05', icon: 'i-hardhat', color: '#475569', desc: 'Kits por cuadrilla, vida útil, reposición y costo de uso', soon: true },
   { id: 'valor', name: 'Valorizaciones', code: 'M06', icon: 'i-receipt', color: '#475569', desc: 'Elaborada, enviada, observada, aprobada, facturada y cobrada', soon: true },
@@ -15,7 +16,7 @@ var BIZ_MODULES = [
 ];
 var BIZ_RUBROS = [
   { id: 'general', name: 'Proyectos y servicios', desc: 'Para empresas que gestionan proyectos, personal y aprobaciones.', modules: ['proyectos', 'personal', 'aprob', 'campo'] },
-  { id: 'electrico', name: 'Servicios eléctricos y mantenimiento de redes', badge: 'Propuesta basada en TECSUR', desc: 'Contratos con distribuidoras, OT/SST, emergencias, mantenimiento BT/MT, cortes de tarifas y ACU.', modules: ['proyectos', 'personal', 'aprob', 'campo', 'maestros', 'acu', 'ops'],
+  { id: 'electrico', name: 'Servicios eléctricos y mantenimiento de redes', badge: 'Propuesta basada en TECSUR', desc: 'Contratos con distribuidoras, OT/SST, emergencias, mantenimiento BT/MT, cortes de tarifas y ACU.', modules: ['proyectos', 'personal', 'aprob', 'campo', 'maestros', 'acu', 'ops', 'tecsur'],
     areas: [{ id: 'a-cos', name: 'Ingeniería de Costos', color: '#7C3AED', icon: 'i-calc', parent: 'a-ger' }],
     cargos: [{ name: 'Jefe de Ingeniería de Costos', area: 'a-cos', parentName: 'Gerente general' }, { name: 'Analista de costos', area: 'a-cos', parentName: 'Jefe de Ingeniería de Costos' }, { name: 'Supervisor de cuadrillas', area: 'a-ope', parentName: 'Jefe de Operaciones y Proyectos' }],
     notes: ['Modalidades, gastos generales y utilidad quedan marcados «por validar»: el sistema no asume reglas contractuales.', 'Las OT se registran por servicio, sin obligarlas a ser proyectos.', 'Lo importado nunca queda validado solo; los ACU aprobados no se recalculan.'] },
@@ -100,6 +101,39 @@ Object.assign(Component.prototype, {
         blk('o7', 'db', 12, { table: 'ot', view: 'vo2' }),
         blk('o8', 'db', 7, { table: 'srv', view: 'vs1' }),
         blk('o9', 'db', 5, { table: 'ctr', view: 'vc1' })
+      ] });
+      made.push(m.name);
+    }
+    if (id === 'tecsur') {
+      var tt = seedTecsur();
+      ['tobj', 'tpro', 'tpo', 'tli', 'tbr', 'tde'].forEach(function (k) { addTable(tt[k]); });
+      var accT = { admin: 'full', finanzas: 'view', ventas: 'none', almacen: 'none', invitado: 'none' };
+      ['tobj', 'tpro', 'tpo', 'tli', 'tbr', 'tde'].forEach(function (k) { addAccess(k, clone(accT)); });
+      ensureArea({ id: 'a-cos', name: 'Ingeniería de Costos', color: '#7C3AED', icon: 'i-calc', parent: 'a-ger' });
+      var F = function (k, v) { return [{ prop: k, op: 'is', value: v }]; };
+      addPage({ id: 'pgtec', area: 'a-cos', cover: { kind: 'grad', v: 1 }, title: 'Objetivos 2026 · Vista de Gerencia', icon: 'i-target', color: '#00468C', desc: 'Del procedimiento operativo al ACU: avance, brechas y decisiones requeridas (Fase 1, sin precios)', blocks: [
+        blk('t0', 'callout', 12, { icon: 'i-bulb', text: 'Tres niveles: A) procedimiento operativo, B) anexo técnico de recursos sin precios, C) ACU económico (Costos). Datos de la Fase 1: ninguna línea está validada ni tiene matrícula ACU.' }),
+        blk('t1', 'kpi', 3, { title: 'Procedimientos operativos', table: 'tpo', val: 'count', filters: [] }),
+        blk('t2', 'kpi', 3, { title: 'Líneas de anexo técnico', table: 'tli', val: 'count', filters: [] }),
+        blk('t3', 'kpi', 3, { title: 'Líneas validadas', table: 'tli', val: 'count', filters: F('estado', 'Validado') }),
+        blk('t4', 'kpi', 3, { title: 'Brechas abiertas', table: 'tbr', val: 'count', filters: F('estado', 'Abierta') }),
+        blk('t5', 'kpi', 3, { title: 'Brechas de prioridad alta', table: 'tbr', val: 'count', filters: F('prioridad', 'Alta') }),
+        blk('t6', 'kpi', 3, { title: 'Decisiones pendientes', table: 'tde', val: 'count', filters: F('estado', 'Pendiente') }),
+        blk('t7', 'kpi', 3, { title: 'Documentos del índice', table: 'tpro', val: 'count', filters: [] }),
+        blk('t8', 'kpi', 3, { title: 'Documentos aprobados', table: 'tpro', val: 'count', filters: F('estado', 'Aprobado') }),
+        blk('t9', 'chart', 6, { title: 'Líneas por PO', table: 'tli', kind: 'bar', by: 'poid', val: 'count', sort: 'label', limit: 0, filters: [] }),
+        blk('ta', 'chart', 6, { title: 'Líneas según el estado de la cantidad', table: 'tli', kind: 'donut', by: 'coinc', val: 'count', sort: 'desc', limit: 0, filters: [] }),
+        blk('tb', 'chart', 6, { title: 'Brechas por prioridad', table: 'tbr', kind: 'donut', by: 'prioridad', val: 'count', sort: 'label', limit: 0, filters: [] }),
+        blk('tc', 'chart', 6, { title: 'Decisiones por responsable', table: 'tde', kind: 'bar', by: 'valida', val: 'count', sort: 'desc', limit: 0, filters: [] }),
+        blk('td', 'db', 12, { table: 'tobj', view: 'xo1' }),
+        blk('te', 'db', 12, { table: 'tde', view: 'xd1' })
+      ] });
+      addPage({ id: 'pgtec2', area: 'a-cos', cover: { kind: 'grad', v: 2 }, title: 'Procedimientos y anexos técnicos', icon: 'i-clipboard', color: '#00705A', desc: 'Índice maestro, PO recibidos, líneas de anexo y brechas', blocks: [
+        blk('u0', 'callout', 12, { icon: 'info', text: 'Los PO no se modifican. Una cantidad vacía significa que el PO no la indica, no que sea cero. Si cambia la revisión de un PO, sus líneas deben volver a revisarse antes de usarlas en un ACU.' }),
+        blk('u1', 'db', 12, { table: 'tpro', view: 'xp1' }),
+        blk('u2', 'db', 12, { table: 'tpo', view: 'xq1' }),
+        blk('u3', 'db', 12, { table: 'tli', view: 'xl2' }),
+        blk('u4', 'db', 12, { table: 'tbr', view: 'xb1' })
       ] });
       made.push(m.name);
     }

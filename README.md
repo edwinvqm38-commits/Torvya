@@ -20,3 +20,9 @@ Ejemplo de propuesta: TECSUR (servicios eléctricos: ingeniería de costos, ACU,
 ## Estado
 - Persistencia: la app todavía no se conecta a Supabase (sin inicio de sesión ni guardado). La base ya está creada y cargada con datos de ejemplo.
 - No incluye claves. La clave pública de Supabase se agregará al conectar la app.
+
+## Módulo TECSUR · Objetivos y procedimientos 2026 (rama `tecsur-objetivos`)
+- Módulo M09 en «Tu negocio y módulos»; se instala con la propuesta «Servicios eléctricos y mantenimiento de redes».
+- Seis tablas: objetivos, procedimientos de costos (índice maestro), procedimientos operativos, líneas de anexo técnico (153, sin precios), brechas (45) y decisiones (20), más dos páginas: «Vista de Gerencia» y «Procedimientos y anexos técnicos».
+- Datos: `db/tecsur_fase1.json` (Fase 1: ninguna línea validada ni con matrícula ACU). `python3 tools/gen_tecsur_data.py` regenera `src/tecsur_data.js`; `python3 src/assemble.py` arma `app/Trazya.dc.html`.
+- Pruebas: `APP=app/Trazya.dc.html node src/test_tecsur.js`.

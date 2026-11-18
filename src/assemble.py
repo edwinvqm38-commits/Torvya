@@ -1,7 +1,8 @@
 import re, json
 
-BASE = '/home/claude/erp/build/'
-OUT = '/home/claude/erp/project/Main.dc.html'
+import os
+BASE = os.path.dirname(os.path.abspath(__file__)) + '/'
+OUT = os.environ.get('OUT', BASE + '../app/Trazya.dc.html')
 H = 'hint-placeholder-val'
 
 # Iconos: el trazo (grosor, color, puntas) va en CSS (.ic) para no depender de atributos SVG con guion.
@@ -102,7 +103,7 @@ assert '[[' not in markup, markup[markup.index('[['):markup.index('[[') + 60]
 assert '$.' not in markup
 
 css = open(BASE + 'style.css', encoding='utf-8').read()
-js = '\n'.join(open(BASE + f, encoding='utf-8').read() for f in ['icons.js', 'lib.js', 'core.js', 'actions.js', 'views.js', 'drawer.js', 'render.js', 'pm.js', 'org2.js', 'doc.js', 'forms.js', 'costos.js', 'negocio.js'])
+js = '\n'.join(open(BASE + f, encoding='utf-8').read() for f in ['icons.js', 'lib.js', 'core.js', 'actions.js', 'views.js', 'drawer.js', 'render.js', 'pm.js', 'org2.js', 'doc.js', 'forms.js', 'costos.js', 'tecsur_data.js', 'tecsur.js', 'negocio.js'])
 assert '</' not in js
 
 props = {
