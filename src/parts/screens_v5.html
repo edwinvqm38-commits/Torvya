@@ -1,0 +1,257 @@
+  <sc-if value="{{scrBiz}}" hint-placeholder-val="{{false}}">
+    <div class="pg biz-pg">
+      <div class="pg-head">
+        <span class="pg-icon" style="--c: #4F46E5">[[icl:ICON.settings]]</span>
+        <div class="pg-titles">
+          <h1 class="h1">Tu negocio</h1>
+          <p class="sub">Trama se adapta a cada empresa. Elige una propuesta para no empezar de cero y luego ajústala a mano: nombres, cargos, columnas, fórmulas y parámetros. Nada de lo que agregas borra lo que ya tienes.</p>
+        </div>
+      </div>
+      <div class="biz-ws card">
+        <label class="dlabel" for="biz-ws">Nombre de la empresa</label>
+        <input id="biz-ws" class="finput bordered" value="{{biz.ws}}" onChange="{{biz.setWs}}" placeholder="Nombre de tu empresa">
+      </div>
+
+      <div class="sec-label biz-h">[[ics:ICON.star]]1. Elige una propuesta de partida</div>
+      <div class="biz-rubros">
+        <sc-for list="{{biz.rubros}}" as="rb" hint-placeholder-count="4">
+          <button type="button" class="biz-rubro {{rb.cls}}" onClick="{{rb.pick}}">
+            <span class="biz-rt"><strong>{{rb.name}}</strong><sc-if value="{{rb.applied}}" hint-placeholder-val="{{false}}"><span class="pill p-green">Aplicada</span></sc-if></span>
+            <sc-if value="{{rb.hasBadge}}" hint-placeholder-val="{{false}}"><span class="biz-badge">{{rb.badge}}</span></sc-if>
+            <span class="muted sm">{{rb.desc}}</span>
+            <span class="biz-mods"><sc-for list="{{rb.mods}}" as="bm" hint-placeholder-count="3"><span class="pill {{bm.cls}}">{{bm.name}}</span></sc-for></span>
+            <span class="muted sm">{{rb.pendTxt}}</span>
+          </button>
+        </sc-for>
+      </div>
+      <div class="biz-sel card">
+        <div class="biz-sel-h"><strong>{{biz.sel.name}}</strong><sc-if value="{{biz.sel.hasBadge}}" hint-placeholder-val="{{false}}"><span class="biz-badge">{{biz.sel.badge}}</span></sc-if></div>
+        <sc-if value="{{biz.sel.hasNotes}}" hint-placeholder-val="{{false}}"><ul class="biz-notes"><sc-for list="{{biz.sel.notes}}" as="bn" hint-placeholder-count="2"><li>{{bn.text}}</li></sc-for></ul></sc-if>
+        <sc-if value="{{biz.sel.hasChanges}}" hint-placeholder-val="{{true}}">
+          <div class="dlabel">Se agregará</div>
+          <div class="biz-changes"><sc-for list="{{biz.sel.changes}}" as="bc" hint-placeholder-count="3"><span class="chip">[[icx:ICON.plus]]{{bc.name}}</span></sc-for></div>
+          <button type="button" class="btn btn-primary" onClick="{{biz.sel.apply}}">[[ics:ICON.check]]Aplicar esta propuesta</button>
+        </sc-if>
+        <sc-if value="{{biz.sel.noChanges}}" hint-placeholder-val="{{false}}"><p class="muted sm" style="margin: 0">Todo lo de esta propuesta ya está en tu espacio.</p></sc-if>
+      </div>
+
+      <div class="sec-label biz-h">[[ics:ICON.grid]]2. Módulos</div>
+      <div class="biz-grid">
+        <sc-for list="{{biz.mods}}" as="md" hint-placeholder-count="6">
+          <div class="biz-mod card">
+            <div class="biz-mod-h"><span class="tico" style="--c: {{md.color}}">[[ics:md.icon]]</span><span class="biz-mod-t"><sc-if value="{{md.hasCode}}" hint-placeholder-val="{{false}}"><span class="muted sm">{{md.code}}</span></sc-if><strong>{{md.name}}</strong></span><span class="pill {{md.stateCls}}">{{md.stateTxt}}</span></div>
+            <p class="muted sm">{{md.desc}}</p>
+            <sc-if value="{{md.hasTables}}" hint-placeholder-val="{{true}}"><div class="biz-tbls"><sc-for list="{{md.tables}}" as="mt" hint-placeholder-count="3"><span class="chip">{{mt.name}}</span></sc-for></div></sc-if>
+            <sc-if value="{{md.hasNeeds}}" hint-placeholder-val="{{false}}"><span class="muted sm">{{md.needsTxt}}</span></sc-if>
+            <div class="biz-mod-f">
+              <sc-if value="{{md.canInstall}}" hint-placeholder-val="{{false}}"><button type="button" class="btn btn-sm btn-primary" onClick="{{md.install}}">[[ics:ICON.plus]]Instalar</button></sc-if>
+              <sc-if value="{{md.installed}}" hint-placeholder-val="{{true}}"><button type="button" class="btn btn-sm" onClick="{{md.open}}">Abrir</button></sc-if>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+
+      <div class="sec-label biz-h">[[ics:ICON.edit]]3. Nombres en tu empresa</div>
+      <p class="muted sm">Renombra cada tabla como la llaman en tu empresa (por ejemplo «Órdenes de trabajo» → «SST»). Las fórmulas que las usan se mantienen por su identificador interno.</p>
+      <div class="biz-names card">
+        <sc-for list="{{biz.tnames}}" as="tn" hint-placeholder-count="6"><label class="biz-name"><span class="tico xs" style="--c: {{tn.color}}">[[icx:tn.icon]]</span><input class="finput" value="{{tn.name}}" onChange="{{tn.set}}" aria-label="Nombre de la tabla"></label></sc-for>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{scrCosNo}}" hint-placeholder-val="{{false}}">
+    <div class="pg"><div class="empty">El módulo de ingeniería de costos no está instalado o tu rol no tiene acceso.</div></div>
+  </sc-if>
+
+  <sc-if value="{{scrCos}}" hint-placeholder-val="{{false}}">
+    <div class="pg cos-pg">
+      <div class="pg-head">
+        <span class="pg-icon" style="--c: #7C3AED">[[icl:ICON.i-calc]]</span>
+        <div class="pg-titles">
+          <h1 class="h1">Ingeniería de costos</h1>
+          <p class="sub">Importa cada corte de tarifas, revisa qué cambió, valida los precios y compara versiones de ACU. Nada se sobrescribe: cada precio queda con su fecha, su fuente y quién lo validó.</p>
+        </div>
+      </div>
+      <div class="cos-kpis">
+        <sc-for list="{{cos.kpis}}" as="ck" hint-placeholder-count="5"><div class="cos-kpi {{ck.cls}}"><span class="muted sm">{{ck.n}}</span><strong>{{ck.v}}</strong><span class="muted sm">{{ck.sub}}</span></div></sc-for>
+      </div>
+      <div class="vtabs cos-tabs">
+        <sc-for list="{{cos.tabs}}" as="ct" hint-placeholder-count="4"><button type="button" class="vtab {{ct.cls}}" onClick="{{ct.pick}}">[[ics:ct.icon]]<span>{{ct.n}}</span></button></sc-for>
+      </div>
+      <sc-if value="{{cos.readOnly}}" hint-placeholder-val="{{false}}"><p class="muted sm">Solo lectura: tu rol puede ver los precios pero no importarlos ni validarlos.</p></sc-if>
+
+      <sc-if value="{{cos.isCortes}}" hint-placeholder-val="{{true}}">
+        <sc-if value="{{cos.importing}}" hint-placeholder-val="{{false}}">
+          <div class="card cos-imp">
+            <div class="cos-imp-h">
+              <div><div class="dlabel">Revisión antes de importar</div><strong class="cos-fname">[[ics:ICON.files]]{{cos.imp.name}}</strong></div>
+              <label class="cos-field"><span class="dlabel">Fecha de corte (vigencia)</span><input class="finput bordered" type="date" value="{{cos.imp.fecha}}" onChange="{{cos.imp.setFecha}}"></label>
+              <div class="cos-field"><span class="dlabel">Periodicidad</span><div class="seg seg-sm"><sc-for list="{{cos.imp.periodos}}" as="pe" hint-placeholder-count="3"><button type="button" class="seg-btn {{pe.cls}}" onClick="{{pe.pick}}">{{pe.n}}</button></sc-for></div></div>
+            </div>
+            <sc-if value="{{cos.imp.hasErr}}" hint-placeholder-val="{{false}}"><div class="ph-errbox">{{cos.imp.err}}</div></sc-if>
+            <sc-if value="{{cos.imp.hasRows}}" hint-placeholder-val="{{true}}">
+              <div class="cos-sum"><sc-for list="{{cos.imp.summary}}" as="sm2" hint-placeholder-count="3"><span class="pill {{sm2.cls}}">{{sm2.v}} · {{sm2.n}}</span></sc-for></div>
+              <div class="cos-tbl">
+                <div class="cos-tr cos-th"><span>Código</span><span>Descripción en el archivo</span><span>Und</span><span class="r">Precio</span><span>Resultado</span></div>
+                <sc-for list="{{cos.imp.rows}}" as="ir" hint-placeholder-count="6">
+                  <div class="cos-tr {{ir.cls}}">
+                    <span class="mono">{{ir.cod}}</span>
+                    <span class="cos-desc">{{ir.desc}}<sc-if value="{{ir.isDuda}}" hint-placeholder-val="{{false}}"><span class="cos-q">{{ir.candTxt}}<span class="cos-qb"><button type="button" class="btn btn-xs {{ir.sameCls}}" onClick="{{ir.same}}">Sí, es el mismo</button><button type="button" class="btn btn-xs {{ir.newCls}}" onClick="{{ir.other}}">No, es otro</button></span></span></sc-if><span class="muted sm">{{ir.matchTxt}}</span></span>
+                    <span class="muted sm">{{ir.und}}</span>
+                    <span class="r tabnum"><sc-if value="{{ir.hasPrev}}" hint-placeholder-val="{{false}}"><span class="muted sm cos-prev">{{ir.prev}} →</span></sc-if>{{ir.precio}}</span>
+                    <span><span class="pill {{ir.kcls}}">{{ir.kindTxt}}</span></span>
+                  </div>
+                </sc-for>
+              </div>
+              <div class="cos-imp-f">
+                <button type="button" class="btn btn-primary" onClick="{{cos.imp.confirm}}" disabled="{{cos.readOnly}}">[[ics:ICON.download]]{{cos.imp.confirmTxt}}</button>
+                <button type="button" class="btn" onClick="{{cos.imp.cancel}}">Cancelar</button>
+                <span class="muted sm">Los precios quedan «por validar»: el precio vigente no cambia hasta que alguien con permiso los valide.</span>
+              </div>
+            </sc-if>
+            <sc-if value="{{cos.imp.hasErr}}" hint-placeholder-val="{{false}}"><button type="button" class="btn" onClick="{{cos.imp.cancel}}">Volver</button></sc-if>
+          </div>
+        </sc-if>
+        <sc-if value="{{cos.notImporting}}" hint-placeholder-val="{{true}}">
+          <div class="cos-grid">
+            <aside class="card cos-list">
+              <label class="btn btn-primary btn-sm cos-up">[[ics:ICON.imageup]]Importar corte (.xlsx o .csv)<input type="file" accept=".xlsx,.csv,.txt" class="sr-only" onChange="{{cos.upload}}"></label>
+              <p class="muted sm" style="margin: 0">Columnas que reconoce: Código, Descripción, Unidad, Familia y Precio (en cualquier orden).</p>
+              <sc-if value="{{cos.hasSamples}}" hint-placeholder-val="{{true}}">
+                <div class="dlabel">Archivos de ejemplo por importar</div>
+                <sc-for list="{{cos.samples}}" as="sp2" hint-placeholder-count="2"><button type="button" class="cos-sample" onClick="{{sp2.pick}}">[[ics:ICON.files]]<span><strong>{{sp2.name}}</strong><span class="muted sm">{{sp2.meta}}</span></span></button></sc-for>
+              </sc-if>
+              <div class="dlabel">Cortes recibidos</div>
+              <sc-for list="{{cos.cortes}}" as="kc" hint-placeholder-count="4">
+                <button type="button" class="cos-k {{kc.cls}}" onClick="{{kc.pick}}"><span class="cos-k-t"><strong>{{kc.name}}</strong><span class="pill {{kc.stCls}}">{{kc.estado}}</span></span><span class="muted sm">{{kc.fecha}} · {{kc.periodo}}</span><span class="muted sm">{{kc.meta}}</span></button>
+              </sc-for>
+            </aside>
+            <section class="card cos-main">
+              <sc-if value="{{cos.hasK}}" hint-placeholder-val="{{true}}">
+                <div class="cos-k-head"><div><strong class="cos-fname">{{cos.k.name}}</strong><span class="muted sm">Corte del {{cos.k.fecha}} · {{cos.k.who}}</span></div><span class="pill {{cos.k.stCls}}">{{cos.k.estado}}</span></div>
+                <sc-if value="{{cos.k.canValidate}}" hint-placeholder-val="{{false}}"><div class="cos-val"><span class="sm">Revisa los cambios y valida el corte. Al validarlo cambia el precio vigente de cada recurso; los ACU aprobados conservan su precio.</span><button type="button" class="btn btn-sm btn-primary" onClick="{{cos.k.validate}}">[[ics:ICON.check]]Validar corte</button><button type="button" class="btn btn-sm" onClick="{{cos.k.reject}}">Rechazar</button></div></sc-if>
+                <div class="cos-tbl">
+                  <div class="cos-tr cos-th k"><span>Código</span><span>Recurso</span><span class="r">Antes</span><span class="r">Ahora</span><span>Cambio</span><span>Estado</span></div>
+                  <sc-for list="{{cos.k.rows}}" as="kr" hint-placeholder-count="6">
+                    <button type="button" class="cos-tr k" onClick="{{kr.open}}"><span class="mono">{{kr.cod}}</span><span class="cos-desc">{{kr.name}}<sc-if value="{{kr.alias}}" hint-placeholder-val="{{false}}"><span class="muted sm">{{kr.aliasTxt}}</span></sc-if></span><span class="r tabnum muted">{{kr.prev}}</span><span class="r tabnum">{{kr.precio}}</span><span class="cos-d {{kr.dcls}}">{{kr.delta}}</span><span><span class="pill {{kr.stCls}}">{{kr.estado}}</span></span></button>
+                  </sc-for>
+                </div>
+              </sc-if>
+            </section>
+          </div>
+        </sc-if>
+      </sc-if>
+
+      <sc-if value="{{cos.isPrecios}}" hint-placeholder-val="{{false}}">
+        <div class="cos-grid">
+          <aside class="card cos-list">
+            <label class="search">[[ics:ICON.search]]<input class="search-in" value="{{cos.q}}" onChange="{{cos.setQ}}" placeholder="Código, nombre o equivalencia" aria-label="Buscar recurso"></label>
+            <div class="cos-fams"><sc-for list="{{cos.fams}}" as="fm2" hint-placeholder-count="4"><button type="button" class="chip {{fm2.cls}}" onClick="{{fm2.pick}}">{{fm2.n}}</button></sc-for></div>
+            <sc-for list="{{cos.recs}}" as="rc2" hint-placeholder-count="6">
+              <button type="button" class="cos-r {{rc2.cls}}" onClick="{{rc2.pick}}"><span class="cos-r-t"><span class="mono sm">{{rc2.cod}}</span><span class="pill {{rc2.stCls}}">{{rc2.estado}}</span></span><strong>{{rc2.name}}</strong><span class="cos-r-p"><span class="pill {{rc2.famCls}}">{{rc2.fam}}</span><span class="tabnum">{{rc2.precio}}</span><sc-if value="{{rc2.hasUlt}}" hint-placeholder-val="{{false}}"><span class="muted sm">→ {{rc2.ultimo}}</span></sc-if></span></button>
+            </sc-for>
+            <sc-if value="{{cos.noRecs}}" hint-placeholder-val="{{false}}"><p class="muted sm">Sin resultados.</p></sc-if>
+          </aside>
+          <section class="card cos-main">
+            <sc-if value="{{cos.hasR}}" hint-placeholder-val="{{true}}">
+              <div class="cos-k-head"><div><span class="mono sm">{{cos.r.cod}}</span><strong class="cos-fname">{{cos.r.name}}</strong><span class="muted sm"><span class="pill {{cos.r.famCls}}">{{cos.r.fam}}</span> por {{cos.r.und}}</span></div>
+                <div class="cos-price"><span class="muted sm">Precio vigente</span><strong>{{cos.r.precio}}</strong><span class="muted sm">{{cos.r.desde}}</span><sc-if value="{{cos.r.hasUlt}}" hint-placeholder-val="{{false}}"><span class="pill p-amber">Por validar: {{cos.r.ultimo}}</span></sc-if></div></div>
+              <sc-if value="{{cos.r.hasAlias}}" hint-placeholder-val="{{false}}"><p class="sm cos-alias">[[icx:ICON.link]]Equivalencias: {{cos.r.alias}}</p></sc-if>
+              <div class="cos-chart">
+                <svg viewBox="{{cos.r.chart.vb}}" class="cos-svg" role="img" aria-label="Evolución del precio">
+                  <polyline points="{{cos.r.chart.line}}" class="cos-line"></polyline>
+                  <sc-for list="{{cos.r.chart.dots}}" as="dt" hint-placeholder-count="3"><circle cx="{{dt.cx}}" cy="{{dt.cy}}" r="4.5" class="cos-dot {{dt.cls}}"><title>{{dt.tip}}</title></circle></sc-for>
+                  <text x="4" y="{{cos.r.chart.yHi}}" class="cos-ax">{{cos.r.chart.hi}}</text>
+                  <text x="4" y="{{cos.r.chart.yLo}}" class="cos-ax">{{cos.r.chart.lo}}</text>
+                </svg>
+                <span class="muted sm cos-legend"><span class="cos-dot-l ok"></span>Validado <span class="cos-dot-l pend"></span>Por validar</span>
+              </div>
+              <div class="cos-acts"><button type="button" class="btn btn-sm" onClick="{{cos.r.impact}}">[[ics:ICON.bolt]]Simular un precio nuevo</button><button type="button" class="btn btn-sm" onClick="{{cos.r.open}}">[[ics:ICON.expand]]Abrir ficha</button></div>
+              <div class="dlabel">Historial (nunca se sobrescribe)</div>
+              <div class="cos-tbl">
+                <div class="cos-tr cos-th h"><span>Vigente desde</span><span class="r">Precio</span><span>Cambio</span><span>Fuente</span><span>Estado</span><span></span></div>
+                <sc-for list="{{cos.r.hist}}" as="hh" hint-placeholder-count="4">
+                  <div class="cos-tr h"><span>{{hh.fecha}}</span><span class="r tabnum">{{hh.precio}}</span><span class="cos-d">{{hh.delta}}</span><span class="cos-desc sm">{{hh.fuente}}<span class="muted sm">{{hh.cod}} {{hh.motivo}}</span></span><span><span class="pill {{hh.stCls}}">{{hh.estado}}</span></span>
+                    <span class="cos-hact"><sc-if value="{{hh.canAct}}" hint-placeholder-val="{{false}}"><button type="button" class="btn btn-xs" onClick="{{hh.ok}}">Validar</button><button type="button" class="btn btn-xs" onClick="{{hh.no}}">Rechazar</button></sc-if></span></div>
+                </sc-for>
+              </div>
+              <sc-if value="{{cos.r.hasUsers}}" hint-placeholder-val="{{false}}">
+                <div class="dlabel">Usado en</div>
+                <sc-for list="{{cos.r.users}}" as="us" hint-placeholder-count="2"><button type="button" class="cos-user" onClick="{{us.open}}">[[ics:ICON.i-calc]]<span><strong>{{us.name}}</strong><span class="muted sm">{{us.sub}}</span></span></button></sc-for>
+              </sc-if>
+            </sc-if>
+          </section>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{cos.isAcu}}" hint-placeholder-val="{{false}}">
+        <div class="cos-grid">
+          <aside class="card cos-list">
+            <div class="dlabel">Matrículas</div>
+            <sc-for list="{{cos.mats}}" as="ma" hint-placeholder-count="3"><button type="button" class="cos-k {{ma.cls}}" onClick="{{ma.pick}}"><span class="mono">{{ma.mat}}</span><strong>{{ma.name}}</strong><span class="muted sm">{{ma.meta}}</span></button></sc-for>
+          </aside>
+          <section class="card cos-main">
+            <div class="dlabel">Versiones de {{cos.acu.mat}}</div>
+            <div class="cos-vers">
+              <sc-for list="{{cos.acu.versions}}" as="vv" hint-placeholder-count="2">
+                <button type="button" class="cos-ver {{vv.cls}}" onClick="{{vv.open}}"><strong>{{vv.name}}</strong><span class="pill {{vv.eCls}}">{{vv.estado}}</span><span class="pill {{vv.tCls}}">{{vv.tipo}}</span><span class="tabnum">{{vv.pu}}</span><span class="muted sm">{{vv.vig}} · {{vv.rend}}</span></button>
+              </sc-for>
+            </div>
+            <div class="cos-pick">
+              <label><span class="dlabel">Comparar</span><select class="select" value="{{cos.acu.verA}}" onChange="{{cos.acu.setA}}" aria-label="Versión A"><sc-for list="{{cos.acu.verOpts}}" as="vo" hint-placeholder-count="2"><option value="{{vo.v}}">{{vo.label}}</option></sc-for></select></label>
+              <label><span class="dlabel">con</span><select class="select" value="{{cos.acu.verB}}" onChange="{{cos.acu.setB}}" aria-label="Versión B"><sc-for list="{{cos.acu.verOpts}}" as="vo2" hint-placeholder-count="2"><option value="{{vo2.v}}">{{vo2.label}}</option></sc-for></select></label>
+              <sc-if value="{{cos.acu.canNew}}" hint-placeholder-val="{{true}}"><button type="button" class="btn btn-sm" onClick="{{cos.acu.newVer}}">[[ics:ICON.plus]]Nueva versión con precios vigentes</button></sc-if>
+            </div>
+            <sc-if value="{{cos.acu.noCmp}}" hint-placeholder-val="{{false}}"><p class="muted sm">Esta matrícula tiene una sola versión. Crea una nueva con los precios vigentes para compararla.</p></sc-if>
+            <sc-if value="{{cos.acu.hasCmp}}" hint-placeholder-val="{{true}}">
+              <div class="cos-res">
+                <div class="cos-pu"><span class="muted sm">{{cos.acu.cmp.aName}}</span><strong class="tabnum">{{cos.acu.cmp.puA}}</strong></div>
+                <span class="cos-arrow">[[ic:ICON.arrowr]]</span>
+                <div class="cos-pu"><span class="muted sm">{{cos.acu.cmp.bName}}</span><strong class="tabnum">{{cos.acu.cmp.puB}}</strong></div>
+                <div class="cos-pu {{cos.acu.cmp.dCls}}"><span class="muted sm">Diferencia</span><strong class="tabnum">{{cos.acu.cmp.dPu}} · {{cos.acu.cmp.dPct}}</strong></div>
+              </div>
+              <p class="cos-explain">{{cos.acu.cmp.explain}}</p>
+              <p class="muted sm">{{cos.acu.cmp.meta}} · Costo directo {{cos.acu.cmp.cdA}} → {{cos.acu.cmp.cdB}}</p>
+              <div class="cos-comps">
+                <sc-for list="{{cos.acu.cmp.comps}}" as="cc2" hint-placeholder-count="5"><div class="cos-comp {{cc2.cls}}"><span class="sm">{{cc2.n}}</span><span class="cos-bar"><span class="cos-fill" style="{{cc2.w}}"></span></span><span class="tabnum sm">{{cc2.v}}</span></div></sc-for>
+              </div>
+              <div class="cos-tbl">
+                <div class="cos-tr cos-th c"><span>Recurso</span><span>Cantidad</span><span>Precio usado</span><span class="r">Parcial</span><span class="r">Δ</span><span>Causa</span></div>
+                <sc-for list="{{cos.acu.cmp.rows}}" as="cr" hint-placeholder-count="6">
+                  <div class="cos-tr c"><span class="cos-desc">{{cr.name}}<span class="pill {{cr.famCls}}">{{cr.fam}}</span></span><span class="tabnum sm">{{cr.q}}</span><span class="tabnum sm">{{cr.p}}</span><span class="r tabnum sm">{{cr.par}}</span><span class="r tabnum cos-d {{cr.dCls}}">{{cr.delta}}</span><span class="sm">{{cr.causa}}</span></div>
+                </sc-for>
+              </div>
+            </sc-if>
+          </section>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{cos.isImpacto}}" hint-placeholder-val="{{false}}">
+        <div class="card cos-impact">
+          <p class="muted sm" style="margin: 0">Ejemplo: Compras consigue un nuevo precio del casco dieléctrico. Mira qué ACU cambian antes de decidir. Registrar el precio no modifica ninguna versión aprobada; si quieres, se crean versiones nuevas «en elaboración».</p>
+          <div class="cos-iform">
+            <label class="cos-field wide"><span class="dlabel">Recurso</span><select class="select" value="{{cos.imp2.rid}}" onChange="{{cos.imp2.setRec}}"><sc-for list="{{cos.imp2.recOpts}}" as="ro" hint-placeholder-count="3"><option value="{{ro.v}}">{{ro.label}}</option></sc-for></select></label>
+            <label class="cos-field"><span class="dlabel">Nuevo precio (S/)</span><input class="finput bordered" value="{{cos.imp2.precio}}" onChange="{{cos.imp2.setPrecio}}" placeholder="0.00" inputmode="decimal"></label>
+            <label class="cos-field"><span class="dlabel">Vigente desde</span><input class="finput bordered" type="date" value="{{cos.imp2.fecha}}" onChange="{{cos.imp2.setFecha}}"></label>
+            <div class="cos-field"><span class="dlabel">Fuente</span><div class="seg seg-sm"><sc-for list="{{cos.imp2.fuentes}}" as="fu" hint-placeholder-count="3"><button type="button" class="seg-btn {{fu.cls}}" onClick="{{fu.pick}}">{{fu.n}}</button></sc-for></div></div>
+            <label class="cos-field wide"><span class="dlabel">Motivo</span><input class="finput bordered" value="{{cos.imp2.motivo}}" onChange="{{cos.imp2.setMotivo}}" placeholder="Ej.: orden de compra OC-2026-118, nuevo proveedor"></label>
+          </div>
+          <sc-if value="{{cos.imp2.hasRec}}" hint-placeholder-val="{{true}}"><p class="sm" style="margin: 0"><strong>Precio vigente:</strong> {{cos.imp2.cur}} <span class="muted">{{cos.imp2.curUlt}}</span></p><p class="sm" style="margin: 0">{{cos.imp2.summary}}</p></sc-if>
+          <sc-if value="{{cos.imp2.hasRows}}" hint-placeholder-val="{{true}}">
+            <div class="cos-tbl">
+              <div class="cos-tr cos-th i"><span>ACU</span><span>Estado</span><span>Cantidad</span><span class="r">PU actual</span><span class="r">PU con el nuevo precio</span><span>Efecto</span></div>
+              <sc-for list="{{cos.imp2.rows}}" as="ip" hint-placeholder-count="2">
+                <button type="button" class="cos-tr i" onClick="{{ip.open}}"><span class="cos-desc"><strong>{{ip.mat}}</strong><span class="muted sm">{{ip.name}}</span><span class="muted sm">{{ip.ots}}</span></span><span class="sm">{{ip.estado}}</span><span class="tabnum sm">{{ip.q}}</span><span class="r tabnum">{{ip.puA}}</span><span class="r tabnum">{{ip.puB}}</span><span class="cos-d {{ip.dCls}}">{{ip.d}}</span></button>
+              </sc-for>
+            </div>
+          </sc-if>
+          <sc-if value="{{cos.imp2.noRows}}" hint-placeholder-val="{{false}}"><p class="muted sm">Ningún ACU vigente usa este recurso.</p></sc-if>
+          <sc-if value="{{cos.imp2.canApply}}" hint-placeholder-val="{{false}}">
+            <div class="cos-imp-f"><button type="button" class="btn" onClick="{{cos.imp2.applyPrice}}">Solo registrar el precio (por validar)</button><button type="button" class="btn btn-primary" onClick="{{cos.imp2.applyVersions}}">[[ics:ICON.plus]]Registrar y crear nuevas versiones de ACU</button></div>
+          </sc-if>
+          <sc-if value="{{cos.imp2.done}}" hint-placeholder-val="{{false}}"><p class="pm-ok">[[ic:ICON.check]]Registrado. Puedes revisarlo en «Recursos y precios» y en «Comparar versiones de ACU».</p></sc-if>
+        </div>
+      </sc-if>
+    </div>
+  </sc-if>
+

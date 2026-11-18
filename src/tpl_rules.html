@@ -1,0 +1,13 @@
+<p class="sub sm" style="margin: 0">{{$.rulesIntro}}</p>
+<sc-for list="{{$.rulesV}}" as="ru" hint-placeholder-count="1">
+  <div class="rule-card">
+    <div class="rc-top">[[ic:ru.icon]]<strong>{{ru.propName}}</strong><button type="button" class="icon-btn sm" onClick="{{ru.remove}}" aria-label="{{ru.removeAria}}">[[ics:ICON.trash]]</button></div>
+    <div class="ops"><sc-for list="{{ru.ops}}" as="op" hint-placeholder-count="4"><button type="button" class="op {{op.cls}}" onClick="{{op.pick}}">{{op.label}}</button></sc-for></div>
+    <sc-if value="{{ru.vInput}}" hint-placeholder-val="{{false}}"><input class="finput bordered" type="{{ru.itype}}" value="{{ru.value}}" onChange="{{ru.setValue}}" placeholder="Valor" aria-label="Valor"></sc-if>
+    <sc-if value="{{ru.vChoices}}" hint-placeholder-val="{{false}}"><div class="opts"><sc-for list="{{ru.choices}}" as="ch" hint-placeholder-count="3"><button type="button" class="pill pill-btn {{ch.cls}}" onClick="{{ch.pick}}" aria-pressed="{{ch.on}}">{{ch.label}}</button></sc-for></div></sc-if>
+    <sc-if value="{{ru.hasColor}}" hint-placeholder-val="{{false}}"><div class="dlabel">Color</div><div class="cswatches"><sc-for list="{{ru.colors}}" as="cl" hint-placeholder-count="8"><button type="button" class="cswatch {{cl.cls}}" onClick="{{cl.pick}}" aria-pressed="{{cl.on}}">{{cl.name}}</button></sc-for></div></sc-if>
+  </div>
+</sc-for>
+<sc-if value="{{$.rulesEmpty}}" hint-placeholder-val="{{false}}"><p class="muted sm" style="margin: 0">{{$.rulesEmptyText}}</p></sc-if>
+<button type="button" class="link-btn" onClick="{{$.toggleRuleAdd}}" aria-expanded="{{$.rulesAdding}}">[[ics:ICON.plus]]{{$.rulesAddLabel}}</button>
+<sc-if value="{{$.rulesAdding}}" hint-placeholder-val="{{false}}"><div class="prop-list"><sc-for list="{{$.ruleProps}}" as="rp" hint-placeholder-count="6"><button type="button" class="pl-item" onClick="{{rp.pick}}">[[ic:rp.icon]]<span class="pl-name">{{rp.name}}</span></button></sc-for></div></sc-if>

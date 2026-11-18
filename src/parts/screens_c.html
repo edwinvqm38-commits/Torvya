@@ -1,0 +1,243 @@
+  <sc-if value="{{scrForms}}" hint-placeholder-val="{{false}}">
+    <div class="pg fb-pg">
+      <div class="pg-head">
+        <span class="pg-icon" style="--c: #0E7490">[[icl:ICON.formb]]</span>
+        <div class="pg-titles">
+          <h1 class="h1">Formularios</h1>
+          <p class="sub">Diseña formularios por tabla con secciones, preguntas obligatorias, textos de ayuda y preguntas que aparecen según otra respuesta. Al publicarlos se llenan desde la app móvil, incluso sin señal.</p>
+        </div>
+        <div class="head-actions"><button type="button" class="btn btn-sm" onClick="{{fb.goMob}}">[[ics:ICON.mobile]]Ver la app móvil</button></div>
+      </div>
+      <div class="fb-grid">
+        <aside class="fb-list card">
+          <div class="fb-list-head"><span class="sec-label">Formularios</span>
+            <span class="pick-wrap"><button type="button" class="btn btn-xs" onClick="{{fb.toggleNew}}" aria-expanded="{{fb.newOpen}}">[[icx:ICON.plus]]Nuevo</button>
+              <sc-if value="{{fb.newOpen}}" hint-placeholder-val="{{false}}"><div class="menu fb-newmenu"><div class="menu-title">¿Qué tabla llenará?</div><sc-for list="{{fb.newTables}}" as="nt" hint-placeholder-count="4"><button type="button" class="menu-item" onClick="{{nt.pick}}"><span class="tico xs" style="--c: {{nt.color}}">[[icx:nt.icon]]</span><span>{{nt.name}}</span></button></sc-for></div></sc-if>
+            </span>
+          </div>
+          <sc-for list="{{fb.groups}}" as="fg" hint-placeholder-count="3">
+            <div class="fb-grp">
+              <div class="fb-grp-h"><span class="tico xs" style="--c: {{fg.tcolor}}">[[icx:fg.ticon]]</span>{{fg.tname}}</div>
+              <sc-for list="{{fg.forms}}" as="fi" hint-placeholder-count="1">
+                <button type="button" class="fb-fitem {{fi.cls}}" onClick="{{fi.pick}}"><span class="fb-fname">{{fi.name}}</span><span class="fb-fmeta"><span class="pill {{fi.pubCls}}">{{fi.pubTxt}}</span><span class="muted sm">{{fi.count}}</span></span></button>
+              </sc-for>
+            </div>
+          </sc-for>
+        </aside>
+
+        <section class="fb-main card">
+          <sc-if value="{{fb.none}}" hint-placeholder-val="{{false}}"><div class="empty">Crea tu primer formulario con «Nuevo».</div></sc-if>
+          <sc-if value="{{fb.has}}" hint-placeholder-val="{{true}}">
+            <div class="fb-head">
+              <input class="fb-name" value="{{fb.fm.name}}" onChange="{{fb.fm.setName}}" aria-label="Nombre del formulario" placeholder="Nombre del formulario" disabled="{{fb.fm.readOnly}}">
+              <input class="finput fb-desc" value="{{fb.fm.desc}}" onChange="{{fb.fm.setDesc}}" aria-label="Descripción" placeholder="Descripción para quien llena (opcional)" disabled="{{fb.fm.readOnly}}">
+              <div class="fb-meta">
+                <button type="button" class="chip" onClick="{{fb.fm.openTable}}"><span class="tico xs" style="--c: {{fb.fm.tcolor}}">[[icx:fb.fm.ticon]]</span>Crea registros en {{fb.fm.tname}}</button>
+                <span class="muted sm">{{fb.fm.stats}}</span>
+              </div>
+              <div class="fb-pubrow">
+                <button type="button" class="opt-sw" onClick="{{fb.fm.togglePub}}" aria-pressed="{{fb.fm.pub}}"><span class="sw {{fb.fm.pubCls}}" aria-hidden="true"></span><span>{{fb.fm.pubTxt}}</span></button>
+                <span class="fb-acts-top">
+                  <button type="button" class="btn btn-sm btn-primary" onClick="{{fb.fm.test}}">[[ics:ICON.mobile]]Probar en el celular</button>
+                  <sc-if value="{{fb.fm.canEdit}}" hint-placeholder-val="{{true}}"><button type="button" class="icon-btn" onClick="{{fb.fm.del}}" aria-label="Eliminar formulario" title="Eliminar formulario">[[ic:ICON.trash]]</button></sc-if>
+                </span>
+              </div>
+              <sc-if value="{{fb.fm.readOnly}}" hint-placeholder-val="{{false}}"><p class="muted sm">{{fb.fm.roText}}</p></sc-if>
+            </div>
+
+            <div class="sec-label">[[ics:ICON.checks]]Preguntas</div>
+            <p class="muted sm fb-tip">[[icx:ICON.grip]]Arrastra para reordenar. Las secciones agrupan las preguntas en el celular; una pregunta con condición solo aparece cuando se cumple.</p>
+            <div class="fb-items">
+              <sc-for list="{{fb.fm.items}}" as="it" hint-placeholder-count="5">
+                <div class="fb-item {{it.cls}}" draggable="true" onDragStart="{{it.dragStart}}" onDragOver="{{it.dragOver}}" onDrop="{{it.drop}}" onDragEnd="{{it.dragEnd}}">
+                  <span class="fb-grip" aria-hidden="true">[[ics:ICON.grip]]</span>
+                  <div class="fb-body">
+                    <sc-if value="{{it.isSec}}" hint-placeholder-val="{{false}}">
+                      <div class="fb-sec">[[ics:ICON.section]]<input class="finput fb-secin" value="{{it.title}}" onChange="{{it.setTitle}}" placeholder="Título de la sección" aria-label="Título de la sección"></div>
+                    </sc-if>
+                    <sc-if value="{{it.isField}}" hint-placeholder-val="{{true}}">
+                      <div class="fb-r1">
+                        <span class="fb-type" title="{{it.typeName}}">[[ics:it.icon]]</span>
+                        <input class="finput fb-q" value="{{it.q}}" onChange="{{it.setQ}}" placeholder="{{it.propName}}" aria-label="Texto de la pregunta">
+                        <button type="button" class="fb-req {{it.reqCls}}" onClick="{{it.toggleReq}}" aria-pressed="{{it.req}}" disabled="{{it.reqLocked}}">[[icx:ICON.required]]Obligatoria</button>
+                      </div>
+                      <div class="fb-r2"><span class="muted sm">Columna: {{it.propName}} · {{it.typeName}}</span></div>
+                      <input class="finput fb-help" value="{{it.help}}" onChange="{{it.setHelp}}" placeholder="Texto de ayuda (opcional)" aria-label="Texto de ayuda">
+                      <div class="fb-cond">
+                        <span class="fb-cond-ic">[[icx:ICON.cond]]</span>
+                        <sc-if value="{{it.hasCond}}" hint-placeholder-val="{{false}}">
+                          <span class="sm">Mostrar solo si</span>
+                          <select class="select fb-sel" value="{{it.condKey}}" onChange="{{it.setCondKey}}" aria-label="Pregunta que condiciona"><sc-for list="{{it.condKeys}}" as="ck" hint-placeholder-count="2"><option value="{{ck.v}}">{{ck.label}}</option></sc-for></select>
+                          <span class="sm">es</span>
+                          <select class="select fb-sel" value="{{it.condVal}}" onChange="{{it.setCondVal}}" aria-label="Valor"><sc-for list="{{it.condVals}}" as="cv" hint-placeholder-count="2"><option value="{{cv.v}}">{{cv.label}}</option></sc-for></select>
+                          <button type="button" class="icon-btn sm" onClick="{{it.clearCond}}" aria-label="Quitar condición" title="Quitar condición">[[icx:ICON.x]]</button>
+                          <sc-if value="{{it.multi}}" hint-placeholder-val="{{false}}"><span class="muted sm fb-condtxt">{{it.condTxt}}</span></sc-if>
+                        </sc-if>
+                        <sc-if value="{{it.noCond}}" hint-placeholder-val="{{true}}"><button type="button" class="link-btn" onClick="{{it.addCond}}" disabled="{{it.condNone}}" title="{{it.condHint}}">Agregar condición</button></sc-if>
+                      </div>
+                    </sc-if>
+                  </div>
+                  <div class="fb-acts">
+                    <button type="button" class="icon-btn sm" onClick="{{it.up}}" disabled="{{it.noUp}}" aria-label="Subir" title="Subir">[[icx:ICON.up]]</button>
+                    <button type="button" class="icon-btn sm" onClick="{{it.down}}" disabled="{{it.noDown}}" aria-label="Bajar" title="Bajar">[[icx:ICON.down]]</button>
+                    <button type="button" class="icon-btn sm" onClick="{{it.del}}" aria-label="{{it.delAria}}" title="{{it.delAria}}">[[icx:ICON.trash]]</button>
+                  </div>
+                </div>
+              </sc-for>
+              <sc-if value="{{fb.fm.noItems}}" hint-placeholder-val="{{false}}"><div class="empty">Añade preguntas desde las columnas de la tabla.</div></sc-if>
+            </div>
+            <div class="fb-addbar">
+              <span class="pick-wrap">
+                <button type="button" class="btn btn-sm" onClick="{{fb.fm.toggleAdd}}" aria-expanded="{{fb.fm.addOpen}}">[[ics:ICON.plus]]Añadir pregunta</button>
+                <sc-if value="{{fb.fm.addOpen}}" hint-placeholder-val="{{false}}"><div class="menu fb-addmenu">
+                  <div class="menu-title">Columnas de {{fb.fm.tname}}</div>
+                  <sc-for list="{{fb.fm.addable}}" as="ad" hint-placeholder-count="4"><button type="button" class="menu-item" onClick="{{ad.pick}}">[[ics:ad.icon]]<span>{{ad.name}}</span><span class="muted sm mi-sub">{{ad.type}}</span></button></sc-for>
+                  <sc-if value="{{fb.fm.noAddable}}" hint-placeholder-val="{{false}}"><p class="muted sm" style="padding: 6px 10px; margin: 0">Ya usas todas las columnas. Crea una nueva en la tabla para preguntarla aquí.</p></sc-if>
+                </div></sc-if>
+              </span>
+              <button type="button" class="btn btn-sm" onClick="{{fb.fm.addSection}}">[[ics:ICON.section]]Añadir sección</button>
+            </div>
+
+            <div class="sec-label">[[ics:ICON.bolt]]Automático al enviar</div>
+            <div class="fb-autos">
+              <sc-for list="{{fb.fm.autos}}" as="au2" hint-placeholder-count="4">
+                <button type="button" class="fb-auto {{au2.cls}}" onClick="{{au2.toggle}}" aria-pressed="{{au2.on}}" disabled="{{au2.disabled}}"><span class="sw {{au2.cls}}" aria-hidden="true"></span><span class="fb-auto-t"><strong>{{au2.label}}</strong><span class="muted sm">{{au2.note}}</span></span></button>
+              </sc-for>
+            </div>
+            <label class="dlabel" for="fb-msg">Mensaje al enviar</label>
+            <input id="fb-msg" class="finput bordered" value="{{fb.fm.submitMsg}}" onChange="{{fb.fm.setSubmitMsg}}" placeholder="¡Gracias! Tu respuesta quedó registrada.">
+            <p class="muted sm fb-who">[[icx:ICON.shield]]{{fb.fm.who}}</p>
+          </sc-if>
+        </section>
+
+        <div class="fb-prev">
+          <div class="dlabel">Vista previa en vivo</div>
+          <div class="phone sm">
+            <div class="ph-status"><span>9:41</span><span class="ph-sig">[[icx:ICON.wifi]]4G</span></div>
+            <div class="ph-app">
+              <div class="ph-body">
+                <sc-if value="{{fb.has}}" hint-placeholder-val="{{true}}">
+                  <sc-if value="{{fb.prevFill}}" hint-placeholder-val="{{true}}">[[fill:fb.prev]]</sc-if>
+                  <sc-if value="{{fb.prevDone}}" hint-placeholder-val="{{false}}"><div class="ph-done"><span class="ph-done-ic">[[icl:ICON.check]]</span><h2 class="ph-ftitle">Enviado</h2><p class="ph-fdesc">{{fb.prevMsg}}</p><p class="muted sm">Vista previa: no se creó ningún registro.</p><button type="button" class="btn btn-sm" onClick="{{fb.prevAgain}}">Probar otra vez</button></div></sc-if>
+                </sc-if>
+              </div>
+            </div>
+          </div>
+          <p class="muted sm fb-prevnote">Prueba aquí las condiciones y validaciones; no guarda registros.</p>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{scrMob}}" hint-placeholder-val="{{false}}">
+    <div class="pg mob-pg">
+      <div class="pg-head">
+        <span class="pg-icon" style="--c: #0E7490">[[icl:ICON.mobile]]</span>
+        <div class="pg-titles">
+          <h1 class="h1">App móvil</h1>
+          <p class="sub">Así usan Trama tus equipos en campo: sus tareas, lo que tienen por aprobar y los formularios publicados. Cada envío entra a su tabla con GPS, fotos y fecha, y se ve al instante en proyectos, tableros y trazabilidad.</p>
+        </div>
+      </div>
+      <div class="mob-wrap">
+        <div class="phone">
+          <div class="ph-status"><span>9:41</span><span class="ph-sig">[[icx:mob.netIcon]]{{mob.netTxt}}</span></div>
+          <sc-if value="{{mob.offline}}" hint-placeholder-val="{{false}}"><div class="ph-offbar">[[icx:ICON.wifioff]]Sin señal · {{mob.queueTxt}}</div></sc-if>
+          <div class="ph-app">
+            <div class="ph-top">
+              <sc-if value="{{mob.hasBack}}" hint-placeholder-val="{{false}}"><button type="button" class="icon-btn" onClick="{{mob.back}}" aria-label="Volver" title="Volver">[[ic:ICON.left]]</button></sc-if>
+              <span class="ph-ttl">{{mob.title}}</span>
+              <span class="av sm" style="background: {{mob.meColor}}" title="{{mob.meName}}">{{mob.meIni}}</span>
+            </div>
+            <div class="ph-body">
+              <sc-if value="{{mob.isHome}}" hint-placeholder-val="{{true}}">
+                <div class="ph-hello"><strong>{{mob.hello}}</strong><span class="muted sm">{{mob.today}}</span></div>
+                <sc-if value="{{mob.hasQuick}}" hint-placeholder-val="{{true}}">
+                  <div class="ph-quick"><sc-for list="{{mob.quick}}" as="qk" hint-placeholder-count="2"><button type="button" class="ph-qbtn" onClick="{{qk.go}}"><span class="tico" style="--c: {{qk.color}}">[[ics:qk.icon]]</span><span>{{qk.name}}</span></button></sc-for></div>
+                </sc-if>
+                <sc-if value="{{mob.hasApprovals}}" hint-placeholder-val="{{true}}">
+                  <div class="ph-h">Por aprobar</div>
+                  <sc-for list="{{mob.approvals}}" as="ap" hint-placeholder-count="1">
+                    <div class="ph-card">
+                      <button type="button" class="ph-card-t" onClick="{{ap.open}}"><strong>{{ap.title}}</strong><span class="muted sm">{{ap.sub}} · {{ap.step}}</span></button>
+                      <div class="ph-card-acts"><button type="button" class="btn btn-sm btn-primary" onClick="{{ap.ok}}">[[icx:ICON.check]]Aprobar</button><button type="button" class="btn btn-sm" onClick="{{ap.no}}">Rechazar</button></div>
+                    </div>
+                  </sc-for>
+                </sc-if>
+                <div class="ph-h">Mis tareas <span class="muted sm">{{mob.taskCount}}</span></div>
+                <sc-for list="{{mob.tasks}}" as="tk" hint-placeholder-count="3">
+                  <div class="ph-task {{tk.cls}}">
+                    <button type="button" class="ph-tcheck" onClick="{{tk.done}}" aria-label="{{tk.doneAria}}" title="{{tk.doneAria}}"></button>
+                    <button type="button" class="ph-ttxt" onClick="{{tk.open}}"><strong>{{tk.title}}</strong><span class="muted sm">{{tk.sub}}</span></button>
+                    <span class="pill {{tk.pillCls}}">{{tk.pill}}</span>
+                  </div>
+                </sc-for>
+                <sc-if value="{{mob.noTasks}}" hint-placeholder-val="{{false}}"><p class="muted sm ph-empty">No tienes tareas abiertas.</p></sc-if>
+              </sc-if>
+
+              <sc-if value="{{mob.isReg}}" hint-placeholder-val="{{false}}">
+                <sc-for list="{{mob.forms}}" as="mf" hint-placeholder-count="2">
+                  <button type="button" class="ph-fcard" onClick="{{mf.go}}"><span class="tico" style="--c: {{mf.color}}">[[ics:mf.icon]]</span><span class="ph-fcard-t"><strong>{{mf.name}}</strong><span class="muted sm">{{mf.desc}}</span></span>[[ics:ICON.right]]</button>
+                </sc-for>
+                <sc-if value="{{mob.noForms}}" hint-placeholder-val="{{false}}"><p class="muted sm ph-empty">No hay formularios publicados para tu rol.</p></sc-if>
+              </sc-if>
+
+              <sc-if value="{{mob.isFill}}" hint-placeholder-val="{{false}}">[[fill:mob.fill]]</sc-if>
+
+              <sc-if value="{{mob.isDone}}" hint-placeholder-val="{{false}}">
+                <div class="ph-done {{mob.doneCls}}"><span class="ph-done-ic">[[icl:mob.doneIcon]]</span><h2 class="ph-ftitle">{{mob.doneTitle}}</h2><p class="ph-fdesc">{{mob.doneMsg}}</p>
+                  <div class="ph-done-acts"><button type="button" class="btn btn-sm btn-primary" onClick="{{mob.again}}">Llenar otro</button><sc-if value="{{mob.hasDoneRec}}" hint-placeholder-val="{{true}}"><button type="button" class="btn btn-sm" onClick="{{mob.openDone}}">Ver registro</button></sc-if><button type="button" class="btn btn-sm" onClick="{{mob.home}}">Inicio</button></div>
+                </div>
+              </sc-if>
+
+              <sc-if value="{{mob.isMine}}" hint-placeholder-val="{{false}}">
+                <sc-if value="{{mob.hasQueue}}" hint-placeholder-val="{{false}}">
+                  <div class="ph-h">En el celular, sin enviar</div>
+                  <sc-for list="{{mob.queue}}" as="qq" hint-placeholder-count="1"><div class="ph-row queued">[[ics:ICON.wifioff]]<span class="ph-row-t"><strong>{{qq.title}}</strong><span class="muted sm">Guardado a las {{qq.at}}</span></span><span class="pill p-amber">En cola</span></div></sc-for>
+                  <button type="button" class="btn btn-sm ph-syncbtn" onClick="{{mob.sync}}">[[ics:ICON.sync]]Enviar ahora</button>
+                </sc-if>
+                <sc-for list="{{mob.mine}}" as="mr" hint-placeholder-count="3"><button type="button" class="ph-row" onClick="{{mr.open}}"><span class="tico xs" style="--c: {{mr.color}}">[[icx:mr.icon]]</span><span class="ph-row-t"><strong>{{mr.title}}</strong><span class="muted sm">{{mr.sub}}</span></span><sc-if value="{{mr.hasPill}}" hint-placeholder-val="{{true}}"><span class="pill {{mr.pillCls}}">{{mr.pill}}</span></sc-if></button></sc-for>
+                <sc-if value="{{mob.noMine}}" hint-placeholder-val="{{false}}"><p class="muted sm ph-empty">Aún no envías registros desde un formulario.</p></sc-if>
+              </sc-if>
+
+              <sc-if value="{{mob.isInbox}}" hint-placeholder-val="{{false}}">
+                <sc-for list="{{mob.notifs}}" as="mn" hint-placeholder-count="3"><button type="button" class="ph-row {{mn.cls}}" onClick="{{mn.open}}">[[ics:ICON.bell]]<span class="ph-row-t"><strong>{{mn.text}}</strong><span class="muted sm">{{mn.when}}</span></span></button></sc-for>
+                <sc-if value="{{mob.noNotifs}}" hint-placeholder-val="{{false}}"><p class="muted sm ph-empty">Sin avisos.</p></sc-if>
+              </sc-if>
+            </div>
+            <nav class="ph-tabs" aria-label="Secciones de la app">
+              <sc-for list="{{mob.tabs}}" as="tb" hint-placeholder-count="4">
+                <button type="button" class="ph-tab {{tb.cls}}" onClick="{{tb.go}}">[[ic:tb.icon]]<span>{{tb.n}}</span><sc-if value="{{tb.hasBadge}}" hint-placeholder-val="{{false}}"><span class="ph-badge">{{tb.badge}}</span></sc-if></button>
+              </sc-for>
+            </nav>
+          </div>
+        </div>
+
+        <aside class="mob-side">
+          <div class="card mob-card">
+            <div class="sec-label">[[ics:ICON.user]]Ver la app como</div>
+            <div class="opts"><sc-for list="{{mob.people}}" as="mp" hint-placeholder-count="5"><button type="button" class="person-opt {{mp.cls}}" onClick="{{mp.pick}}"><span class="av sm" style="background: {{mp.color}}">{{mp.initials}}</span>{{mp.first}}</button></sc-for></div>
+            <p class="muted sm">Cada persona ve sus tareas, lo que tiene por aprobar y solo los formularios de las tablas que puede editar.</p>
+          </div>
+          <div class="card mob-card">
+            <div class="sec-label">[[ics:ICON.wifi]]Señal del celular</div>
+            <div class="seg seg-sm"><sc-for list="{{mob.netOpts}}" as="no" hint-placeholder-count="2"><button type="button" class="seg-btn {{no.cls}}" onClick="{{no.pick}}">{{no.n}}</button></sc-for></div>
+            <p class="muted sm">Sin señal, los formularios se guardan en el celular y se envían solos al volver la conexión. Pruébalo: apaga la señal, envía un parte y vuelve a encenderla.</p>
+            <sc-if value="{{mob.hasQueue}}" hint-placeholder-val="{{false}}">
+              <div class="mob-queue"><strong>{{mob.queueCount}} en cola</strong><sc-for list="{{mob.queue}}" as="q2" hint-placeholder-count="1"><span class="muted sm">{{q2.at}} · {{q2.title}}</span></sc-for>
+                <button type="button" class="btn btn-sm" onClick="{{mob.sync}}">[[ics:ICON.sync]]Sincronizar</button></div>
+            </sc-if>
+          </div>
+          <div class="card mob-card">
+            <div class="sec-label">[[ics:ICON.formb]]Formularios publicados: {{mob.formsCount}}</div>
+            <p class="muted sm">Cambia preguntas, condiciones o qué se captura solo (GPS, foto, fecha) y se actualiza en todos los celulares.</p>
+            <button type="button" class="btn btn-sm" onClick="{{mob.goForms}}">[[ics:ICON.edit]]Editar formularios</button>
+          </div>
+          <div class="card mob-card">
+            <div class="sec-label">[[ics:ICON.download]]Cómo se instala</div>
+            <p class="muted sm">En la versión real será una app web instalable: se abre el enlace de la empresa en el celular y se elige «Añadir a pantalla de inicio». Usa la cámara y el GPS del teléfono con permiso del usuario.</p>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </sc-if>
+

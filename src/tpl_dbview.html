@@ -1,0 +1,217 @@
+<div class="dbv">
+  <sc-if value="{{$.compact}}" hint-placeholder-val="{{false}}">
+    <div class="dbv-head">
+      <button type="button" class="dbv-name" onClick="{{$.goFull}}" title="Abrir {{$.name}} a pantalla completa"><span class="tico sm" style="--c: {{$.color}}">[[ics:$.icon]]</span><span class="dbv-nametxt">{{$.name}}</span><span class="dbv-open">[[icx:ICON.arrowr]]</span></button>
+    </div>
+  </sc-if>
+  <div class="toolbar">
+    <div class="vtabs">
+      <sc-for list="{{$.viewTabs}}" as="vt" hint-placeholder-count="4">
+        <button type="button" class="vtab {{vt.cls}}" onClick="{{vt.pick}}">[[ics:vt.icon]]<span>{{vt.name}}</span><sc-if value="{{vt.locked}}" hint-placeholder-val="{{false}}"><span class="lk" title="Vista bloqueada">[[icx:ICON.lock]]</span></sc-if></button>
+      </sc-for>
+      <button type="button" class="icon-btn sm" onClick="{{$.toggleAddView}}" aria-label="Añadir vista" title="Añadir vista" aria-expanded="{{$.addViewOpen}}">[[ic:ICON.plus]]</button>
+    </div>
+    <div class="tools">
+      <button type="button" class="tool {{$.filterOn}}" onClick="{{$.openFilter}}">[[ics:ICON.filter]]<span class="tool-txt">Filtrar</span><sc-if value="{{$.hasFilters}}" hint-placeholder-val="{{false}}"><span class="badge">{{$.filterCount}}</span></sc-if></button>
+      <button type="button" class="tool {{$.sortOn}}" onClick="{{$.openSort}}">[[ics:ICON.sort]]<span class="tool-txt">Ordenar</span><sc-if value="{{$.hasSorts}}" hint-placeholder-val="{{false}}"><span class="badge">{{$.sortCount}}</span></sc-if></button>
+      <sc-if value="{{$.showSearch}}" hint-placeholder-val="{{true}}"><label class="search">[[ics:ICON.search]]<input class="search-in" value="{{$.q}}" onChange="{{$.setQ}}" placeholder="{{$.searchPh}}" aria-label="{{$.searchPh}}"></label></sc-if>
+      <sc-if value="{{$.canStructureOpen}}" hint-placeholder-val="{{true}}"><button type="button" class="tool" onClick="{{$.openRelate}}" title="Añadir una relación con otra tabla">[[ics:ICON.relation]]<span class="tool-txt">Relacionar</span></button></sc-if>
+      <button type="button" class="tool" onClick="{{$.openSettings}}" aria-label="Configuración de la vista">[[ics:ICON.sliders]]<span class="tool-txt">Configuración</span></button>
+      <sc-if value="{{$.canEdit}}" hint-placeholder-val="{{true}}"><span class="split pick-wrap"><button type="button" class="btn btn-primary btn-sm split-main" onClick="{{$.newRowBtn}}">[[ics:ICON.plus]]Nuevo</button><button type="button" class="btn btn-primary btn-sm split-arrow" onClick="{{$.toggleTpl}}" aria-label="Nuevo desde plantilla" title="Nuevo desde plantilla" aria-expanded="{{$.tplOpen}}">[[icx:ICON.chevdown]]</button>
+        <sc-if value="{{$.tplOpen}}" hint-placeholder-val="{{false}}"><div class="menu tpl-menu">
+          <button type="button" class="menu-item" onClick="{{$.newBlank}}">[[ics:ICON.plus]]<span>Registro vacío</span></button>
+          <div class="menu-title">Plantillas</div>
+          <sc-for list="{{$.tpls}}" as="tp2" hint-placeholder-count="2"><div class="tpl-item"><button type="button" class="menu-item" onClick="{{tp2.pick}}">[[ics:ICON.template]]<span>{{tp2.name}}</span><span class="muted sm mi-sub">{{tp2.sub}}</span></button><sc-if value="{{tp2.canDel}}" hint-placeholder-val="{{true}}"><button type="button" class="icon-btn sm" onClick="{{tp2.del}}" aria-label="{{tp2.delAria}}" title="{{tp2.delAria}}">[[icx:ICON.trash]]</button></sc-if></div></sc-for>
+          <sc-if value="{{$.noTpls}}" hint-placeholder-val="{{false}}"><p class="muted sm tpl-tip">Aún no hay plantillas.</p></sc-if>
+          <p class="muted sm tpl-tip">Para crear una, abre un registro y usa «Guardar como plantilla».</p>
+        </div></sc-if></span></sc-if>
+    </div>
+  </div>
+
+  <sc-if value="{{$.addViewOpen}}" hint-placeholder-val="{{false}}">
+    <div class="addview">
+      <div class="addview-title">Nueva vista</div>
+      <sc-for list="{{$.layoutsAdd}}" as="la" hint-placeholder-count="7"><button type="button" class="addview-btn" onClick="{{la.pick}}">[[ic:la.icon]]{{la.name}}</button></sc-for>
+    </div>
+  </sc-if>
+  <sc-if value="{{$.hasXf}}" hint-placeholder-val="{{false}}"><div class="xf-note">[[ics:ICON.filter]]<span>{{$.xfText}}</span></div></sc-if>
+  <sc-if value="{{$.hasActiveChips}}" hint-placeholder-val="{{false}}">
+    <div class="fchips">
+      <sc-for list="{{$.activeChips}}" as="fc" hint-placeholder-count="1"><span class="fchip-on">{{fc.label}}<button type="button" class="icon-btn" onClick="{{fc.remove}}" aria-label="{{fc.aria}}">[[icx:ICON.x]]</button></span></sc-for>
+      <button type="button" class="link-btn" onClick="{{$.clearFilters}}">Quitar filtros</button>
+    </div>
+  </sc-if>
+  <sc-if value="{{$.hasHeadMenu}}" hint-placeholder-val="{{false}}">
+    <div class="headbar">
+      <span class="hb-name">[[ic:$.hm.icon]]{{$.hm.name}}</span>
+      <button type="button" class="btn btn-xs" onClick="{{$.hm.asc}}">[[ics:ICON.up]]Ascendente</button>
+      <button type="button" class="btn btn-xs" onClick="{{$.hm.desc}}">[[ics:ICON.down]]Descendente</button>
+      <button type="button" class="btn btn-xs" onClick="{{$.hm.filter}}">[[ics:ICON.filter]]Filtrar</button>
+      <sc-if value="{{$.hm.canHide}}" hint-placeholder-val="{{true}}"><button type="button" class="btn btn-xs" onClick="{{$.hm.hide}}">[[ics:ICON.eyeoff]]Ocultar</button></sc-if>
+      <button type="button" class="btn btn-xs {{$.hm.wrapCls}}" onClick="{{$.hm.wrap}}" aria-pressed="{{$.hm.wrapOn}}">[[ics:ICON.wrap]]Ajustar texto</button>
+      <div class="seg seg-sm"><sc-for list="{{$.hm.widthOpts}}" as="wo" hint-placeholder-count="3"><button type="button" class="seg-btn {{wo.cls}}" onClick="{{wo.pick}}">{{wo.label}}</button></sc-for></div>
+      <sc-if value="{{$.hm.canEditProp}}" hint-placeholder-val="{{true}}"><button type="button" class="btn btn-xs" onClick="{{$.hm.edit}}">[[ics:ICON.settings]]Configurar columna</button><button type="button" class="btn btn-xs" onClick="{{$.hm.insert}}">[[ics:ICON.plus]]Insertar columna</button></sc-if>
+      <span class="hb-sp"></span>
+      <button type="button" class="icon-btn sm" onClick="{{$.hm.close}}" aria-label="Cerrar opciones de columna">[[ics:ICON.x]]</button>
+    </div>
+  </sc-if>
+  <sc-if value="{{$.hasCellBar}}" hint-placeholder-val="{{false}}">
+    <div class="cellbar" role="group" aria-label="Editar celda">
+      <div class="cb-ref">[[ics:$.cb.icon]]<strong>{{$.cb.prop}}</strong><span class="muted">· {{$.cb.rowTitle}}</span></div>
+      <sc-if value="{{$.cb.isFormula}}" hint-placeholder-val="{{false}}">
+        <div class="cb-fx"><span class="fx-badge">fx</span><code class="mono cb-code">{{$.cb.formula}}</code><sc-if value="{{$.cb.canEditFormula}}" hint-placeholder-val="{{true}}"><button type="button" class="btn btn-xs" onClick="{{$.cb.editFormula}}">Editar fórmula</button></sc-if></div>
+      </sc-if>
+      <div class="cb-field">[[fields:$.cb.fields]]</div>
+      <div class="cb-actions">
+        <button type="button" class="btn btn-xs" onClick="{{$.cb.openRec}}">[[ics:ICON.expand]]Abrir registro</button>
+        <button type="button" class="icon-btn sm" onClick="{{$.cb.close}}" aria-label="Cerrar edición de celda">[[ics:ICON.x]]</button>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{$.isTable}}" hint-placeholder-val="{{true}}">
+    <div class="tbl-wrap">
+      <div class="tbl" style="min-width: {{$.tblMinW}}px">
+        <div class="tr th-row" style="grid-template-columns: {{$.gridCols}}">
+          <sc-for list="{{$.headCols}}" as="c" hint-placeholder-count="7">
+            <div class="th {{c.num}} {{c.cls}}">
+              <button type="button" class="th-btn" onClick="{{c.menu}}" aria-label="{{c.aria}}" title="{{c.desc}}">[[ics:c.icon]]<span class="th-label">{{c.label}}</span><sc-if value="{{c.restricted}}" hint-placeholder-val="{{false}}"><span class="th-lock" title="{{c.restrictedText}}">[[icx:ICON.lock]]</span></sc-if><sc-if value="{{c.sorted}}" hint-placeholder-val="{{false}}"><span class="th-sort">{{c.sortArrow}}</span></sc-if></button>
+            </div>
+          </sc-for>
+          <div class="th th-add"><sc-if value="{{$.canStructureOpen}}" hint-placeholder-val="{{true}}"><button type="button" class="icon-btn sm" onClick="{{$.openNewProp}}" aria-label="Nueva columna" title="Nueva columna">[[ic:ICON.plus]]</button></sc-if></div>
+        </div>
+        <sc-for list="{{$.tgroups}}" as="gp" hint-placeholder-count="1">
+          <sc-if value="{{gp.hasHeader}}" hint-placeholder-val="{{false}}">
+            <div class="grp-head">
+              <button type="button" class="grp-toggle" onClick="{{gp.toggle}}" aria-expanded="{{gp.open}}">
+                <span class="chev {{gp.chevCls}}">[[ics:ICON.right]]</span>
+                <sc-if value="{{gp.isPill}}" hint-placeholder-val="{{true}}"><span class="pill {{gp.cls}}"><sc-if value="{{gp.dot}}" hint-placeholder-val="{{false}}"><span class="sdot"></span></sc-if>{{gp.label}}</span></sc-if>
+                <sc-if value="{{gp.isPerson}}" hint-placeholder-val="{{false}}"><span class="person"><span class="av sm" style="background: {{gp.avatar}}">{{gp.initials}}</span>{{gp.label}}</span></sc-if>
+                <span class="kcount">{{gp.count}}</span>
+              </button>
+            </div>
+          </sc-if>
+          <sc-if value="{{gp.open}}" hint-placeholder-val="{{true}}">
+            <sc-for list="{{gp.rows}}" as="r" hint-placeholder-count="6">
+              <div class="tr row {{r.sel}} {{r.rc}}" style="grid-template-columns: {{r.gc}}">
+                <sc-for list="{{r.cells}}" as="cell" hint-placeholder-count="7">
+                  <div class="td {{cell.align}} {{cell.wrapCls}} {{cell.selCls}}">
+                    <sc-if value="{{cell.isTitle}}" hint-placeholder-val="{{false}}"><button type="button" class="title-btn" onClick="{{cell.open}}"><span class="title-txt">{{cell.title}}</span><span class="open-hint">[[icx:ICON.expand]]Abrir</span></button></sc-if>
+                    <sc-if value="{{cell.notTitle}}" hint-placeholder-val="{{true}}"><button type="button" class="cell-hit" onClick="{{cell.select}}" aria-label="{{cell.aria}}"></button>[[disp:cell.d]]</sc-if>
+                  </div>
+                </sc-for>
+                <div class="td"></div>
+              </div>
+            </sc-for>
+            <sc-if value="{{gp.canAdd}}" hint-placeholder-val="{{true}}"><button type="button" class="add-row" onClick="{{gp.add}}">[[ics:ICON.plus]]Nuevo</button></sc-if>
+          </sc-if>
+        </sc-for>
+        <sc-if value="{{$.noRows}}" hint-placeholder-val="{{false}}"><div class="empty">{{$.emptyText}}</div></sc-if>
+        <div class="tr calc-row" style="grid-template-columns: {{$.gridCols}}">
+          <sc-for list="{{$.calcCells}}" as="cc" hint-placeholder-count="7"><div class="td {{cc.num}}"><button type="button" class="calc-btn {{cc.cls}}" onClick="{{cc.run}}" title="Cambiar el cálculo de esta columna">{{cc.label}}</button></div></sc-for>
+          <div class="td"></div>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{$.isBoard}}" hint-placeholder-val="{{false}}">
+    <sc-if value="{{$.boardNoProp}}" hint-placeholder-val="{{false}}"><div class="card empty">{{$.boardMsg}}</div></sc-if>
+    <div class="board">
+      <sc-for list="{{$.board}}" as="col" hint-placeholder-count="4">
+        <div class="kcol" onDragOver="{{$.allowDrop}}" onDrop="{{col.drop}}">
+          <div class="kcol-head">
+            <sc-if value="{{col.isPill}}" hint-placeholder-val="{{true}}"><span class="pill {{col.cls}}"><sc-if value="{{col.dot}}" hint-placeholder-val="{{false}}"><span class="sdot"></span></sc-if>{{col.label}}</span></sc-if>
+            <sc-if value="{{col.isPerson}}" hint-placeholder-val="{{false}}"><span class="person"><span class="av sm" style="background: {{col.avatar}}">{{col.initials}}</span>{{col.label}}</span></sc-if>
+            <span class="kcount">{{col.count}}</span>
+          </div>
+          <sc-for list="{{col.cards}}" as="k" hint-placeholder-count="2">
+            <div class="kcard {{k.sel}} {{k.rc}}" draggable="{{k.drag}}" onDragStart="{{k.dragStart}}" onDragEnd="{{k.dragEnd}}">
+              <button type="button" class="k-title stretch" onClick="{{k.open}}">{{k.title}}</button>
+              <sc-for list="{{k.props}}" as="pr" hint-placeholder-count="2"><div class="kprop" title="{{pr.name}}"><sc-if value="{{pr.hasLbl}}" hint-placeholder-val="{{true}}"><span class="klbl">{{pr.name}}</span></sc-if>[[disp:pr.d]]</div></sc-for>
+            </div>
+          </sc-for>
+          <sc-if value="{{col.empty}}" hint-placeholder-val="{{false}}"><div class="kempty">Arrastra tarjetas aquí</div></sc-if>
+          <sc-if value="{{col.canAdd}}" hint-placeholder-val="{{true}}"><button type="button" class="kadd" onClick="{{col.add}}">[[ics:ICON.plus]]Nuevo</button></sc-if>
+        </div>
+      </sc-for>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{$.isList}}" hint-placeholder-val="{{false}}">
+    <div class="list">
+      <sc-for list="{{$.listItems}}" as="it" hint-placeholder-count="5">
+        <div class="li {{it.sel}} {{it.rc}}">
+          <button type="button" class="li-title stretch" onClick="{{it.open}}"><span class="title-txt">{{it.title}}</span></button>
+          <div class="li-props"><sc-for list="{{it.props}}" as="pr" hint-placeholder-count="3"><span class="li-prop" title="{{pr.name}}">[[disp:pr.d]]</span></sc-for></div>
+        </div>
+      </sc-for>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{$.isGallery}}" hint-placeholder-val="{{false}}">
+    <div class="gallery">
+      <sc-for list="{{$.gallery}}" as="g" hint-placeholder-count="6">
+        <div class="gcard {{g.sel}} {{g.rc}}">
+          <div class="gcover" style="--c: {{g.coverFg}}" aria-hidden="true"><span class="gcover-ic">[[icl:g.icon]]</span><span class="gcover-txt">{{g.initials}}</span></div>
+          <div class="gbody">
+            <button type="button" class="g-title stretch" onClick="{{g.open}}">{{g.title}}</button>
+            <sc-for list="{{g.props}}" as="pr" hint-placeholder-count="3"><div class="gprop" title="{{pr.name}}"><sc-if value="{{pr.hasLbl}}" hint-placeholder-val="{{true}}"><span class="klbl">{{pr.name}}</span></sc-if>[[disp:pr.d]]</div></sc-for>
+          </div>
+        </div>
+      </sc-for>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{$.showListEmpty}}" hint-placeholder-val="{{false}}"><div class="empty">{{$.emptyText}}</div></sc-if>
+
+  <sc-if value="{{$.isCalendar}}" hint-placeholder-val="{{false}}">
+    <sc-if value="{{$.calNo}}" hint-placeholder-val="{{false}}"><div class="card empty">{{$.calMsg}}</div></sc-if>
+    <sc-if value="{{$.calOk}}" hint-placeholder-val="{{true}}">
+      <div class="cal">
+        <div class="cal-head">
+          <strong class="cal-title">{{$.cal.title}}</strong>
+          <button type="button" class="icon-btn sm" onClick="{{$.cal.prev}}" aria-label="Mes anterior">[[ic:ICON.left]]</button>
+          <button type="button" class="icon-btn sm" onClick="{{$.cal.next}}" aria-label="Mes siguiente">[[ic:ICON.right]]</button>
+          <button type="button" class="btn btn-xs" onClick="{{$.cal.today}}">Hoy</button>
+          <span class="muted sm">Según la columna {{$.cal.propName}}</span>
+        </div>
+        <div class="cal-scroll">
+          <div class="cal-grid">
+            <sc-for list="{{$.cal.dows}}" as="dw" hint-placeholder-count="7"><div class="cal-dow">{{dw.n}}</div></sc-for>
+            <sc-for list="{{$.cal.days}}" as="dy" hint-placeholder-count="35">
+              <div class="cal-day {{dy.cls}}">
+                <div class="cal-num"><span>{{dy.num}}</span><sc-if value="{{dy.canAdd}}" hint-placeholder-val="{{false}}"><button type="button" class="cal-add" onClick="{{dy.add}}" aria-label="{{dy.addAria}}">[[ics:ICON.plus]]</button></sc-if></div>
+                <sc-for list="{{dy.items}}" as="ci" hint-placeholder-count="1"><button type="button" class="cal-item {{ci.cls}}" onClick="{{ci.open}}">{{ci.title}}</button></sc-for>
+                <sc-if value="{{dy.hasMore}}" hint-placeholder-val="{{false}}"><span class="cal-more">{{dy.more}}</span></sc-if>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+      </div>
+    </sc-if>
+  </sc-if>
+
+  <sc-if value="{{$.isChart}}" hint-placeholder-val="{{false}}">
+    <div class="card chart-card">
+      <div class="chart-head"><strong class="h3">{{$.chart.title}}</strong><span class="muted sm">{{$.chart.sub}}</span></div>
+      [[chart:$.chart]]
+    </div>
+  </sc-if>
+
+  <sc-if value="{{$.isForm}}" hint-placeholder-val="{{false}}">
+    <div class="card form-wrap">
+      <div class="eyebrow">Formulario</div>
+      <h2 class="h2">{{$.form.title}}</h2>
+      <p class="sub">{{$.form.sub}}</p>
+      <div class="fields" style="margin-top: 14px">
+        [[fields:$.form.fields]]
+      </div>
+      <div class="form-foot">
+        <sc-if value="{{$.form.canSubmit}}" hint-placeholder-val="{{true}}"><button type="button" class="btn btn-primary" onClick="{{$.form.submit}}">Enviar respuesta</button></sc-if>
+        <button type="button" class="btn" onClick="{{$.form.copy}}">[[ics:ICON.link]]Copiar enlace del formulario</button><button type="button" class="btn" onClick="{{$.fmAdv}}">[[ics:ICON.formb]]{{$.fmAdvTxt}}</button>
+      </div>
+    </div>
+  </sc-if>
+  <p class="foot-note">{{$.countText}}</p>
+</div>

@@ -1,0 +1,38 @@
+<div class="ph-form">
+  <div class="ph-fhead">
+    <h2 class="ph-ftitle">{{$.title}}</h2>
+    <sc-if value="{{$.hasDesc}}" hint-placeholder-val="{{true}}"><p class="ph-fdesc">{{$.desc}}</p></sc-if>
+  </div>
+  <sc-if value="{{$.hasAutos}}" hint-placeholder-val="{{true}}"><div class="ph-autos"><sc-for list="{{$.autos}}" as="au" hint-placeholder-count="2"><span class="ph-auto">[[icx:au.icon]]{{au.text}}</span></sc-for></div></sc-if>
+  <sc-for list="{{$.sections}}" as="sec" hint-placeholder-count="2">
+    <div class="ph-sec">
+      <sc-if value="{{sec.hasTitle}}" hint-placeholder-val="{{true}}"><h3 class="ph-sect">{{sec.title}}</h3></sc-if>
+      <div class="fields">
+        [[fields:sec.fields]]
+      </div>
+    </div>
+  </sc-for>
+  <sc-if value="{{$.hasPhoto}}" hint-placeholder-val="{{true}}">
+    <div class="ph-sec">
+      <h3 class="ph-sect">{{$.photoTitle}}</h3>
+      <div class="ph-photos {{$.photoCls}}">
+        <sc-for list="{{$.photos}}" as="ph" hint-placeholder-count="1">
+          <div class="ph-photo">
+            <sc-if value="{{ph.hasSrc}}" hint-placeholder-val="{{false}}"><img src="{{ph.src}}" alt="{{ph.name}}"></sc-if>
+            <sc-if value="{{ph.noSrc}}" hint-placeholder-val="{{true}}"><span class="ph-photo-ph">[[ic:ICON.image]]</span></sc-if>
+            <span class="ph-photo-n">{{ph.name}}</span>
+            <button type="button" class="ph-photo-x" onClick="{{ph.remove}}" aria-label="{{ph.aria}}" title="{{ph.aria}}">[[icx:ICON.x]]</button>
+          </div>
+        </sc-for>
+        <label class="ph-photo-add">[[ic:ICON.camera]]<span>Tomar o subir foto</span><input type="file" accept="image/*" capture="environment" class="sr-only" onChange="{{$.addPhoto}}" multiple="{{true}}"></label>
+      </div>
+      <sc-if value="{{$.photoErr}}" hint-placeholder-val="{{false}}"><span class="ph-err">Adjunta al menos una foto</span></sc-if>
+    </div>
+  </sc-if>
+  <sc-if value="{{$.hasGps}}" hint-placeholder-val="{{true}}">
+    <div class="ph-gps">[[ics:ICON.pin]]<span class="ph-gps-t">{{$.gpsText}}</span><button type="button" class="btn btn-xs" onClick="{{$.captureGps}}" disabled="{{$.gpsBusy}}">{{$.gpsBtn}}</button></div>
+  </sc-if>
+  <sc-if value="{{$.hasErr}}" hint-placeholder-val="{{false}}"><div class="ph-errbox" role="alert">{{$.errText}}</div></sc-if>
+  <button type="button" class="btn btn-primary ph-submit" onClick="{{$.submit}}">[[ics:$.submitIcon]]{{$.submitLabel}}</button>
+  <sc-if value="{{$.hasNoEdit}}" hint-placeholder-val="{{false}}"><p class="muted sm ph-noedit">{{$.noEditText}}</p></sc-if>
+</div>

@@ -1,0 +1,1718 @@
+<div class="app theme-{{mode}} acc-{{accent}} dens-{{density}} rad-{{corners}} font-{{font}}">
+
+<aside class="side {{navCls}}" aria-label="Navegación principal">
+  <div class="side-top">
+    <div class="ws">
+      <span class="brand"><svg class="logo" viewBox="0 0 32 32" aria-hidden="true"><rect class="logo-bg" x="1" y="1" width="30" height="30" rx="8"></rect><path class="logo-s" d="M8.5 10.5H23.5"></path><path class="logo-s" d="M16 14.5V24"></path><path class="logo-t" d="M8.5 18.5H12.5M19.5 18.5H23.5"></path></svg></span>
+      <span class="ws-text"><span class="ws-name">{{appName}}</span><span class="ws-plan">{{ws}}</span></span>
+    </div>
+    <button type="button" class="icon-btn nav-toggle" onClick="{{toggleNav}}" aria-label="{{navAria}}" aria-expanded="{{navOpenB}}">[[ic:ICON.menu]]</button>
+  </div>
+  <div class="side-body">
+    <sc-for list="{{sideHome}}" as="sp" hint-placeholder-count="1">
+      <button type="button" class="nav-item {{sp.on}}" onClick="{{sp.go}}"><span class="tico sm" style="--c: {{sp.color}}">[[ics:sp.icon]]</span><span class="nav-txt">{{sp.name}}</span></button>
+    </sc-for>
+    <button type="button" class="nav-item {{navOrg}}" onClick="{{goOrg}}"><span class="nav-ic">[[ic:ICON.org]]</span><span class="nav-txt">Organigrama</span></button>
+    <button type="button" class="nav-item {{navForms}}" onClick="{{goForms}}"><span class="nav-ic">[[ic:ICON.formb]]</span><span class="nav-txt">Formularios</span></button>
+    <button type="button" class="nav-item {{navMob}}" onClick="{{goMob}}"><span class="nav-ic">[[ic:ICON.mobile]]</span><span class="nav-txt">App móvil</span><sc-if value="{{hasMobQueued}}" hint-placeholder-val="{{false}}"><span class="nav-badge">{{mobQueuedTxt}}</span></sc-if></button>
+    <sc-if value="{{hasCos}}" hint-placeholder-val="{{true}}"><button type="button" class="nav-item {{navCos}}" onClick="{{goCos}}"><span class="nav-ic">[[ic:icCalc]]</span><span class="nav-txt">Ingeniería de costos</span></button></sc-if>
+    <button type="button" class="nav-item {{navAi}}" onClick="{{goAi}}"><span class="nav-ic">[[ic:ICON.ai]]</span><span class="nav-txt">Asistente IA</span></button>
+    <button type="button" class="nav-item {{navInbox}}" onClick="{{goInbox}}"><span class="nav-ic">[[ic:ICON.bell]]</span><span class="nav-txt">Avisos</span><sc-if value="{{hasUnread}}" hint-placeholder-val="{{false}}"><span class="nav-badge">{{unreadCount}}</span></sc-if></button>
+
+    <div class="nav-label"><span>Páginas</span><sc-if value="{{canNewPage}}" hint-placeholder-val="{{true}}"><button type="button" class="icon-btn xs" onClick="{{newPage}}" aria-label="Nueva página" title="Nueva página">[[ics:ICON.plus]]</button></sc-if></div>
+    <sc-if value="{{hasGeneral}}" hint-placeholder-val="{{true}}">
+      <div class="nav-sub">General</div>
+      <sc-for list="{{sideGeneral}}" as="sp" hint-placeholder-count="1">
+        <button type="button" class="nav-item {{sp.on}}" onClick="{{sp.go}}"><span class="tico sm" style="--c: {{sp.color}}">[[ics:sp.icon]]</span><span class="nav-txt">{{sp.name}}</span></button>
+      </sc-for>
+    </sc-if>
+    <sc-for list="{{sideAreas}}" as="sa" hint-placeholder-count="3">
+      <div class="nav-sub"><span class="na-dot" style="background: {{sa.color}}"></span>{{sa.name}}</div>
+      <sc-for list="{{sa.pages}}" as="sp" hint-placeholder-count="2">
+        <button type="button" class="nav-item {{sp.on}}" onClick="{{sp.go}}"><span class="tico sm" style="--c: {{sp.color}}">[[ics:sp.icon]]</span><span class="nav-txt">{{sp.name}}</span></button>
+      </sc-for>
+    </sc-for>
+
+    <div class="nav-label"><span>Bases de datos</span><sc-if value="{{isAdminView}}" hint-placeholder-val="{{true}}"><button type="button" class="icon-btn xs" onClick="{{newDb}}" aria-label="Nueva base de datos" title="Nueva base de datos">[[ics:ICON.plus]]</button></sc-if></div>
+    <sc-for list="{{sideDbs}}" as="d" hint-placeholder-count="4">
+      <button type="button" class="nav-item {{d.on}}" onClick="{{d.go}}">
+        <span class="tico sm" style="--c: {{d.color}}">[[ics:d.icon]]</span>
+        <span class="nav-txt">{{d.name}}</span>
+        <sc-if value="{{d.locked}}" hint-placeholder-val="{{false}}"><span class="nav-lock" title="Sin acceso">[[ics:ICON.lock]]</span></sc-if>
+        <sc-if value="{{d.unlocked}}" hint-placeholder-val="{{true}}"><span class="nav-count">{{d.count}}</span></sc-if>
+      </button>
+    </sc-for>
+    <sc-if value="{{isAdminView}}" hint-placeholder-val="{{true}}">
+      <div class="nav-label"><span>Administración</span></div>
+      <button type="button" class="nav-item {{navPerm}}" onClick="{{goPerm}}"><span class="nav-ic">[[ic:ICON.shield]]</span><span class="nav-txt">Miembros y permisos</span></button>
+      <button type="button" class="nav-item {{navBiz}}" onClick="{{goBiz}}"><span class="nav-ic">[[ic:ICON.settings]]</span><span class="nav-txt">Tu negocio y módulos</span></button>
+      <button type="button" class="nav-item {{navTheme}}" onClick="{{goTheme}}"><span class="nav-ic">[[ic:ICON.palette]]</span><span class="nav-txt">Personalizar</span></button>
+    </sc-if>
+    <div class="side-foot">
+      <div class="nav-label"><span>Previsualizar como</span></div>
+      <button type="button" class="viewas" onClick="{{toggleViewMenu}}" aria-expanded="{{viewMenu}}">
+        <span class="av" style="background: {{viewer.color}}">{{viewer.initials}}</span>
+        <span class="va-text"><span class="va-name">{{viewer.name}}</span><span class="va-role">{{viewer.roleName}}</span></span>
+        [[ic:ICON.sort]]
+      </button>
+      <sc-if value="{{viewMenu}}" hint-placeholder-val="{{false}}">
+        <div class="menu menu-up">
+          <div class="menu-title">Ver el espacio como…</div>
+          <sc-for list="{{viewOpts}}" as="o" hint-placeholder-count="6">
+            <button type="button" class="menu-item {{o.cls}}" onClick="{{o.pick}}">
+              <span class="av sm" style="background: {{o.color}}">{{o.initials}}</span>
+              <span class="va-text"><span class="va-name">{{o.name}}</span><span class="mi-sub">{{o.roleName}}</span></span>
+            </button>
+          </sc-for>
+        </div>
+      </sc-if>
+    </div>
+  </div>
+</aside>
+
+<main class="main">
+  <sc-if value="{{previewing}}" hint-placeholder-val="{{false}}">
+    <div class="banner">
+      [[ic:ICON.eye]]
+      <span class="grow">Estás viendo el espacio como <strong>{{viewer.name}}</strong> ({{viewer.roleName}}). {{bannerDetail}}</span>
+      <button type="button" class="btn btn-sm" onClick="{{exitPreview}}">Volver a mi vista</button>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{scrPage}}" hint-placeholder-val="{{true}}">
+    <div class="pg">
+      <sc-if value="{{pg.hasCover}}" hint-placeholder-val="{{true}}">
+        <div class="pg-cover" style="{{pg.coverStyle}}">
+          <sc-if value="{{pg.canEdit}}" hint-placeholder-val="{{true}}"><div class="cover-tools"><button type="button" class="cover-btn" onClick="{{pg.toggleCover}}" aria-expanded="{{pg.coverOpen}}">[[ics:ICON.image]]Cambiar portada</button><sc-if value="{{pg.coverImg}}" hint-placeholder-val="{{false}}"><button type="button" class="cover-btn" onClick="{{pg.coverPos}}">[[ics:ICON.sort]]Reposicionar</button></sc-if></div></sc-if>
+        </div>
+      </sc-if>
+      <sc-if value="{{pg.coverOpen}}" hint-placeholder-val="{{false}}">
+        <div class="cover-pop">
+          <div class="pp-title">Degradados</div>
+          <div class="cover-grid"><sc-for list="{{pg.coverGrads}}" as="cg" hint-placeholder-count="8"><button type="button" class="cover-opt {{cg.cls}}" style="{{cg.style}}" onClick="{{cg.pick}}" aria-label="{{cg.aria}}" aria-pressed="{{cg.on}}"></button></sc-for></div>
+          <div class="pp-title">Colores</div>
+          <div class="swatches sm"><sc-for list="{{pg.coverColors}}" as="cc2" hint-placeholder-count="8"><button type="button" class="swatch {{cc2.cls}}" style="background: {{cc2.hex}}" onClick="{{cc2.pick}}" aria-label="{{cc2.aria}}" aria-pressed="{{cc2.on}}"></button></sc-for></div>
+          <div class="cover-row">
+            <label class="btn btn-sm">[[ics:ICON.imageup]]Subir imagen<input type="file" accept="image/*" class="sr-only" onChange="{{pg.coverUpload}}"></label>
+            <button type="button" class="btn btn-sm" onClick="{{pg.coverRemove}}">[[ics:ICON.trash]]Quitar portada</button>
+            <button type="button" class="btn btn-sm" onClick="{{pg.toggleCover}}">Listo</button>
+          </div>
+        </div>
+      </sc-if>
+      <div class="pg-head {{pg.headCls}}">
+        <div class="pick-wrap">
+          <button type="button" class="pg-icon" style="--c: {{pg.color}}" onClick="{{pg.toggleIcon}}" aria-label="Cambiar icono y color de la página" aria-expanded="{{pg.iconOpen}}" title="Cambiar icono">[[icl:pg.icon]]</button>
+          <sc-if value="{{pg.iconOpen}}" hint-placeholder-val="{{false}}">
+            <div class="picker-pop">
+              <div class="pp-title">Icono</div>
+              <div class="icon-grid"><sc-for list="{{pg.iconOpts}}" as="io" hint-placeholder-count="12"><button type="button" class="icon-opt {{io.cls}}" onClick="{{io.pick}}" aria-label="{{io.aria}}" aria-pressed="{{io.on}}">[[ic:io.icon]]</button></sc-for></div>
+              <div class="pp-title">Color</div>
+              <div class="swatches sm"><sc-for list="{{pg.colorOpts}}" as="co" hint-placeholder-count="8"><button type="button" class="swatch {{co.cls}}" style="background: {{co.hex}}" onClick="{{co.pick}}" aria-label="{{co.aria}}" aria-pressed="{{co.on}}"></button></sc-for></div>
+              <button type="button" class="btn btn-sm" onClick="{{pg.toggleIcon}}">Listo</button>
+            </div>
+          </sc-if>
+        </div>
+        <div class="pg-titles">
+          <div class="pg-meta">
+            <button type="button" class="area-chip" onClick="{{pg.toggleArea}}" disabled="{{pg.cannotArea}}" aria-expanded="{{pg.areaOpen}}" title="Quién ve esta página"><span class="na-dot" style="background: {{pg.areaColor}}"></span>{{pg.areaName}}<sc-if value="{{pg.canArea}}" hint-placeholder-val="{{true}}">[[icx:ICON.chevdown]]</sc-if></button>
+            <sc-if value="{{pg.canAddCover}}" hint-placeholder-val="{{false}}"><button type="button" class="link-btn" onClick="{{pg.addCover}}">[[icx:ICON.image]]Añadir portada</button></sc-if>
+            <sc-if value="{{pg.areaOpen}}" hint-placeholder-val="{{false}}"><div class="menu area-menu"><div class="menu-title">¿Quién ve esta página?</div><sc-for list="{{pg.areaOpts}}" as="ao" hint-placeholder-count="4"><button type="button" class="menu-item {{ao.cls}}" onClick="{{ao.pick}}" aria-pressed="{{ao.on}}"><span class="na-dot" style="background: {{ao.color}}"></span><span class="va-name">{{ao.label}}</span></button></sc-for></div></sc-if>
+          </div>
+          <sc-if value="{{pg.isMine}}" hint-placeholder-val="{{false}}"><div class="greet">{{pg.greet}}</div><div class="greet-sub">{{pg.greetSub}}</div></sc-if>
+          <sc-if value="{{pg.canEdit}}" hint-placeholder-val="{{true}}">
+            <input class="h1-input" value="{{pg.title}}" onChange="{{pg.setTitle}}" placeholder="Sin título" aria-label="Título de la página">
+            <input class="desc-input" value="{{pg.desc}}" onChange="{{pg.setDesc}}" placeholder="Añade una descripción" aria-label="Descripción de la página">
+          </sc-if>
+          <sc-if value="{{pg.readOnly}}" hint-placeholder-val="{{false}}"><h1 class="h1">{{pg.titleText}}</h1><p class="sub">{{pg.desc}}</p></sc-if>
+          <div class="pg-stats">{{pg.stats}}</div>
+        </div>
+        <div class="head-actions">
+          <sc-if value="{{pg.canEdit}}" hint-placeholder-val="{{true}}"><button type="button" class="btn btn-primary btn-sm" onClick="{{pg.toggleAdd}}" aria-expanded="{{pg.addAny}}">[[ics:ICON.plus]]Añadir bloque</button></sc-if>
+          <sc-if value="{{pg.canDel}}" hint-placeholder-val="{{true}}"><button type="button" class="icon-btn {{pg.delCls}}" onClick="{{pg.delPage}}" aria-label="{{pg.delLabel}}" title="{{pg.delLabel}}">[[ic:ICON.trash]]</button></sc-if>
+        </div>
+      </div>
+
+      <sc-if value="{{pg.addOpen}}" hint-placeholder-val="{{false}}">
+        <div class="addblk">
+          <div class="addblk-top"><strong>Añadir a la página</strong><button type="button" class="icon-btn sm" onClick="{{pg.closeAdd}}" aria-label="Cerrar">[[ics:ICON.x]]</button></div>
+          <sc-for list="{{pg.addGroups}}" as="ag" hint-placeholder-count="3">
+            <div class="addblk-sec">{{ag.title}}</div>
+            <div class="addblk-grid">
+              <sc-for list="{{ag.items}}" as="ai" hint-placeholder-count="4">
+                <button type="button" class="addblk-item" onClick="{{ai.pick}}"><span class="ab-ic">[[ic:ai.icon]]</span><span class="ab-txt"><strong>{{ai.name}}</strong><span>{{ai.desc}}</span></span></button>
+              </sc-for>
+            </div>
+          </sc-for>
+        </div>
+      </sc-if>
+      <sc-if value="{{pg.addDb}}" hint-placeholder-val="{{false}}">
+        <div class="addblk">
+          <div class="addblk-top"><button type="button" class="icon-btn sm" onClick="{{pg.addBack}}" aria-label="Atrás">[[ics:ICON.left]]</button><strong>¿Qué base de datos quieres mostrar?</strong><button type="button" class="icon-btn sm" onClick="{{pg.closeAdd}}" aria-label="Cerrar">[[ics:ICON.x]]</button></div>
+          <div class="addblk-grid">
+            <sc-for list="{{pg.addTables}}" as="at" hint-placeholder-count="4">
+              <button type="button" class="addblk-item" onClick="{{at.pick}}"><span class="tico" style="--c: {{at.color}}">[[ic:at.icon]]</span><span class="ab-txt"><strong>{{at.name}}</strong><span>{{at.meta}}</span></span></button>
+            </sc-for>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{pg.hasXf}}" hint-placeholder-val="{{false}}">
+        <div class="xf-bar">
+          <span class="xf-ic">[[ic:ICON.slicer]]</span>
+          <span class="grow"><strong>{{pg.xfLabel}}</strong><span class="muted"> · {{pg.xfHint}}</span></span>
+          <button type="button" class="btn btn-sm" onClick="{{pg.clearXf}}">[[ics:ICON.x]]Quitar filtro</button>
+        </div>
+      </sc-if>
+
+      <div class="pg-grid">
+        <sc-for list="{{pg.blocks}}" as="bl" hint-placeholder-count="6">
+          <section class="{{bl.cls}}" data-bid="{{bl.id}}" aria-label="{{bl.typeName}}" onDragOver="{{bl.dragOver}}" onDragLeave="{{bl.dragLeave}}" onDrop="{{bl.drop}}">
+            <sc-if value="{{bl.canEdit}}" hint-placeholder-val="{{true}}">
+              <div class="blk-tools" role="toolbar" aria-label="Acciones del bloque">
+                <button type="button" class="bt bt-grip" draggable="true" onDragStart="{{bl.dragStart}}" onDragEnd="{{bl.dragEnd}}" aria-label="Arrastrar para mover el bloque" title="Arrastra para mover">[[icx:ICON.grip]]</button>
+                <sc-if value="{{bl.canUp}}" hint-placeholder-val="{{true}}"><button type="button" class="bt" onClick="{{bl.up}}" aria-label="Mover arriba" title="Mover arriba">[[icx:ICON.up]]</button></sc-if>
+                <sc-if value="{{bl.canDown}}" hint-placeholder-val="{{true}}"><button type="button" class="bt" onClick="{{bl.down}}" aria-label="Mover abajo" title="Mover abajo">[[icx:ICON.down]]</button></sc-if>
+                <button type="button" class="bt bt-w" onClick="{{bl.cycleW}}" aria-label="{{bl.wAria}}" title="{{bl.wAria}}">[[icx:ICON.width]]<span>{{bl.wLabel}}</span></button>
+                <sc-if value="{{bl.hasConfig}}" hint-placeholder-val="{{true}}"><button type="button" class="bt" onClick="{{bl.config}}" aria-label="{{bl.configAria}}" title="{{bl.configAria}}">[[icx:ICON.settings]]</button></sc-if>
+                <button type="button" class="bt {{bl.delCls}}" onClick="{{bl.del}}" aria-label="{{bl.delAria}}" title="{{bl.delAria}}">[[icx:ICON.trash]]</button>
+              </div>
+            </sc-if>
+
+            <sc-if value="{{bl.isDoc}}" hint-placeholder-val="{{false}}">
+              <div class="doc-line {{bl.docCls}}">
+                <sc-if value="{{bl.isBullet}}" hint-placeholder-val="{{false}}"><span class="doc-mk" aria-hidden="true">•</span></sc-if>
+                <sc-if value="{{bl.isNumber}}" hint-placeholder-val="{{false}}"><span class="doc-mk num" aria-hidden="true">{{bl.num}}</span></sc-if>
+                <sc-if value="{{bl.isCheck}}" hint-placeholder-val="{{false}}"><button type="button" class="cbox doc-cb {{bl.chkCls}}" onClick="{{bl.toggleDone}}" aria-pressed="{{bl.done}}" aria-label="Marcar como hecho">[[CHECK]]</button></sc-if>
+                <sc-if value="{{bl.canEdit}}" hint-placeholder-val="{{true}}"><textarea class="doc-in" rows="1" value="{{bl.text}}" onChange="{{bl.setText}}" onKeyDown="{{bl.key}}" placeholder="{{bl.docPh}}" aria-label="{{bl.typeName}}"></textarea></sc-if>
+                <sc-if value="{{bl.readOnly}}" hint-placeholder-val="{{false}}"><p class="doc-in ro">{{bl.textRo}}</p></sc-if>
+              </div>
+              <sc-if value="{{bl.hasMentions}}" hint-placeholder-val="{{false}}"><div class="men-row"><sc-for list="{{bl.mentions}}" as="mn" hint-placeholder-count="2"><button type="button" class="men-chip" onClick="{{mn.open}}" title="{{mn.kindTxt}}"><span class="chip-dot" style="background: {{mn.color}}"></span>@{{mn.label}}</button></sc-for></div></sc-if>
+              <sc-if value="{{bl.menOpen}}" hint-placeholder-val="{{false}}">
+                <div class="slash-menu men-menu" role="listbox" aria-label="Mencionar">
+                  <div class="slash-head">Mencionar persona, página o registro</div>
+                  <sc-for list="{{bl.men}}" as="me2" hint-placeholder-count="5"><button type="button" class="slash-item {{me2.cls}}" onClick="{{me2.pick}}"><sc-if value="{{me2.isPerson}}" hint-placeholder-val="{{true}}"><span class="av sm" style="background: {{me2.color}}">{{me2.initials}}</span></sc-if><sc-if value="{{me2.notPerson}}" hint-placeholder-val="{{false}}"><span class="tico sm" style="--c: {{me2.color}}">[[ics:me2.icon]]</span></sc-if><span class="ab-txt"><strong>{{me2.label}}</strong><span>{{me2.sub}}</span></span></button></sc-for>
+                  <sc-if value="{{bl.menEmpty}}" hint-placeholder-val="{{false}}"><div class="slash-none">No hay coincidencias.</div></sc-if>
+                </div>
+              </sc-if>
+            </sc-if>
+            <sc-if value="{{bl.slashOpen}}" hint-placeholder-val="{{false}}">[[slash:bl]]</sc-if>
+            <sc-if value="{{bl.isDivider}}" hint-placeholder-val="{{false}}"><div class="blk-hr" role="separator"></div></sc-if>
+
+            <sc-if value="{{bl.isCallout}}" hint-placeholder-val="{{false}}">
+              <div class="callout {{bl.co.tone}}">
+                <button type="button" class="co-ic" onClick="{{bl.co.cycle}}" aria-label="Cambiar icono del aviso" title="Cambiar icono">[[ic:bl.co.icon]]</button>
+                <sc-if value="{{bl.canEdit}}" hint-placeholder-val="{{true}}"><textarea class="co-txt" value="{{bl.text}}" onChange="{{bl.setText}}" placeholder="Escribe un aviso…" aria-label="Texto del aviso"></textarea></sc-if>
+                <sc-if value="{{bl.readOnly}}" hint-placeholder-val="{{false}}"><p class="co-txt">{{bl.textRo}}</p></sc-if>
+              </div>
+            </sc-if>
+
+            <sc-if value="{{bl.isTodo}}" hint-placeholder-val="{{false}}">
+              <div class="blk-head">
+                <span class="tico sm" style="--c: #15803D">[[ics:ICON.checks]]</span>
+                <div class="blk-titles"><input class="blk-title-in" value="{{bl.td.title}}" onChange="{{bl.td.setTitle}}" aria-label="Título de la lista"><span class="blk-sub">{{bl.td.progress}} hechos</span></div>
+              </div>
+              <div class="todo-bar"><span style="width: {{bl.td.pct}}%"></span></div>
+              <sc-for list="{{bl.td.items}}" as="ti2" hint-placeholder-count="3">
+                <div class="todo-row {{ti2.cls}}">
+                  <button type="button" class="cbox {{ti2.cbCls}}" onClick="{{ti2.toggle}}" aria-pressed="{{ti2.done}}" aria-label="{{ti2.aria}}">[[CHECK]]</button>
+                  <input class="todo-in" value="{{ti2.text}}" onChange="{{ti2.setText}}" placeholder="Pendiente" aria-label="Texto del pendiente">
+                  <button type="button" class="icon-btn xs todo-del" onClick="{{ti2.del}}" aria-label="Quitar pendiente">[[icx:ICON.x]]</button>
+                </div>
+              </sc-for>
+              <button type="button" class="link-btn" onClick="{{bl.td.add}}">[[icx:ICON.plus]]Añadir pendiente</button>
+            </sc-if>
+
+            <sc-if value="{{bl.isPm}}" hint-placeholder-val="{{false}}">
+              <div class="blk-head pm-head">
+                <span class="tico sm" style="--c: #B45309">[[ics:ICON.shield]]</span>
+                <div class="blk-titles"><strong class="blk-title">{{bl.title}}</strong><span class="blk-sub">{{bl.pm.scope}} · {{bl.pm.edName}}: {{bl.pm.edNote}}</span></div>
+                <div class="seg seg-sm" role="group" aria-label="Edición del PMBOK"><sc-for list="{{bl.pm.edSeg}}" as="es" hint-placeholder-count="3"><button type="button" class="seg-btn {{es.cls}}" onClick="{{es.pick}}">{{es.label}}</button></sc-for></div>
+              </div>
+              <div class="pm-top">
+                <div class="pm-score {{bl.pm.scoreCls}}"><span class="pm-score-n">{{bl.pm.score}}</span><span class="pm-score-l">de cumplimiento de buenas prácticas</span><span class="pm-score-bar"><span style="width: {{bl.pm.scorePct}}%"></span></span></div>
+                <div class="pm-counts"><span class="sev-chip sev-alta">{{bl.pm.nAlta}} altas</span><span class="sev-chip sev-media">{{bl.pm.nMedia}} medias</span><span class="sev-chip sev-baja">{{bl.pm.nBaja}} bajas</span></div>
+                <sc-if value="{{bl.pm.canNew}}" hint-placeholder-val="{{true}}"><button type="button" class="btn btn-primary btn-sm" onClick="{{bl.pm.newProject}}">[[ics:ICON.plus]]Nuevo proyecto con plantilla PMBOK</button></sc-if>
+              </div>
+              <sc-if value="{{bl.pm.hasProjects}}" hint-placeholder-val="{{true}}">
+                <div class="pm-projects">
+                  <div class="pmp-row pmp-head"><span>Proyecto</span><span>Fase</span><span>Avance</span><span>CPI</span><span>SPI</span><span>Director</span><span>Alertas</span></div>
+                  <sc-for list="{{bl.pm.projects}}" as="pp2" hint-placeholder-count="3">
+                    <button type="button" class="pmp-row" onClick="{{pp2.open}}">
+                      <strong class="pmp-name">{{pp2.title}}</strong>
+                      <span><span class="pill {{pp2.faseCls}}"><span class="sdot"></span>{{pp2.fase}}</span></span>
+                      <span class="v-bar"><span class="vb-track"><span class="vb-fill" style="width: {{pp2.pct}}%"></span></span><span class="vb-txt">{{pp2.pctTxt}}</span></span>
+                      <span class="idx {{pp2.cpiCls}}">{{pp2.cpi}}</span>
+                      <span class="idx {{pp2.spiCls}}">{{pp2.spi}}</span>
+                      <span class="person"><span class="av sm" style="background: {{pp2.dColor}}">{{pp2.dInitials}}</span>{{pp2.director}}</span>
+                      <span><sc-if value="{{pp2.hasIssues}}" hint-placeholder-val="{{true}}"><span class="sev-chip sev-alta">{{pp2.issues}}</span></sc-if><sc-if value="{{pp2.noIssues}}" hint-placeholder-val="{{false}}"><span class="sev-chip sev-ok">0</span></sc-if></span>
+                    </button>
+                  </sc-for>
+                </div>
+              </sc-if>
+              <div class="pm-list">
+                <sc-for list="{{bl.pm.issues}}" as="pi" hint-placeholder-count="4">
+                  <div class="pm-item {{pi.sevCls}}">
+                    <span class="pm-sev">{{pi.sevName}}</span>
+                    <div class="pm-body">
+                      <strong class="pm-msg">{{pi.title}}</strong>
+                      <span class="pm-where"><span class="tico xs" style="--c: {{pi.tcolor}}">[[icx:pi.ticon]]</span>{{pi.where}}</span>
+                      <span class="pm-tip">{{pi.tip}}</span>
+                      <span class="pm-ref">[[icx:ICON.book]]{{pi.ref}}</span>
+                    </div>
+                    <div class="pm-acts"><button type="button" class="btn btn-xs" onClick="{{pi.fix}}">{{pi.fixLabel}}</button><button type="button" class="icon-btn sm" onClick="{{pi.open}}" aria-label="Abrir registro" title="Abrir registro">[[ics:ICON.expand]]</button></div>
+                  </div>
+                </sc-for>
+                <sc-if value="{{bl.pm.noIssues}}" hint-placeholder-val="{{false}}"><div class="pm-ok">[[ic:ICON.check]]Todo en orden: no hay recomendaciones pendientes.</div></sc-if>
+                <sc-if value="{{bl.pm.hasMore}}" hint-placeholder-val="{{true}}"><button type="button" class="link-btn" onClick="{{bl.pm.toggleMore}}">{{bl.pm.moreLabel}}</button></sc-if>
+              </div>
+            </sc-if>
+
+            <sc-if value="{{bl.isLocked}}" hint-placeholder-val="{{false}}"><div class="blk-locked">[[ic:ICON.lock]]<span>{{bl.lockText}}</span></div></sc-if>
+
+            <sc-if value="{{bl.isKpi}}" hint-placeholder-val="{{false}}">
+              <div class="kpi">
+                <div class="kpi-top"><span class="tico sm" style="--c: {{bl.srcColor}}">[[ics:bl.srcIcon]]</span><span class="kpi-title">{{bl.title}}</span><sc-if value="{{bl.hasXfTag}}" hint-placeholder-val="{{false}}"><span class="tag tag-sm {{bl.xfTagCls}}">{{bl.xfTag}}</span></sc-if></div>
+                <div class="kpi-val">{{bl.kpi.value}}</div>
+                <div class="kpi-cap">{{bl.kpi.caption}}</div>
+              </div>
+            </sc-if>
+
+            <sc-if value="{{bl.isSlicer}}" hint-placeholder-val="{{false}}">
+              <div class="blk-head">
+                <span class="tico sm" style="--c: {{bl.srcColor}}">[[ics:ICON.slicer]]</span>
+                <div class="blk-titles"><strong class="blk-title">{{bl.title}}</strong><span class="blk-sub">{{bl.srcName}}</span></div>
+                <sc-if value="{{bl.hasXfTag}}" hint-placeholder-val="{{false}}"><span class="tag tag-sm {{bl.xfTagCls}}">{{bl.xfTag}}</span></sc-if>
+                <sc-if value="{{bl.sl.hasSel}}" hint-placeholder-val="{{false}}"><button type="button" class="link-btn" onClick="{{bl.sl.clear}}">[[icx:ICON.x]]Limpiar</button></sc-if>
+              </div>
+              <div class="slicer">
+                <sc-for list="{{bl.sl.opts}}" as="so" hint-placeholder-count="5">
+                  <button type="button" class="slc {{so.cls}}" onClick="{{so.pick}}" aria-pressed="{{so.on}}" aria-label="{{so.aria}}">
+                    <sc-if value="{{so.notPerson}}" hint-placeholder-val="{{true}}"><span class="slc-dot" style="background: {{so.color}}"></span></sc-if>
+                    <sc-if value="{{so.isPerson}}" hint-placeholder-val="{{false}}"><span class="av xs" style="background: {{so.color}}">{{so.initials}}</span></sc-if>
+                    <span class="slc-lab">{{so.label}}</span><span class="slc-n">{{so.count}}</span>
+                  </button>
+                </sc-for>
+                <sc-if value="{{bl.sl.empty}}" hint-placeholder-val="{{false}}"><span class="muted sm">No hay opciones para segmentar.</span></sc-if>
+              </div>
+            </sc-if>
+
+            <sc-if value="{{bl.isChart}}" hint-placeholder-val="{{false}}">
+              <div class="blk-head">
+                <span class="tico sm" style="--c: {{bl.srcColor}}">[[ics:bl.srcIcon]]</span>
+                <div class="blk-titles"><strong class="blk-title">{{bl.title}}</strong><span class="blk-sub">{{bl.ch.sub}} · {{bl.srcName}}</span></div>
+                <sc-if value="{{bl.hasXfTag}}" hint-placeholder-val="{{false}}"><span class="tag tag-sm {{bl.xfTagCls}}">{{bl.xfTag}}</span></sc-if>
+              </div>
+              [[chart:bl.ch]]
+            </sc-if>
+
+            <sc-if value="{{bl.isDb}}" hint-placeholder-val="{{false}}">[[dbview:bl.dv]]</sc-if>
+
+            <sc-if value="{{bl.isSheet}}" hint-placeholder-val="{{false}}">
+              <div class="blk-head">
+                <span class="tico sm" style="--c: #15803D">[[ics:ICON.sheet]]</span>
+                <div class="blk-titles"><strong class="blk-title">{{bl.sh.title}}</strong><span class="blk-sub">Celdas A1, rangos A1:B5 y referencias a tablas como Pedidos[Total]</span></div>
+              </div>
+              <div class="sheet">
+                <div class="fxbar">
+                  <span class="fx-ref mono">{{bl.sh.sel}}</span>
+                  <span class="fx-badge">fx</span>
+                  <sc-if value="{{bl.sh.canEdit}}" hint-placeholder-val="{{true}}"><input class="fx-in mono" value="{{bl.sh.raw}}" onChange="{{bl.sh.setRaw}}" placeholder="Escribe un valor o una fórmula que empiece por =" aria-label="Contenido de la celda {{bl.sh.sel}}" spellcheck="false"><button type="button" class="icon-btn sm" onClick="{{bl.sh.clear}}" aria-label="Vaciar la celda" title="Vaciar la celda">[[ics:ICON.x]]</button></sc-if>
+                  <sc-if value="{{bl.sh.readOnly}}" hint-placeholder-val="{{false}}"><span class="fx-in mono ro">{{bl.sh.raw}}</span></sc-if>
+                </div>
+                <sc-if value="{{bl.sh.hasResult}}" hint-placeholder-val="{{false}}"><div class="fx-res {{bl.sh.resCls}}">{{bl.sh.result}}</div></sc-if>
+                <div class="sh-scroll">
+                  <div class="sh-grid" style="{{bl.sh.gridStyle}}">
+                    <div class="sh-corner"></div>
+                    <sc-for list="{{bl.sh.cols}}" as="scol" hint-placeholder-count="6"><div class="sh-col">{{scol.l}}</div></sc-for>
+                    <sc-for list="{{bl.sh.rows}}" as="srow" hint-placeholder-count="10">
+                      <div class="sh-rn">{{srow.num}}</div>
+                      <sc-for list="{{srow.cells}}" as="sx" hint-placeholder-count="6"><button type="button" class="sh-cell {{sx.cls}}" onClick="{{sx.pick}}" title="{{sx.tip}}" aria-label="Celda {{sx.ref}}">{{sx.text}}</button></sc-for>
+                    </sc-for>
+                  </div>
+                </div>
+                <sc-if value="{{bl.sh.canEdit}}" hint-placeholder-val="{{true}}">
+                  <div class="sh-help">
+                    <div class="sh-help-row"><span class="dlabel">Funciones</span><div class="mini-chips"><sc-for list="{{bl.sh.fns}}" as="sf" hint-placeholder-count="6"><button type="button" class="mini-chip mono" onClick="{{sf.pick}}">{{sf.label}}</button></sc-for></div></div>
+                    <div class="sh-help-row"><span class="dlabel">Columnas de tus tablas</span><div class="mini-chips"><sc-for list="{{bl.sh.refs}}" as="sr" hint-placeholder-count="6"><button type="button" class="mini-chip mono" onClick="{{sr.pick}}">{{sr.label}}</button></sc-for></div></div>
+                  </div>
+                </sc-if>
+              </div>
+            </sc-if>
+
+            <sc-if value="{{bl.isMap}}" hint-placeholder-val="{{false}}">
+              <div class="blk-head">
+                <span class="tico sm" style="--c: #0E7490">[[ics:ICON.map]]</span>
+                <div class="blk-titles"><strong class="blk-title">{{bl.title}}</strong><span class="blk-sub">Toca una columna de relación para resaltar su vínculo · toca el nombre de una tabla para abrirla</span></div>
+              </div>
+              <div class="map-scroll">
+                <div class="map" style="{{bl.mp.style}}">
+                  <sc-for list="{{bl.mp.links}}" as="ln" hint-placeholder-count="3">
+                    <svg class="map-svg" viewBox="{{bl.mp.vb}}" aria-hidden="true"><path class="map-ln {{ln.cls}}" d="{{ln.d}}"></path></svg>
+                    <span class="map-card {{ln.cls}}" style="left: {{ln.l1x}}px; top: {{ln.l1y}}px">{{ln.l1}}</span>
+                    <span class="map-card {{ln.cls}}" style="left: {{ln.l2x}}px; top: {{ln.l2y}}px">{{ln.l2}}</span>
+                  </sc-for>
+                  <sc-for list="{{bl.mp.boxes}}" as="bx" hint-placeholder-count="4">
+                    <div class="map-box" style="{{bx.style}}; --c: {{bx.color}}">
+                      <button type="button" class="map-head" onClick="{{bx.open}}"><span class="tico sm">[[ics:bx.icon]]</span><span class="map-name">{{bx.name}}</span><span class="map-count">{{bx.count}}</span></button>
+                      <sc-for list="{{bx.rows}}" as="mr" hint-placeholder-count="5"><button type="button" class="map-row {{mr.cls}}" onClick="{{mr.pick}}" aria-label="{{mr.aria}}">[[icx:mr.icon]]<span class="map-rn">{{mr.name}}</span><span class="map-tg">{{mr.target}}</span></button></sc-for>
+                      <sc-if value="{{bx.hasMore}}" hint-placeholder-val="{{false}}"><div class="map-more">{{bx.more}}</div></sc-if>
+                    </div>
+                  </sc-for>
+                </div>
+              </div>
+            </sc-if>
+            <sc-if value="{{bl.canEdit}}" hint-placeholder-val="{{true}}"><span class="blk-rz" draggable="true" onDragStart="{{bl.rzStart}}" onDrag="{{bl.rzMove}}" onDragEnd="{{bl.rzEnd}}" title="Arrastra para cambiar el ancho" aria-hidden="true"></span></sc-if>
+          </section>
+        </sc-for>
+      </div>
+      <sc-if value="{{pg.noBlocks}}" hint-placeholder-val="{{false}}"><div class="card empty">Esta página está vacía. Añade tablas, gráficos, indicadores u hojas de cálculo.</div></sc-if>
+      <sc-if value="{{pg.canEdit}}" hint-placeholder-val="{{true}}">
+        <div class="slash-line" onDragOver="{{pg.dropEndOk}}" onDrop="{{pg.dropEnd}}">
+          <span class="sl-plus">[[ics:ICON.plus]]</span>
+          <input class="slash-in" value="{{pg.slashQ}}" onChange="{{pg.setSlashQ}}" onKeyDown="{{pg.slashKey}}" placeholder="Escribe «/» para insertar: /tabla, /2 columnas, /gráfico, /kpi…" aria-label="Insertar bloque: escribe / y el tipo">
+          <button type="button" class="btn btn-sm" onClick="{{pg.toggleAdd}}">Ver todos los bloques</button>
+        </div>
+        <sc-if value="{{pg.slashOpen}}" hint-placeholder-val="{{false}}">[[slash:pg]]</sc-if>
+      </sc-if>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{scrDb}}" hint-placeholder-val="{{false}}">
+    <div class="pg">
+      <div class="pg-head">
+        <div class="pick-wrap">
+          <button type="button" class="pg-icon" style="--c: {{db.color}}" onClick="{{db.toggleIcon}}" aria-label="Cambiar icono y color de la base de datos" aria-expanded="{{db.iconOpen}}" disabled="{{db.cannotStructure}}">[[icl:db.icon]]</button>
+          <sc-if value="{{db.iconOpen}}" hint-placeholder-val="{{false}}">
+            <div class="picker-pop">
+              <div class="pp-title">Icono</div>
+              <div class="icon-grid"><sc-for list="{{db.iconOpts}}" as="io" hint-placeholder-count="12"><button type="button" class="icon-opt {{io.cls}}" onClick="{{io.pick}}" aria-label="{{io.aria}}" aria-pressed="{{io.on}}">[[ic:io.icon]]</button></sc-for></div>
+              <div class="pp-title">Color</div>
+              <div class="swatches sm"><sc-for list="{{db.colorOpts}}" as="co" hint-placeholder-count="8"><button type="button" class="swatch {{co.cls}}" style="background: {{co.hex}}" onClick="{{co.pick}}" aria-label="{{co.aria}}" aria-pressed="{{co.on}}"></button></sc-for></div>
+              <button type="button" class="btn btn-sm" onClick="{{db.toggleIcon}}">Listo</button>
+            </div>
+          </sc-if>
+        </div>
+        <div class="pg-titles">
+          <sc-if value="{{db.canStructure}}" hint-placeholder-val="{{true}}">
+            <input class="h1-input" value="{{db.name}}" onChange="{{db.rename}}" aria-label="Nombre de la base de datos">
+            <input class="desc-input" value="{{db.desc}}" onChange="{{db.setDesc}}" placeholder="Añade una descripción" aria-label="Descripción de la base de datos">
+          </sc-if>
+          <sc-if value="{{db.cannotStructure}}" hint-placeholder-val="{{false}}"><h1 class="h1">{{db.name}}</h1><p class="sub">{{db.desc}}</p></sc-if>
+        </div>
+        <div class="head-actions">
+          <div class="avs" title="{{db.peopleAria}}"><sc-for list="{{db.people}}" as="p" hint-placeholder-count="4"><span class="av" style="background: {{p.color}}" title="{{p.name}}">{{p.initials}}</span></sc-for></div>
+          <sc-if value="{{db.hasMap}}" hint-placeholder-val="{{true}}"><button type="button" class="btn btn-sm" onClick="{{db.goMap}}" title="Ver el mapa de relaciones">[[ics:ICON.map]]{{db.relText}}</button></sc-if>
+          <sc-if value="{{db.roBadge}}" hint-placeholder-val="{{false}}"><span class="tag tag-warn">[[icx:ICON.lock]]Permiso: {{db.levelName}}</span></sc-if>
+          <sc-if value="{{isAdminView}}" hint-placeholder-val="{{true}}"><button type="button" class="btn btn-sm" onClick="{{db.share}}">[[ics:ICON.shield]]Compartir</button></sc-if>
+        </div>
+      </div>
+      [[dbview:db.dv]]
+    </div>
+  </sc-if>
+
+  <sc-if value="{{scrOrg}}" hint-placeholder-val="{{false}}">
+    <div class="pg">
+      <div class="pg-head">
+        <span class="pg-icon" style="--c: #4F46E5">[[icl:ICON.org]]</span>
+        <div class="pg-titles">
+          <h1 class="h1">Organigrama</h1>
+          <p class="sub">Áreas, cargos y personas. Cada página pertenece a un área: la ven sus integrantes y sus jefes; Gerencia ve todo.</p>
+          <div class="pg-stats">{{org.stats}}</div>
+        </div>
+        <sc-if value="{{org.isAdmin}}" hint-placeholder-val="{{true}}"><div class="head-actions"><button type="button" class="btn btn-sm" onClick="{{org.addArea}}">[[ics:ICON.plus]]Nueva área</button><button type="button" class="btn btn-primary btn-sm" onClick="{{org.addRoot}}">[[ics:ICON.plus]]Nuevo cargo</button></div></sc-if>
+      </div>
+      <div class="org-bar">
+        <span class="muted sm org-hint">[[ics:ICON.grip]]Arrastra un cargo sobre otro para que reporte a él, a su costado para ponerlo al mismo nivel, o sobre un área para cambiarlo de área.</span>
+        <div class="org-ex">
+          <span class="dlabel">Exportar</span>
+          <button type="button" class="btn btn-sm" onClick="{{org.exPptx}}" title="Cada cargo es una forma editable">[[ics:ICON.slides]]PowerPoint</button>
+          <button type="button" class="btn btn-sm" onClick="{{org.exPdf}}">[[ics:ICON.files]]PDF</button>
+          <button type="button" class="btn btn-sm" onClick="{{org.exPng}}">[[ics:ICON.image]]Imagen</button>
+          <button type="button" class="btn btn-sm" onClick="{{org.exSvg}}" title="Vectorial: se edita en Illustrator, Figma o PowerPoint">[[ics:ICON.download]]SVG</button>
+        </div>
+      </div>
+      <div class="org-areas">
+        <sc-for list="{{org.areas}}" as="oa" hint-placeholder-count="4">
+          <button type="button" class="org-area {{oa.cls}}" style="--c: {{oa.color}}" onClick="{{oa.pick}}" aria-pressed="{{oa.on}}" onDragOver="{{oa.dragOver}}" onDragLeave="{{oa.dragLeave}}" onDrop="{{oa.drop}}"><span class="tico sm">[[ics:oa.icon]]</span><span class="ab-txt"><strong>{{oa.name}}</strong><span>{{oa.meta}}</span></span></button>
+        </sc-for>
+      </div>
+      <sc-if value="{{org.ap.has}}" hint-placeholder-val="{{false}}">
+        <div class="card org-areaedit">
+          <sc-if value="{{org.ap.canEdit}}" hint-placeholder-val="{{true}}">
+            <div class="dfield"><label class="dlabel" for="area-name">Nombre del área</label><input id="area-name" class="finput bordered" value="{{org.ap.name}}" onChange="{{org.ap.rename}}"></div>
+            <div class="dfield"><span class="dlabel">Color</span><div class="swatches sm"><sc-for list="{{org.ap.colors}}" as="ac" hint-placeholder-count="8"><button type="button" class="swatch {{ac.cls}}" style="background: {{ac.hex}}" onClick="{{ac.pick}}" aria-label="{{ac.aria}}" aria-pressed="{{ac.on}}"></button></sc-for></div></div>
+            <div class="dfield"><span class="dlabel">Icono</span><div class="icon-grid"><sc-for list="{{org.ap.icons}}" as="ai2" hint-placeholder-count="12"><button type="button" class="icon-opt {{ai2.cls}}" onClick="{{ai2.pick}}" aria-label="{{ai2.aria}}" aria-pressed="{{ai2.on}}">[[ic:ai2.icon]]</button></sc-for></div></div>
+          </sc-if>
+          <button type="button" class="btn btn-sm" onClick="{{org.ap.newPage}}">[[ics:ICON.plus]]Nueva página para {{org.ap.name}}</button>
+        </div>
+      </sc-if>
+      <div class="org-wrap">
+        <div class="map-scroll org-scroll">
+          <div class="org-chart" style="{{org.style}}">
+            <sc-for list="{{org.links}}" as="ol" hint-placeholder-count="5"><svg class="map-svg" viewBox="{{org.vb}}" aria-hidden="true"><path class="org-ln {{ol.cls}}" d="{{ol.d}}"></path></svg></sc-for>
+            <sc-for list="{{org.boxes}}" as="ob" hint-placeholder-count="6">
+              <button type="button" class="org-node {{ob.cls}}" style="{{ob.style}}" onClick="{{ob.pick}}" aria-label="{{ob.aria}}" draggable="{{ob.canDrag}}" onDragStart="{{ob.dragStart}}" onDragEnd="{{ob.dragEnd}}" onDragOver="{{ob.dragOver}}" onDragLeave="{{ob.dragLeave}}" onDrop="{{ob.drop}}">
+                <span class="on-area"><span class="tico xs">[[icx:ob.icon]]</span><span class="on-areatxt">{{ob.areaName}}</span></span>
+                <strong class="on-name">{{ob.name}}</strong>
+                <span class="on-person"><sc-if value="{{ob.hasPerson}}" hint-placeholder-val="{{true}}"><span class="av xs" style="background: {{ob.avatar}}">{{ob.initials}}</span></sc-if><sc-if value="{{ob.vacant}}" hint-placeholder-val="{{false}}"><span class="vac-dot"></span></sc-if><span class="on-pname">{{ob.person}}</span></span>
+                <sc-if value="{{ob.hasLoad}}" hint-placeholder-val="{{true}}"><span class="on-load {{ob.loadCls}}">{{ob.load}}</span></sc-if>
+                <sc-if value="{{ob.hasAlerts}}" hint-placeholder-val="{{false}}"><span class="on-al" title="{{ob.alertsAria}}">{{ob.alerts}}</span></sc-if>
+                <sc-if value="{{ob.hasKids}}" hint-placeholder-val="{{false}}"><span class="on-kids" title="Cargos a su cargo">{{ob.kidsTxt}}</span></sc-if>
+              </button>
+            </sc-for>
+          </div>
+        </div>
+        <sc-if value="{{org.panel.has}}" hint-placeholder-val="{{false}}">
+          <aside class="card org-panel" aria-label="Detalle del cargo">
+            <div class="op-head"><span class="eyebrow">Cargo</span><button type="button" class="icon-btn sm" onClick="{{org.panel.close}}" aria-label="Cerrar detalle">[[ics:ICON.x]]</button></div>
+            <sc-if value="{{org.panel.canEdit}}" hint-placeholder-val="{{true}}"><input class="finput bordered op-name" value="{{org.panel.name}}" onChange="{{org.panel.rename}}" aria-label="Nombre del cargo"></sc-if>
+            <sc-if value="{{org.panel.readOnly}}" hint-placeholder-val="{{false}}"><h3 class="h3">{{org.panel.name}}</h3></sc-if>
+            <div class="dfield"><span class="dlabel">Reporta a</span><span class="sm">{{org.panel.boss}}</span></div>
+            <sc-if value="{{org.panel.hasPerson}}" hint-placeholder-val="{{true}}">
+              <div class="op-who"><strong>{{org.panel.personName}}</strong><span class="muted sm">{{org.panel.desde}}</span><span class="op-load {{org.panel.loadCls}}">{{org.panel.load}}</span></div>
+              <sc-if value="{{org.panel.hasFicha}}" hint-placeholder-val="{{true}}">
+                <div class="op-ficha"><sc-for list="{{org.panel.ficha}}" as="fi" hint-placeholder-count="5"><div class="op-fr"><span class="muted">{{fi.label}}</span><span>{{fi.value}}</span></div></sc-for><button type="button" class="link-btn" onClick="{{org.panel.openFicha}}">[[icx:ICON.expand]]Abrir ficha y planilla</button></div>
+              </sc-if>
+              <sc-if value="{{org.panel.noFicha}}" hint-placeholder-val="{{false}}"><p class="muted sm" style="margin: 0">Su ficha de personal solo la ven Administración y Finanzas.</p></sc-if>
+              <div class="dfield"><span class="dlabel">Pendientes vinculados</span>
+                <sc-for list="{{org.panel.items}}" as="oi" hint-placeholder-count="3"><button type="button" class="pl-item" onClick="{{oi.open}}"><span class="tico xs" style="--c: {{oi.color}}">[[icx:oi.icon]]</span><span class="pl-name">{{oi.label}}<span class="pl-sub" style="display: block">{{oi.what}}</span></span>[[ics:ICON.right]]</button></sc-for>
+                <sc-if value="{{org.panel.noItems}}" hint-placeholder-val="{{false}}"><span class="muted sm">No tiene pendientes abiertos.</span></sc-if>
+              </div>
+            </sc-if>
+            <sc-if value="{{org.panel.hasHist}}" hint-placeholder-val="{{false}}"><div class="dfield"><span class="dlabel">Historial del cargo</span><sc-for list="{{org.panel.hist}}" as="oh" hint-placeholder-count="2"><span class="sm muted">{{oh.text}}</span></sc-for></div></sc-if>
+            <div class="dfield"><span class="dlabel">Área</span>
+              <sc-if value="{{org.panel.canEdit}}" hint-placeholder-val="{{true}}"><div class="opts"><sc-for list="{{org.panel.areaOpts}}" as="pa" hint-placeholder-count="4"><button type="button" class="area-chip {{pa.cls}}" onClick="{{pa.pick}}" aria-pressed="{{pa.on}}"><span class="na-dot" style="background: {{pa.color}}"></span>{{pa.label}}</button></sc-for></div></sc-if>
+              <sc-if value="{{org.panel.readOnly}}" hint-placeholder-val="{{false}}"><span class="sm">{{org.panel.areaName}}</span></sc-if>
+            </div>
+            <sc-if value="{{org.panel.canEdit}}" hint-placeholder-val="{{true}}">
+              <div class="dfield"><span class="dlabel">Persona en el cargo</span>
+                <div class="op-people"><sc-for list="{{org.panel.people}}" as="pe2" hint-placeholder-count="5"><button type="button" class="op-person {{pe2.cls}}" onClick="{{pe2.pick}}" aria-pressed="{{pe2.on}}"><span class="av sm" style="background: {{pe2.color}}">{{pe2.initials}}</span><span class="va-text"><span class="va-name">{{pe2.name}}</span><sc-if value="{{pe2.hasNote}}" hint-placeholder-val="{{false}}"><span class="mi-sub">Ahora: {{pe2.note}}</span></sc-if></span></button></sc-for></div>
+              </div>
+            </sc-if>
+            <div class="dfield"><span class="dlabel">Páginas que ve por su área</span>
+              <sc-for list="{{org.panel.pages}}" as="op2" hint-placeholder-count="2"><button type="button" class="pl-item" onClick="{{op2.go}}"><span class="tico xs" style="--c: {{op2.color}}">[[icx:op2.icon]]</span><span class="pl-name">{{op2.name}}</span>[[ics:ICON.right]]</button></sc-for>
+              <sc-if value="{{org.panel.noPages}}" hint-placeholder-val="{{false}}"><span class="muted sm">Su área aún no tiene páginas propias.</span></sc-if>
+            </div>
+            <sc-if value="{{org.panel.canEdit}}" hint-placeholder-val="{{true}}"><div class="op-acts"><button type="button" class="btn btn-sm" onClick="{{org.panel.addChild}}">[[ics:ICON.plus]]Cargo dependiente</button><button type="button" class="btn btn-sm btn-danger" onClick="{{org.panel.del}}">[[ics:ICON.trash]]{{org.panel.delLabel}}</button></div></sc-if>
+          </aside>
+        </sc-if>
+      </div>
+      <sc-if value="{{org.ra.has}}" hint-placeholder-val="{{false}}">
+        <button type="button" class="scrim modal-scrim" onClick="{{org.ra.cancel}}" aria-label="Cerrar"></button>
+        <div class="modal" role="dialog" aria-label="Transferir pendientes">
+          <h2 class="h3">{{org.ra.title}}</h2>
+          <p class="sub sm" style="margin: 0">{{org.ra.sub}}</p>
+          <div class="head-actions"><button type="button" class="link-btn" onClick="{{org.ra.all}}">Seleccionar todos</button><button type="button" class="link-btn" onClick="{{org.ra.none}}">Ninguno</button></div>
+          <div class="ra-list">
+            <sc-for list="{{org.ra.items}}" as="rai" hint-placeholder-count="4">
+              <button type="button" class="ra-item {{rai.cls}}" onClick="{{rai.toggle}}" aria-pressed="{{rai.on}}"><span class="cbox {{rai.cls}}">[[CHECK]]</span><span class="tico xs" style="--c: {{rai.color}}">[[icx:rai.icon]]</span><span class="pl-name">{{rai.label}}<span class="pl-sub" style="display: block">{{rai.what}}</span></span></button>
+            </sc-for>
+          </div>
+          <div class="modal-foot"><button type="button" class="btn" onClick="{{org.ra.cancel}}">Dejar con la persona anterior</button><button type="button" class="btn btn-primary" onClick="{{org.ra.apply}}">{{org.ra.applyLabel}}</button></div>
+        </div>
+      </sc-if>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{scrForms}}" hint-placeholder-val="{{false}}">
+    <div class="pg fb-pg">
+      <div class="pg-head">
+        <span class="pg-icon" style="--c: #0E7490">[[icl:ICON.formb]]</span>
+        <div class="pg-titles">
+          <h1 class="h1">Formularios</h1>
+          <p class="sub">Diseña formularios por tabla con secciones, preguntas obligatorias, textos de ayuda y preguntas que aparecen según otra respuesta. Al publicarlos se llenan desde la app móvil, incluso sin señal.</p>
+        </div>
+        <div class="head-actions"><button type="button" class="btn btn-sm" onClick="{{fb.goMob}}">[[ics:ICON.mobile]]Ver la app móvil</button></div>
+      </div>
+      <div class="fb-grid">
+        <aside class="fb-list card">
+          <div class="fb-list-head"><span class="sec-label">Formularios</span>
+            <span class="pick-wrap"><button type="button" class="btn btn-xs" onClick="{{fb.toggleNew}}" aria-expanded="{{fb.newOpen}}">[[icx:ICON.plus]]Nuevo</button>
+              <sc-if value="{{fb.newOpen}}" hint-placeholder-val="{{false}}"><div class="menu fb-newmenu"><div class="menu-title">¿Qué tabla llenará?</div><sc-for list="{{fb.newTables}}" as="nt" hint-placeholder-count="4"><button type="button" class="menu-item" onClick="{{nt.pick}}"><span class="tico xs" style="--c: {{nt.color}}">[[icx:nt.icon]]</span><span>{{nt.name}}</span></button></sc-for></div></sc-if>
+            </span>
+          </div>
+          <sc-for list="{{fb.groups}}" as="fg" hint-placeholder-count="3">
+            <div class="fb-grp">
+              <div class="fb-grp-h"><span class="tico xs" style="--c: {{fg.tcolor}}">[[icx:fg.ticon]]</span>{{fg.tname}}</div>
+              <sc-for list="{{fg.forms}}" as="fi" hint-placeholder-count="1">
+                <button type="button" class="fb-fitem {{fi.cls}}" onClick="{{fi.pick}}"><span class="fb-fname">{{fi.name}}</span><span class="fb-fmeta"><span class="pill {{fi.pubCls}}">{{fi.pubTxt}}</span><span class="muted sm">{{fi.count}}</span></span></button>
+              </sc-for>
+            </div>
+          </sc-for>
+        </aside>
+
+        <section class="fb-main card">
+          <sc-if value="{{fb.none}}" hint-placeholder-val="{{false}}"><div class="empty">Crea tu primer formulario con «Nuevo».</div></sc-if>
+          <sc-if value="{{fb.has}}" hint-placeholder-val="{{true}}">
+            <div class="fb-head">
+              <input class="fb-name" value="{{fb.fm.name}}" onChange="{{fb.fm.setName}}" aria-label="Nombre del formulario" placeholder="Nombre del formulario" disabled="{{fb.fm.readOnly}}">
+              <input class="finput fb-desc" value="{{fb.fm.desc}}" onChange="{{fb.fm.setDesc}}" aria-label="Descripción" placeholder="Descripción para quien llena (opcional)" disabled="{{fb.fm.readOnly}}">
+              <div class="fb-meta">
+                <button type="button" class="chip" onClick="{{fb.fm.openTable}}"><span class="tico xs" style="--c: {{fb.fm.tcolor}}">[[icx:fb.fm.ticon]]</span>Crea registros en {{fb.fm.tname}}</button>
+                <span class="muted sm">{{fb.fm.stats}}</span>
+              </div>
+              <div class="fb-pubrow">
+                <button type="button" class="fb-pub" onClick="{{fb.fm.togglePub}}" aria-pressed="{{fb.fm.pub}}"><span class="sw {{fb.fm.pubCls}}" aria-hidden="true"></span><span>{{fb.fm.pubTxt}}</span></button>
+                <span class="fb-acts-top">
+                  <button type="button" class="btn btn-sm btn-primary" onClick="{{fb.fm.test}}">[[ics:ICON.mobile]]Probar en el celular</button>
+                  <sc-if value="{{fb.fm.canEdit}}" hint-placeholder-val="{{true}}"><button type="button" class="icon-btn" onClick="{{fb.fm.del}}" aria-label="Eliminar formulario" title="Eliminar formulario">[[ic:ICON.trash]]</button></sc-if>
+                </span>
+              </div>
+              <sc-if value="{{fb.fm.readOnly}}" hint-placeholder-val="{{false}}"><p class="muted sm">{{fb.fm.roText}}</p></sc-if>
+            </div>
+
+            <div class="sec-label">[[ics:ICON.checks]]Preguntas</div>
+            <p class="muted sm fb-tip">[[icx:ICON.grip]]Arrastra para reordenar. Las secciones agrupan las preguntas en el celular; una pregunta con condición solo aparece cuando se cumple.</p>
+            <div class="fb-items">
+              <sc-for list="{{fb.fm.items}}" as="it" hint-placeholder-count="5">
+                <div class="fb-item {{it.cls}}" draggable="true" onDragStart="{{it.dragStart}}" onDragOver="{{it.dragOver}}" onDrop="{{it.drop}}" onDragEnd="{{it.dragEnd}}">
+                  <span class="fb-grip" aria-hidden="true">[[ics:ICON.grip]]</span>
+                  <div class="fb-body">
+                    <sc-if value="{{it.isSec}}" hint-placeholder-val="{{false}}">
+                      <div class="fb-sec">[[ics:ICON.section]]<input class="finput fb-secin" value="{{it.title}}" onChange="{{it.setTitle}}" placeholder="Título de la sección" aria-label="Título de la sección"></div>
+                    </sc-if>
+                    <sc-if value="{{it.isField}}" hint-placeholder-val="{{true}}">
+                      <div class="fb-r1">
+                        <span class="fb-type" title="{{it.typeName}}">[[ics:it.icon]]</span>
+                        <input class="finput fb-q" value="{{it.q}}" onChange="{{it.setQ}}" placeholder="{{it.propName}}" aria-label="Texto de la pregunta">
+                        <button type="button" class="fb-req {{it.reqCls}}" onClick="{{it.toggleReq}}" aria-pressed="{{it.req}}" disabled="{{it.reqLocked}}">[[icx:ICON.required]]Obligatoria</button>
+                      </div>
+                      <div class="fb-r2"><span class="muted sm">Columna: {{it.propName}} · {{it.typeName}}</span></div>
+                      <input class="finput fb-help" value="{{it.help}}" onChange="{{it.setHelp}}" placeholder="Texto de ayuda (opcional)" aria-label="Texto de ayuda">
+                      <div class="fb-cond">
+                        <span class="fb-cond-ic">[[icx:ICON.cond]]</span>
+                        <sc-if value="{{it.hasCond}}" hint-placeholder-val="{{false}}">
+                          <span class="sm">Mostrar solo si</span>
+                          <select class="select fb-sel" value="{{it.condKey}}" onChange="{{it.setCondKey}}" aria-label="Pregunta que condiciona"><sc-for list="{{it.condKeys}}" as="ck" hint-placeholder-count="2"><option value="{{ck.v}}">{{ck.label}}</option></sc-for></select>
+                          <span class="sm">es</span>
+                          <select class="select fb-sel" value="{{it.condVal}}" onChange="{{it.setCondVal}}" aria-label="Valor"><sc-for list="{{it.condVals}}" as="cv" hint-placeholder-count="2"><option value="{{cv.v}}">{{cv.label}}</option></sc-for></select>
+                          <button type="button" class="icon-btn sm" onClick="{{it.clearCond}}" aria-label="Quitar condición" title="Quitar condición">[[icx:ICON.x]]</button>
+                          <sc-if value="{{it.multi}}" hint-placeholder-val="{{false}}"><span class="muted sm fb-condtxt">{{it.condTxt}}</span></sc-if>
+                        </sc-if>
+                        <sc-if value="{{it.noCond}}" hint-placeholder-val="{{true}}"><button type="button" class="link-btn" onClick="{{it.addCond}}" disabled="{{it.condNone}}" title="{{it.condHint}}">Agregar condición</button></sc-if>
+                      </div>
+                    </sc-if>
+                  </div>
+                  <div class="fb-acts">
+                    <button type="button" class="icon-btn sm" onClick="{{it.up}}" disabled="{{it.noUp}}" aria-label="Subir" title="Subir">[[icx:ICON.up]]</button>
+                    <button type="button" class="icon-btn sm" onClick="{{it.down}}" disabled="{{it.noDown}}" aria-label="Bajar" title="Bajar">[[icx:ICON.down]]</button>
+                    <button type="button" class="icon-btn sm" onClick="{{it.del}}" aria-label="{{it.delAria}}" title="{{it.delAria}}">[[icx:ICON.trash]]</button>
+                  </div>
+                </div>
+              </sc-for>
+              <sc-if value="{{fb.fm.noItems}}" hint-placeholder-val="{{false}}"><div class="empty">Añade preguntas desde las columnas de la tabla.</div></sc-if>
+            </div>
+            <div class="fb-addbar">
+              <span class="pick-wrap">
+                <button type="button" class="btn btn-sm" onClick="{{fb.fm.toggleAdd}}" aria-expanded="{{fb.fm.addOpen}}">[[ics:ICON.plus]]Añadir pregunta</button>
+                <sc-if value="{{fb.fm.addOpen}}" hint-placeholder-val="{{false}}"><div class="menu fb-addmenu">
+                  <div class="menu-title">Columnas de {{fb.fm.tname}}</div>
+                  <sc-for list="{{fb.fm.addable}}" as="ad" hint-placeholder-count="4"><button type="button" class="menu-item" onClick="{{ad.pick}}">[[ics:ad.icon]]<span>{{ad.name}}</span><span class="muted sm mi-sub">{{ad.type}}</span></button></sc-for>
+                  <sc-if value="{{fb.fm.noAddable}}" hint-placeholder-val="{{false}}"><p class="muted sm" style="padding: 6px 10px; margin: 0">Ya usas todas las columnas. Crea una nueva en la tabla para preguntarla aquí.</p></sc-if>
+                </div></sc-if>
+              </span>
+              <button type="button" class="btn btn-sm" onClick="{{fb.fm.addSection}}">[[ics:ICON.section]]Añadir sección</button>
+            </div>
+
+            <div class="sec-label">[[ics:ICON.bolt]]Automático al enviar</div>
+            <div class="fb-autos">
+              <sc-for list="{{fb.fm.autos}}" as="au2" hint-placeholder-count="4">
+                <button type="button" class="fb-auto {{au2.cls}}" onClick="{{au2.toggle}}" aria-pressed="{{au2.on}}" disabled="{{au2.disabled}}"><span class="sw {{au2.cls}}" aria-hidden="true"></span><span class="fb-auto-t"><strong>{{au2.label}}</strong><span class="muted sm">{{au2.note}}</span></span></button>
+              </sc-for>
+            </div>
+            <label class="dlabel" for="fb-msg">Mensaje al enviar</label>
+            <input id="fb-msg" class="finput bordered" value="{{fb.fm.submitMsg}}" onChange="{{fb.fm.setSubmitMsg}}" placeholder="¡Gracias! Tu respuesta quedó registrada.">
+            <p class="muted sm fb-who">[[icx:ICON.shield]]{{fb.fm.who}}</p>
+          </sc-if>
+        </section>
+
+        <div class="fb-prev">
+          <div class="dlabel">Vista previa en vivo</div>
+          <div class="phone sm">
+            <div class="ph-status"><span>9:41</span><span class="ph-sig">[[icx:ICON.wifi]]4G</span></div>
+            <div class="ph-app">
+              <div class="ph-body">
+                <sc-if value="{{fb.has}}" hint-placeholder-val="{{true}}">
+                  <sc-if value="{{fb.prevFill}}" hint-placeholder-val="{{true}}">[[fill:fb.prev]]</sc-if>
+                  <sc-if value="{{fb.prevDone}}" hint-placeholder-val="{{false}}"><div class="ph-done"><span class="ph-done-ic">[[icl:ICON.check]]</span><h2 class="ph-ftitle">Enviado</h2><p class="ph-fdesc">{{fb.prevMsg}}</p><p class="muted sm">Vista previa: no se creó ningún registro.</p><button type="button" class="btn btn-sm" onClick="{{fb.prevAgain}}">Probar otra vez</button></div></sc-if>
+                </sc-if>
+              </div>
+            </div>
+          </div>
+          <p class="muted sm fb-prevnote">Prueba aquí las condiciones y validaciones; no guarda registros.</p>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{scrMob}}" hint-placeholder-val="{{false}}">
+    <div class="pg mob-pg">
+      <div class="pg-head">
+        <span class="pg-icon" style="--c: #0E7490">[[icl:ICON.mobile]]</span>
+        <div class="pg-titles">
+          <h1 class="h1">App móvil</h1>
+          <p class="sub">Así usan Trama tus equipos en campo: sus tareas, lo que tienen por aprobar y los formularios publicados. Cada envío entra a su tabla con GPS, fotos y fecha, y se ve al instante en proyectos, tableros y trazabilidad.</p>
+        </div>
+      </div>
+      <div class="mob-wrap">
+        <div class="phone">
+          <div class="ph-status"><span>9:41</span><span class="ph-sig">[[icx:mob.netIcon]]{{mob.netTxt}}</span></div>
+          <sc-if value="{{mob.offline}}" hint-placeholder-val="{{false}}"><div class="ph-offbar">[[icx:ICON.wifioff]]Sin señal · {{mob.queueTxt}}</div></sc-if>
+          <div class="ph-app">
+            <div class="ph-top">
+              <sc-if value="{{mob.hasBack}}" hint-placeholder-val="{{false}}"><button type="button" class="icon-btn" onClick="{{mob.back}}" aria-label="Volver" title="Volver">[[ic:ICON.left]]</button></sc-if>
+              <span class="ph-ttl">{{mob.title}}</span>
+              <span class="av sm" style="background: {{mob.meColor}}" title="{{mob.meName}}">{{mob.meIni}}</span>
+            </div>
+            <div class="ph-body">
+              <sc-if value="{{mob.isHome}}" hint-placeholder-val="{{true}}">
+                <div class="ph-hello"><strong>{{mob.hello}}</strong><span class="muted sm">{{mob.today}}</span></div>
+                <sc-if value="{{mob.hasQuick}}" hint-placeholder-val="{{true}}">
+                  <div class="ph-quick"><sc-for list="{{mob.quick}}" as="qk" hint-placeholder-count="2"><button type="button" class="ph-qbtn" onClick="{{qk.go}}"><span class="tico" style="--c: {{qk.color}}">[[ics:qk.icon]]</span><span>{{qk.name}}</span></button></sc-for></div>
+                </sc-if>
+                <sc-if value="{{mob.hasApprovals}}" hint-placeholder-val="{{true}}">
+                  <div class="ph-h">Por aprobar</div>
+                  <sc-for list="{{mob.approvals}}" as="ap" hint-placeholder-count="1">
+                    <div class="ph-card">
+                      <button type="button" class="ph-card-t" onClick="{{ap.open}}"><strong>{{ap.title}}</strong><span class="muted sm">{{ap.sub}} · {{ap.step}}</span></button>
+                      <div class="ph-card-acts"><button type="button" class="btn btn-sm btn-primary" onClick="{{ap.ok}}">[[icx:ICON.check]]Aprobar</button><button type="button" class="btn btn-sm" onClick="{{ap.no}}">Rechazar</button></div>
+                    </div>
+                  </sc-for>
+                </sc-if>
+                <div class="ph-h">Mis tareas <span class="muted sm">{{mob.taskCount}}</span></div>
+                <sc-for list="{{mob.tasks}}" as="tk" hint-placeholder-count="3">
+                  <div class="ph-task {{tk.cls}}">
+                    <button type="button" class="ph-tcheck" onClick="{{tk.done}}" aria-label="{{tk.doneAria}}" title="{{tk.doneAria}}"></button>
+                    <button type="button" class="ph-ttxt" onClick="{{tk.open}}"><strong>{{tk.title}}</strong><span class="muted sm">{{tk.sub}}</span></button>
+                    <span class="pill {{tk.pillCls}}">{{tk.pill}}</span>
+                  </div>
+                </sc-for>
+                <sc-if value="{{mob.noTasks}}" hint-placeholder-val="{{false}}"><p class="muted sm ph-empty">No tienes tareas abiertas.</p></sc-if>
+              </sc-if>
+
+              <sc-if value="{{mob.isReg}}" hint-placeholder-val="{{false}}">
+                <sc-for list="{{mob.forms}}" as="mf" hint-placeholder-count="2">
+                  <button type="button" class="ph-fcard" onClick="{{mf.go}}"><span class="tico" style="--c: {{mf.color}}">[[ics:mf.icon]]</span><span class="ph-fcard-t"><strong>{{mf.name}}</strong><span class="muted sm">{{mf.desc}}</span></span>[[ics:ICON.right]]</button>
+                </sc-for>
+                <sc-if value="{{mob.noForms}}" hint-placeholder-val="{{false}}"><p class="muted sm ph-empty">No hay formularios publicados para tu rol.</p></sc-if>
+              </sc-if>
+
+              <sc-if value="{{mob.isFill}}" hint-placeholder-val="{{false}}">[[fill:mob.fill]]</sc-if>
+
+              <sc-if value="{{mob.isDone}}" hint-placeholder-val="{{false}}">
+                <div class="ph-done {{mob.doneCls}}"><span class="ph-done-ic">[[icl:mob.doneIcon]]</span><h2 class="ph-ftitle">{{mob.doneTitle}}</h2><p class="ph-fdesc">{{mob.doneMsg}}</p>
+                  <div class="ph-done-acts"><button type="button" class="btn btn-sm btn-primary" onClick="{{mob.again}}">Llenar otro</button><sc-if value="{{mob.hasDoneRec}}" hint-placeholder-val="{{true}}"><button type="button" class="btn btn-sm" onClick="{{mob.openDone}}">Ver registro</button></sc-if><button type="button" class="btn btn-sm" onClick="{{mob.home}}">Inicio</button></div>
+                </div>
+              </sc-if>
+
+              <sc-if value="{{mob.isMine}}" hint-placeholder-val="{{false}}">
+                <sc-if value="{{mob.hasQueue}}" hint-placeholder-val="{{false}}">
+                  <div class="ph-h">En el celular, sin enviar</div>
+                  <sc-for list="{{mob.queue}}" as="qq" hint-placeholder-count="1"><div class="ph-row queued">[[ics:ICON.wifioff]]<span class="ph-row-t"><strong>{{qq.title}}</strong><span class="muted sm">Guardado a las {{qq.at}}</span></span><span class="pill p-amber">En cola</span></div></sc-for>
+                  <button type="button" class="btn btn-sm ph-syncbtn" onClick="{{mob.sync}}">[[ics:ICON.sync]]Enviar ahora</button>
+                </sc-if>
+                <sc-for list="{{mob.mine}}" as="mr" hint-placeholder-count="3"><button type="button" class="ph-row" onClick="{{mr.open}}"><span class="tico xs" style="--c: {{mr.color}}">[[icx:mr.icon]]</span><span class="ph-row-t"><strong>{{mr.title}}</strong><span class="muted sm">{{mr.sub}}</span></span><sc-if value="{{mr.hasPill}}" hint-placeholder-val="{{true}}"><span class="pill {{mr.pillCls}}">{{mr.pill}}</span></sc-if></button></sc-for>
+                <sc-if value="{{mob.noMine}}" hint-placeholder-val="{{false}}"><p class="muted sm ph-empty">Aún no envías registros desde un formulario.</p></sc-if>
+              </sc-if>
+
+              <sc-if value="{{mob.isInbox}}" hint-placeholder-val="{{false}}">
+                <sc-for list="{{mob.notifs}}" as="mn" hint-placeholder-count="3"><button type="button" class="ph-row {{mn.cls}}" onClick="{{mn.open}}">[[ics:ICON.bell]]<span class="ph-row-t"><strong>{{mn.text}}</strong><span class="muted sm">{{mn.when}}</span></span></button></sc-for>
+                <sc-if value="{{mob.noNotifs}}" hint-placeholder-val="{{false}}"><p class="muted sm ph-empty">Sin avisos.</p></sc-if>
+              </sc-if>
+            </div>
+            <nav class="ph-tabs" aria-label="Secciones de la app">
+              <sc-for list="{{mob.tabs}}" as="tb" hint-placeholder-count="4">
+                <button type="button" class="ph-tab {{tb.cls}}" onClick="{{tb.go}}">[[ic:tb.icon]]<span>{{tb.n}}</span><sc-if value="{{tb.hasBadge}}" hint-placeholder-val="{{false}}"><span class="ph-badge">{{tb.badge}}</span></sc-if></button>
+              </sc-for>
+            </nav>
+          </div>
+        </div>
+
+        <aside class="mob-side">
+          <div class="card mob-card">
+            <div class="sec-label">[[ics:ICON.user]]Ver la app como</div>
+            <div class="opts"><sc-for list="{{mob.people}}" as="mp" hint-placeholder-count="5"><button type="button" class="person-opt {{mp.cls}}" onClick="{{mp.pick}}"><span class="av sm" style="background: {{mp.color}}">{{mp.initials}}</span>{{mp.first}}</button></sc-for></div>
+            <p class="muted sm">Cada persona ve sus tareas, lo que tiene por aprobar y solo los formularios de las tablas que puede editar.</p>
+          </div>
+          <div class="card mob-card">
+            <div class="sec-label">[[ics:ICON.wifi]]Señal del celular</div>
+            <div class="seg seg-sm"><sc-for list="{{mob.netOpts}}" as="no" hint-placeholder-count="2"><button type="button" class="seg-btn {{no.cls}}" onClick="{{no.pick}}">{{no.n}}</button></sc-for></div>
+            <p class="muted sm">Sin señal, los formularios se guardan en el celular y se envían solos al volver la conexión. Pruébalo: apaga la señal, envía un parte y vuelve a encenderla.</p>
+            <sc-if value="{{mob.hasQueue}}" hint-placeholder-val="{{false}}">
+              <div class="mob-queue"><strong>{{mob.queueCount}} en cola</strong><sc-for list="{{mob.queue}}" as="q2" hint-placeholder-count="1"><span class="muted sm">{{q2.at}} · {{q2.title}}</span></sc-for>
+                <button type="button" class="btn btn-sm" onClick="{{mob.sync}}">[[ics:ICON.sync]]Sincronizar</button></div>
+            </sc-if>
+          </div>
+          <div class="card mob-card">
+            <div class="sec-label">[[ics:ICON.formb]]Formularios publicados: {{mob.formsCount}}</div>
+            <p class="muted sm">Cambia preguntas, condiciones o qué se captura solo (GPS, foto, fecha) y se actualiza en todos los celulares.</p>
+            <button type="button" class="btn btn-sm" onClick="{{mob.goForms}}">[[ics:ICON.edit]]Editar formularios</button>
+          </div>
+          <div class="card mob-card">
+            <div class="sec-label">[[ics:ICON.download]]Cómo se instala</div>
+            <p class="muted sm">En la versión real será una app web instalable: se abre el enlace de la empresa en el celular y se elige «Añadir a pantalla de inicio». Usa la cámara y el GPS del teléfono con permiso del usuario.</p>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{scrBiz}}" hint-placeholder-val="{{false}}">
+    <div class="pg biz-pg">
+      <div class="pg-head">
+        <span class="pg-icon" style="--c: #4F46E5">[[icl:ICON.settings]]</span>
+        <div class="pg-titles">
+          <h1 class="h1">Tu negocio</h1>
+          <p class="sub">Trama se adapta a cada empresa. Elige una propuesta para no empezar de cero y luego ajústala a mano: nombres, cargos, columnas, fórmulas y parámetros. Nada de lo que agregas borra lo que ya tienes.</p>
+        </div>
+      </div>
+      <div class="biz-ws card">
+        <label class="dlabel" for="biz-ws">Nombre de la empresa</label>
+        <input id="biz-ws" class="finput bordered" value="{{biz.ws}}" onChange="{{biz.setWs}}" placeholder="Nombre de tu empresa">
+      </div>
+
+      <div class="sec-label biz-h">[[ics:ICON.star]]1. Elige una propuesta de partida</div>
+      <div class="biz-rubros">
+        <sc-for list="{{biz.rubros}}" as="rb" hint-placeholder-count="4">
+          <button type="button" class="biz-rubro {{rb.cls}}" onClick="{{rb.pick}}">
+            <span class="biz-rt"><strong>{{rb.name}}</strong><sc-if value="{{rb.applied}}" hint-placeholder-val="{{false}}"><span class="pill p-green">Aplicada</span></sc-if></span>
+            <sc-if value="{{rb.hasBadge}}" hint-placeholder-val="{{false}}"><span class="biz-badge">{{rb.badge}}</span></sc-if>
+            <span class="muted sm">{{rb.desc}}</span>
+            <span class="biz-mods"><sc-for list="{{rb.mods}}" as="bm" hint-placeholder-count="3"><span class="pill {{bm.cls}}">{{bm.name}}</span></sc-for></span>
+            <span class="muted sm">{{rb.pendTxt}}</span>
+          </button>
+        </sc-for>
+      </div>
+      <div class="biz-sel card">
+        <div class="biz-sel-h"><strong>{{biz.sel.name}}</strong><sc-if value="{{biz.sel.hasBadge}}" hint-placeholder-val="{{false}}"><span class="biz-badge">{{biz.sel.badge}}</span></sc-if></div>
+        <sc-if value="{{biz.sel.hasNotes}}" hint-placeholder-val="{{false}}"><ul class="biz-notes"><sc-for list="{{biz.sel.notes}}" as="bn" hint-placeholder-count="2"><li>{{bn.text}}</li></sc-for></ul></sc-if>
+        <sc-if value="{{biz.sel.hasChanges}}" hint-placeholder-val="{{true}}">
+          <div class="dlabel">Se agregará</div>
+          <div class="biz-changes"><sc-for list="{{biz.sel.changes}}" as="bc" hint-placeholder-count="3"><span class="chip">[[icx:ICON.plus]]{{bc.name}}</span></sc-for></div>
+          <button type="button" class="btn btn-primary" onClick="{{biz.sel.apply}}">[[ics:ICON.check]]Aplicar esta propuesta</button>
+        </sc-if>
+        <sc-if value="{{biz.sel.noChanges}}" hint-placeholder-val="{{false}}"><p class="muted sm" style="margin: 0">Todo lo de esta propuesta ya está en tu espacio.</p></sc-if>
+      </div>
+
+      <div class="sec-label biz-h">[[ics:ICON.grid]]2. Módulos</div>
+      <div class="biz-grid">
+        <sc-for list="{{biz.mods}}" as="md" hint-placeholder-count="6">
+          <div class="biz-mod card">
+            <div class="biz-mod-h"><span class="tico" style="--c: {{md.color}}">[[ics:md.icon]]</span><span class="biz-mod-t"><sc-if value="{{md.hasCode}}" hint-placeholder-val="{{false}}"><span class="muted sm">{{md.code}}</span></sc-if><strong>{{md.name}}</strong></span><span class="pill {{md.stateCls}}">{{md.stateTxt}}</span></div>
+            <p class="muted sm">{{md.desc}}</p>
+            <sc-if value="{{md.hasTables}}" hint-placeholder-val="{{true}}"><div class="biz-tbls"><sc-for list="{{md.tables}}" as="mt" hint-placeholder-count="3"><span class="chip">{{mt.name}}</span></sc-for></div></sc-if>
+            <sc-if value="{{md.hasNeeds}}" hint-placeholder-val="{{false}}"><span class="muted sm">{{md.needsTxt}}</span></sc-if>
+            <div class="biz-mod-f">
+              <sc-if value="{{md.canInstall}}" hint-placeholder-val="{{false}}"><button type="button" class="btn btn-sm btn-primary" onClick="{{md.install}}">[[ics:ICON.plus]]Instalar</button></sc-if>
+              <sc-if value="{{md.installed}}" hint-placeholder-val="{{true}}"><button type="button" class="btn btn-sm" onClick="{{md.open}}">Abrir</button></sc-if>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+
+      <div class="sec-label biz-h">[[ics:ICON.edit]]3. Nombres en tu empresa</div>
+      <p class="muted sm">Renombra cada tabla como la llaman en tu empresa (por ejemplo «Órdenes de trabajo» → «SST»). Las fórmulas que las usan se mantienen por su identificador interno.</p>
+      <div class="biz-names card">
+        <sc-for list="{{biz.tnames}}" as="tn" hint-placeholder-count="6"><label class="biz-name"><span class="tico xs" style="--c: {{tn.color}}">[[icx:tn.icon]]</span><input class="finput" value="{{tn.name}}" onChange="{{tn.set}}" aria-label="Nombre de la tabla"></label></sc-for>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{scrCosNo}}" hint-placeholder-val="{{false}}">
+    <div class="pg"><div class="empty">El módulo de ingeniería de costos no está instalado o tu rol no tiene acceso.</div></div>
+  </sc-if>
+
+  <sc-if value="{{scrCos}}" hint-placeholder-val="{{false}}">
+    <div class="pg cos-pg">
+      <div class="pg-head">
+        <span class="pg-icon" style="--c: #7C3AED">[[icl:icCalc]]</span>
+        <div class="pg-titles">
+          <h1 class="h1">Ingeniería de costos</h1>
+          <p class="sub">Importa cada corte de tarifas, revisa qué cambió, valida los precios y compara versiones de ACU. Nada se sobrescribe: cada precio queda con su fecha, su fuente y quién lo validó.</p>
+        </div>
+      </div>
+      <div class="cos-kpis">
+        <sc-for list="{{cos.kpis}}" as="ck" hint-placeholder-count="5"><div class="cos-kpi {{ck.cls}}"><span class="muted sm">{{ck.n}}</span><strong>{{ck.v}}</strong><span class="muted sm">{{ck.sub}}</span></div></sc-for>
+      </div>
+      <div class="vtabs cos-tabs">
+        <sc-for list="{{cos.tabs}}" as="ct" hint-placeholder-count="4"><button type="button" class="vtab {{ct.cls}}" onClick="{{ct.pick}}">[[ics:ct.icon]]<span>{{ct.n}}</span></button></sc-for>
+      </div>
+      <sc-if value="{{cos.readOnly}}" hint-placeholder-val="{{false}}"><p class="muted sm">Solo lectura: tu rol puede ver los precios pero no importarlos ni validarlos.</p></sc-if>
+
+      <sc-if value="{{cos.isCortes}}" hint-placeholder-val="{{true}}">
+        <sc-if value="{{cos.importing}}" hint-placeholder-val="{{false}}">
+          <div class="card cos-imp">
+            <div class="cos-imp-h">
+              <div><div class="dlabel">Revisión antes de importar</div><strong class="cos-fname">[[ics:ICON.files]]{{cos.imp.name}}</strong></div>
+              <label class="cos-field"><span class="dlabel">Fecha de corte (vigencia)</span><input class="finput bordered" type="date" value="{{cos.imp.fecha}}" onChange="{{cos.imp.setFecha}}"></label>
+              <div class="cos-field"><span class="dlabel">Periodicidad</span><div class="seg seg-sm"><sc-for list="{{cos.imp.periodos}}" as="pe" hint-placeholder-count="3"><button type="button" class="seg-btn {{pe.cls}}" onClick="{{pe.pick}}">{{pe.n}}</button></sc-for></div></div>
+            </div>
+            <sc-if value="{{cos.imp.hasErr}}" hint-placeholder-val="{{false}}"><div class="ph-errbox">{{cos.imp.err}}</div></sc-if>
+            <sc-if value="{{cos.imp.hasRows}}" hint-placeholder-val="{{true}}">
+              <div class="cos-sum"><sc-for list="{{cos.imp.summary}}" as="sm2" hint-placeholder-count="3"><span class="pill {{sm2.cls}}">{{sm2.v}} · {{sm2.n}}</span></sc-for></div>
+              <div class="cos-tbl">
+                <div class="cos-tr cos-th"><span>Código</span><span>Descripción en el archivo</span><span>Und</span><span class="r">Precio</span><span>Resultado</span></div>
+                <sc-for list="{{cos.imp.rows}}" as="ir" hint-placeholder-count="6">
+                  <div class="cos-tr {{ir.cls}}">
+                    <span class="mono">{{ir.cod}}</span>
+                    <span class="cos-desc">{{ir.desc}}<sc-if value="{{ir.isDuda}}" hint-placeholder-val="{{false}}"><span class="cos-q">{{ir.candTxt}}<span class="cos-qb"><button type="button" class="btn btn-xs {{ir.sameCls}}" onClick="{{ir.same}}">Sí, es el mismo</button><button type="button" class="btn btn-xs {{ir.newCls}}" onClick="{{ir.other}}">No, es otro</button></span></span></sc-if><span class="muted sm">{{ir.matchTxt}}</span></span>
+                    <span class="muted sm">{{ir.und}}</span>
+                    <span class="r tabnum"><sc-if value="{{ir.hasPrev}}" hint-placeholder-val="{{false}}"><span class="muted sm cos-prev">{{ir.prev}} →</span></sc-if>{{ir.precio}}</span>
+                    <span><span class="pill {{ir.kcls}}">{{ir.kindTxt}}</span></span>
+                  </div>
+                </sc-for>
+              </div>
+              <div class="cos-imp-f">
+                <button type="button" class="btn btn-primary" onClick="{{cos.imp.confirm}}" disabled="{{cos.readOnly}}">[[ics:ICON.download]]{{cos.imp.confirmTxt}}</button>
+                <button type="button" class="btn" onClick="{{cos.imp.cancel}}">Cancelar</button>
+                <span class="muted sm">Los precios quedan «por validar»: el precio vigente no cambia hasta que alguien con permiso los valide.</span>
+              </div>
+            </sc-if>
+            <sc-if value="{{cos.imp.hasErr}}" hint-placeholder-val="{{false}}"><button type="button" class="btn" onClick="{{cos.imp.cancel}}">Volver</button></sc-if>
+          </div>
+        </sc-if>
+        <sc-if value="{{cos.notImporting}}" hint-placeholder-val="{{true}}">
+          <div class="cos-grid">
+            <aside class="card cos-list">
+              <label class="btn btn-primary btn-sm cos-up">[[ics:ICON.imageup]]Importar corte (.xlsx o .csv)<input type="file" accept=".xlsx,.csv,.txt" class="sr-only" onChange="{{cos.upload}}"></label>
+              <p class="muted sm" style="margin: 0">Columnas que reconoce: Código, Descripción, Unidad, Familia y Precio (en cualquier orden).</p>
+              <sc-if value="{{cos.hasSamples}}" hint-placeholder-val="{{true}}">
+                <div class="dlabel">Archivos de ejemplo por importar</div>
+                <sc-for list="{{cos.samples}}" as="sp2" hint-placeholder-count="2"><button type="button" class="cos-sample" onClick="{{sp2.pick}}">[[ics:ICON.files]]<span><strong>{{sp2.name}}</strong><span class="muted sm">{{sp2.meta}}</span></span></button></sc-for>
+              </sc-if>
+              <div class="dlabel">Cortes recibidos</div>
+              <sc-for list="{{cos.cortes}}" as="kc" hint-placeholder-count="4">
+                <button type="button" class="cos-k {{kc.cls}}" onClick="{{kc.pick}}"><span class="cos-k-t"><strong>{{kc.name}}</strong><span class="pill {{kc.stCls}}">{{kc.estado}}</span></span><span class="muted sm">{{kc.fecha}} · {{kc.periodo}}</span><span class="muted sm">{{kc.meta}}</span></button>
+              </sc-for>
+            </aside>
+            <section class="card cos-main">
+              <sc-if value="{{cos.hasK}}" hint-placeholder-val="{{true}}">
+                <div class="cos-k-head"><div><strong class="cos-fname">{{cos.k.name}}</strong><span class="muted sm">Corte del {{cos.k.fecha}} · {{cos.k.who}}</span></div><span class="pill {{cos.k.stCls}}">{{cos.k.estado}}</span></div>
+                <sc-if value="{{cos.k.canValidate}}" hint-placeholder-val="{{false}}"><div class="cos-val"><span class="sm">Revisa los cambios y valida el corte. Al validarlo cambia el precio vigente de cada recurso; los ACU aprobados conservan su precio.</span><button type="button" class="btn btn-sm btn-primary" onClick="{{cos.k.validate}}">[[ics:ICON.check]]Validar corte</button><button type="button" class="btn btn-sm" onClick="{{cos.k.reject}}">Rechazar</button></div></sc-if>
+                <div class="cos-tbl">
+                  <div class="cos-tr cos-th k"><span>Código</span><span>Recurso</span><span class="r">Antes</span><span class="r">Ahora</span><span>Cambio</span><span>Estado</span></div>
+                  <sc-for list="{{cos.k.rows}}" as="kr" hint-placeholder-count="6">
+                    <button type="button" class="cos-tr k" onClick="{{kr.open}}"><span class="mono">{{kr.cod}}</span><span class="cos-desc">{{kr.name}}<sc-if value="{{kr.alias}}" hint-placeholder-val="{{false}}"><span class="muted sm">{{kr.aliasTxt}}</span></sc-if></span><span class="r tabnum muted">{{kr.prev}}</span><span class="r tabnum">{{kr.precio}}</span><span class="cos-d {{kr.dcls}}">{{kr.delta}}</span><span><span class="pill {{kr.stCls}}">{{kr.estado}}</span></span></button>
+                  </sc-for>
+                </div>
+              </sc-if>
+            </section>
+          </div>
+        </sc-if>
+      </sc-if>
+
+      <sc-if value="{{cos.isPrecios}}" hint-placeholder-val="{{false}}">
+        <div class="cos-grid">
+          <aside class="card cos-list">
+            <label class="search">[[ics:ICON.search]]<input class="search-in" value="{{cos.q}}" onChange="{{cos.setQ}}" placeholder="Código, nombre o equivalencia" aria-label="Buscar recurso"></label>
+            <div class="cos-fams"><sc-for list="{{cos.fams}}" as="fm2" hint-placeholder-count="4"><button type="button" class="chip {{fm2.cls}}" onClick="{{fm2.pick}}">{{fm2.n}}</button></sc-for></div>
+            <sc-for list="{{cos.recs}}" as="rc2" hint-placeholder-count="6">
+              <button type="button" class="cos-r {{rc2.cls}}" onClick="{{rc2.pick}}"><span class="cos-r-t"><span class="mono sm">{{rc2.cod}}</span><span class="pill {{rc2.stCls}}">{{rc2.estado}}</span></span><strong>{{rc2.name}}</strong><span class="cos-r-p"><span class="pill {{rc2.famCls}}">{{rc2.fam}}</span><span class="tabnum">{{rc2.precio}}</span><sc-if value="{{rc2.hasUlt}}" hint-placeholder-val="{{false}}"><span class="muted sm">→ {{rc2.ultimo}}</span></sc-if></span></button>
+            </sc-for>
+            <sc-if value="{{cos.noRecs}}" hint-placeholder-val="{{false}}"><p class="muted sm">Sin resultados.</p></sc-if>
+          </aside>
+          <section class="card cos-main">
+            <sc-if value="{{cos.hasR}}" hint-placeholder-val="{{true}}">
+              <div class="cos-k-head"><div><span class="mono sm">{{cos.r.cod}}</span><strong class="cos-fname">{{cos.r.name}}</strong><span class="muted sm"><span class="pill {{cos.r.famCls}}">{{cos.r.fam}}</span> por {{cos.r.und}}</span></div>
+                <div class="cos-price"><span class="muted sm">Precio vigente</span><strong>{{cos.r.precio}}</strong><span class="muted sm">{{cos.r.desde}}</span><sc-if value="{{cos.r.hasUlt}}" hint-placeholder-val="{{false}}"><span class="pill p-amber">Por validar: {{cos.r.ultimo}}</span></sc-if></div></div>
+              <sc-if value="{{cos.r.hasAlias}}" hint-placeholder-val="{{false}}"><p class="sm cos-alias">[[icx:ICON.link]]Equivalencias: {{cos.r.alias}}</p></sc-if>
+              <div class="cos-chart">
+                <svg viewBox="{{cos.r.chart.vb}}" class="cos-svg" role="img" aria-label="Evolución del precio">
+                  <polyline points="{{cos.r.chart.line}}" class="cos-line"></polyline>
+                  <sc-for list="{{cos.r.chart.dots}}" as="dt" hint-placeholder-count="3"><circle cx="{{dt.cx}}" cy="{{dt.cy}}" r="4.5" class="cos-dot {{dt.cls}}"><title>{{dt.tip}}</title></circle></sc-for>
+                  <text x="4" y="{{cos.r.chart.yHi}}" class="cos-ax">{{cos.r.chart.hi}}</text>
+                  <text x="4" y="{{cos.r.chart.yLo}}" class="cos-ax">{{cos.r.chart.lo}}</text>
+                </svg>
+                <span class="muted sm cos-legend"><span class="cos-dot-l ok"></span>Validado <span class="cos-dot-l pend"></span>Por validar</span>
+              </div>
+              <div class="cos-acts"><button type="button" class="btn btn-sm" onClick="{{cos.r.impact}}">[[ics:ICON.bolt]]Simular un precio nuevo</button><button type="button" class="btn btn-sm" onClick="{{cos.r.open}}">[[ics:ICON.expand]]Abrir ficha</button></div>
+              <div class="dlabel">Historial (nunca se sobrescribe)</div>
+              <div class="cos-tbl">
+                <div class="cos-tr cos-th h"><span>Vigente desde</span><span class="r">Precio</span><span>Cambio</span><span>Fuente</span><span>Estado</span><span></span></div>
+                <sc-for list="{{cos.r.hist}}" as="hh" hint-placeholder-count="4">
+                  <div class="cos-tr h"><span>{{hh.fecha}}</span><span class="r tabnum">{{hh.precio}}</span><span class="cos-d">{{hh.delta}}</span><span class="cos-desc sm">{{hh.fuente}}<span class="muted sm">{{hh.cod}} {{hh.motivo}}</span></span><span><span class="pill {{hh.stCls}}">{{hh.estado}}</span></span>
+                    <span class="cos-hact"><sc-if value="{{hh.canAct}}" hint-placeholder-val="{{false}}"><button type="button" class="btn btn-xs" onClick="{{hh.ok}}">Validar</button><button type="button" class="btn btn-xs" onClick="{{hh.no}}">Rechazar</button></sc-if></span></div>
+                </sc-for>
+              </div>
+              <sc-if value="{{cos.r.hasUsers}}" hint-placeholder-val="{{false}}">
+                <div class="dlabel">Usado en</div>
+                <sc-for list="{{cos.r.users}}" as="us" hint-placeholder-count="2"><button type="button" class="cos-user" onClick="{{us.open}}">[[ics:icCalc]]<span><strong>{{us.name}}</strong><span class="muted sm">{{us.sub}}</span></span></button></sc-for>
+              </sc-if>
+            </sc-if>
+          </section>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{cos.isAcu}}" hint-placeholder-val="{{false}}">
+        <div class="cos-grid">
+          <aside class="card cos-list">
+            <div class="dlabel">Matrículas</div>
+            <sc-for list="{{cos.mats}}" as="ma" hint-placeholder-count="3"><button type="button" class="cos-k {{ma.cls}}" onClick="{{ma.pick}}"><span class="mono">{{ma.mat}}</span><strong>{{ma.name}}</strong><span class="muted sm">{{ma.meta}}</span></button></sc-for>
+          </aside>
+          <section class="card cos-main">
+            <div class="dlabel">Versiones de {{cos.acu.mat}}</div>
+            <div class="cos-vers">
+              <sc-for list="{{cos.acu.versions}}" as="vv" hint-placeholder-count="2">
+                <button type="button" class="cos-ver {{vv.cls}}" onClick="{{vv.open}}"><strong>{{vv.name}}</strong><span class="pill {{vv.eCls}}">{{vv.estado}}</span><span class="pill {{vv.tCls}}">{{vv.tipo}}</span><span class="tabnum">{{vv.pu}}</span><span class="muted sm">{{vv.vig}} · {{vv.rend}}</span></button>
+              </sc-for>
+            </div>
+            <div class="cos-pick">
+              <label><span class="dlabel">Comparar</span><select class="select" value="{{cos.acu.verA}}" onChange="{{cos.acu.setA}}" aria-label="Versión A"><sc-for list="{{cos.acu.verOpts}}" as="vo" hint-placeholder-count="2"><option value="{{vo.v}}">{{vo.label}}</option></sc-for></select></label>
+              <label><span class="dlabel">con</span><select class="select" value="{{cos.acu.verB}}" onChange="{{cos.acu.setB}}" aria-label="Versión B"><sc-for list="{{cos.acu.verOpts}}" as="vo2" hint-placeholder-count="2"><option value="{{vo2.v}}">{{vo2.label}}</option></sc-for></select></label>
+              <sc-if value="{{cos.acu.canNew}}" hint-placeholder-val="{{true}}"><button type="button" class="btn btn-sm" onClick="{{cos.acu.newVer}}">[[ics:ICON.plus]]Nueva versión con precios vigentes</button></sc-if>
+            </div>
+            <sc-if value="{{cos.acu.noCmp}}" hint-placeholder-val="{{false}}"><p class="muted sm">Esta matrícula tiene una sola versión. Crea una nueva con los precios vigentes para compararla.</p></sc-if>
+            <sc-if value="{{cos.acu.hasCmp}}" hint-placeholder-val="{{true}}">
+              <div class="cos-res">
+                <div class="cos-pu"><span class="muted sm">{{cos.acu.cmp.aName}}</span><strong class="tabnum">{{cos.acu.cmp.puA}}</strong></div>
+                <span class="cos-arrow">[[ic:ICON.arrowr]]</span>
+                <div class="cos-pu"><span class="muted sm">{{cos.acu.cmp.bName}}</span><strong class="tabnum">{{cos.acu.cmp.puB}}</strong></div>
+                <div class="cos-pu {{cos.acu.cmp.dCls}}"><span class="muted sm">Diferencia</span><strong class="tabnum">{{cos.acu.cmp.dPu}} · {{cos.acu.cmp.dPct}}</strong></div>
+              </div>
+              <p class="cos-explain">{{cos.acu.cmp.explain}}</p>
+              <p class="muted sm">{{cos.acu.cmp.meta}} · Costo directo {{cos.acu.cmp.cdA}} → {{cos.acu.cmp.cdB}}</p>
+              <div class="cos-comps">
+                <sc-for list="{{cos.acu.cmp.comps}}" as="cc2" hint-placeholder-count="5"><div class="cos-comp {{cc2.cls}}"><span class="sm">{{cc2.n}}</span><span class="cos-bar"><span class="cos-fill" style="{{cc2.w}}"></span></span><span class="tabnum sm">{{cc2.v}}</span></div></sc-for>
+              </div>
+              <div class="cos-tbl">
+                <div class="cos-tr cos-th c"><span>Recurso</span><span>Cantidad</span><span>Precio usado</span><span class="r">Parcial</span><span class="r">Δ</span><span>Causa</span></div>
+                <sc-for list="{{cos.acu.cmp.rows}}" as="cr" hint-placeholder-count="6">
+                  <div class="cos-tr c"><span class="cos-desc">{{cr.name}}<span class="pill {{cr.famCls}}">{{cr.fam}}</span></span><span class="tabnum sm">{{cr.q}}</span><span class="tabnum sm">{{cr.p}}</span><span class="r tabnum sm">{{cr.par}}</span><span class="r tabnum cos-d {{cr.dCls}}">{{cr.delta}}</span><span class="sm">{{cr.causa}}</span></div>
+                </sc-for>
+              </div>
+            </sc-if>
+          </section>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{cos.isImpacto}}" hint-placeholder-val="{{false}}">
+        <div class="card cos-impact">
+          <p class="muted sm" style="margin: 0">Ejemplo: Compras consigue un nuevo precio del casco dieléctrico. Mira qué ACU cambian antes de decidir. Registrar el precio no modifica ninguna versión aprobada; si quieres, se crean versiones nuevas «en elaboración».</p>
+          <div class="cos-iform">
+            <label class="cos-field wide"><span class="dlabel">Recurso</span><select class="select" value="{{cos.imp2.rid}}" onChange="{{cos.imp2.setRec}}"><sc-for list="{{cos.imp2.recOpts}}" as="ro" hint-placeholder-count="3"><option value="{{ro.v}}">{{ro.label}}</option></sc-for></select></label>
+            <label class="cos-field"><span class="dlabel">Nuevo precio (S/)</span><input class="finput bordered" value="{{cos.imp2.precio}}" onChange="{{cos.imp2.setPrecio}}" placeholder="0.00" inputmode="decimal"></label>
+            <label class="cos-field"><span class="dlabel">Vigente desde</span><input class="finput bordered" type="date" value="{{cos.imp2.fecha}}" onChange="{{cos.imp2.setFecha}}"></label>
+            <div class="cos-field"><span class="dlabel">Fuente</span><div class="seg seg-sm"><sc-for list="{{cos.imp2.fuentes}}" as="fu" hint-placeholder-count="3"><button type="button" class="seg-btn {{fu.cls}}" onClick="{{fu.pick}}">{{fu.n}}</button></sc-for></div></div>
+            <label class="cos-field wide"><span class="dlabel">Motivo</span><input class="finput bordered" value="{{cos.imp2.motivo}}" onChange="{{cos.imp2.setMotivo}}" placeholder="Ej.: orden de compra OC-2026-118, nuevo proveedor"></label>
+          </div>
+          <sc-if value="{{cos.imp2.hasRec}}" hint-placeholder-val="{{true}}"><p class="sm" style="margin: 0"><strong>Precio vigente:</strong> {{cos.imp2.cur}} <span class="muted">{{cos.imp2.curUlt}}</span></p><p class="sm" style="margin: 0">{{cos.imp2.summary}}</p></sc-if>
+          <sc-if value="{{cos.imp2.hasRows}}" hint-placeholder-val="{{true}}">
+            <div class="cos-tbl">
+              <div class="cos-tr cos-th i"><span>ACU</span><span>Estado</span><span>Cantidad</span><span class="r">PU actual</span><span class="r">PU con el nuevo precio</span><span>Efecto</span></div>
+              <sc-for list="{{cos.imp2.rows}}" as="ip" hint-placeholder-count="2">
+                <button type="button" class="cos-tr i" onClick="{{ip.open}}"><span class="cos-desc"><strong>{{ip.mat}}</strong><span class="muted sm">{{ip.name}}</span><span class="muted sm">{{ip.ots}}</span></span><span class="sm">{{ip.estado}}</span><span class="tabnum sm">{{ip.q}}</span><span class="r tabnum">{{ip.puA}}</span><span class="r tabnum">{{ip.puB}}</span><span class="cos-d {{ip.dCls}}">{{ip.d}}</span></button>
+              </sc-for>
+            </div>
+          </sc-if>
+          <sc-if value="{{cos.imp2.noRows}}" hint-placeholder-val="{{false}}"><p class="muted sm">Ningún ACU vigente usa este recurso.</p></sc-if>
+          <sc-if value="{{cos.imp2.canApply}}" hint-placeholder-val="{{false}}">
+            <div class="cos-imp-f"><button type="button" class="btn" onClick="{{cos.imp2.applyPrice}}">Solo registrar el precio (por validar)</button><button type="button" class="btn btn-primary" onClick="{{cos.imp2.applyVersions}}">[[ics:ICON.plus]]Registrar y crear nuevas versiones de ACU</button></div>
+          </sc-if>
+          <sc-if value="{{cos.imp2.done}}" hint-placeholder-val="{{false}}"><p class="pm-ok">[[ic:ICON.check]]Registrado. Puedes revisarlo en «Recursos y precios» y en «Comparar versiones de ACU».</p></sc-if>
+        </div>
+      </sc-if>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{scrNoAccess}}" hint-placeholder-val="{{false}}">
+    <div class="page">
+      <div class="card locked-card">
+        <span class="lock-big">[[icl:ICON.lock]]</span>
+        <h1 class="h2">{{viewerFirst}} no tiene acceso a {{noAccessName}}</h1>
+        <p class="sub">Administración decide quién puede ver cada base de datos y con qué permiso.</p>
+        <sc-if value="{{reqNotSent}}" hint-placeholder-val="{{true}}"><button type="button" class="btn btn-primary" onClick="{{requestAccess}}">Solicitar acceso</button></sc-if>
+        <sc-if value="{{reqSent}}" hint-placeholder-val="{{false}}"><span class="tag tag-ok">Solicitud enviada a Administración</span></sc-if>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{scrInbox}}" hint-placeholder-val="{{false}}">
+    <div class="page">
+      <div class="db-head">
+        <div><h1 class="h1">Avisos</h1><p class="sub">Lo que envían las automatizaciones y las solicitudes de tu equipo.</p></div>
+        <sc-if value="{{hasUnread}}" hint-placeholder-val="{{false}}"><button type="button" class="btn" onClick="{{markAllRead}}">Marcar todo como leído</button></sc-if>
+      </div>
+      <div class="card flush">
+        <sc-for list="{{inbox}}" as="n" hint-placeholder-count="3">
+          <button type="button" class="notif {{n.cls}}" onClick="{{n.open}}"><span class="ndot"></span><span class="tico sm" style="--c: {{n.color}}">[[ics:n.icon]]</span><span><span style="display: block">{{n.text}}</span><span class="muted sm">{{n.meta}}</span></span></button>
+        </sc-for>
+        <sc-if value="{{inboxEmpty}}" hint-placeholder-val="{{false}}"><p class="empty">No tienes avisos.</p></sc-if>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{scrAi}}" hint-placeholder-val="{{false}}">
+    <div class="page">
+      <div class="ai-hero">
+        <span class="ai-badge">[[ics:ICON.ai]]Asistente IA</span>
+        <h1 class="h1 xl">¿Qué quieres organizar?</h1>
+        <p class="sub">Describe un proceso de tu empresa y te propongo las bases de datos, cómo se vinculan y quién puede ver qué. También puedes preguntar sobre tus datos.</p>
+        <div class="ai-box">
+          <textarea class="ai-ta" value="{{aiText}}" onChange="{{setAiText}}" placeholder="Ej.: Quiero controlar el inventario de dos almacenes y las compras a proveedores" aria-label="Describe lo que necesitas"></textarea>
+          <div class="ai-row">
+            <span class="muted sm">Responde con lo que {{viewerFirst}} puede ver</span>
+            <button type="button" class="btn btn-primary" onClick="{{aiGo}}">[[ics:ICON.ai]]Generar</button>
+          </div>
+        </div>
+        <div class="ai-sugs"><sc-for list="{{aiSugs}}" as="sg" hint-placeholder-count="6"><button type="button" class="sug" onClick="{{sg.pick}}">{{sg.label}}</button></sc-for></div>
+      </div>
+      <div class="result">
+        <sc-if value="{{hasProp}}" hint-placeholder-val="{{false}}">
+          <div class="card">
+            <div class="prop-head">
+              <div><div class="eyebrow">Propuesta</div><h2 class="h2">{{prop.title}}</h2><p class="sub">{{prop.intro}}</p></div>
+              <sc-if value="{{prop.canCreate}}" hint-placeholder-val="{{true}}"><button type="button" class="btn btn-primary" onClick="{{aiCreate}}">[[ics:ICON.plus]]Crear en mi espacio</button></sc-if>
+              <sc-if value="{{prop.created}}" hint-placeholder-val="{{false}}"><span class="tag tag-ok">Creado: ya está en la barra lateral</span></sc-if>
+              <sc-if value="{{prop.noAdmin}}" hint-placeholder-val="{{false}}"><span class="tag">Solo Administración puede crear bases de datos</span></sc-if>
+            </div>
+            <div class="prop-grid">
+              <sc-for list="{{prop.tables}}" as="pt" hint-placeholder-count="3">
+                <div class="ptable">
+                  <div class="pt-head"><span class="tico sm" style="--c: {{pt.color}}">[[ics:pt.icon]]</span><span>{{pt.name}}</span></div>
+                  <sc-for list="{{pt.fields}}" as="pf" hint-placeholder-count="5"><div class="pf">[[ics:pf.icon]]<span>{{pf.label}}</span><span class="pf-type">{{pf.typeName}}</span></div></sc-for>
+                </div>
+              </sc-for>
+            </div>
+            <div class="prop-cols">
+              <div><div class="sec-label">Cómo se vinculan</div><ul class="bul"><sc-for list="{{prop.links}}" as="l" hint-placeholder-count="3"><li>{{l.text}}</li></sc-for></ul></div>
+              <div><div class="sec-label">Permisos que se aplicarán</div><ul class="bul"><sc-for list="{{prop.perms}}" as="l" hint-placeholder-count="3"><li>{{l.text}}</li></sc-for></ul></div>
+            </div>
+          </div>
+        </sc-if>
+        <sc-if value="{{hasAns}}" hint-placeholder-val="{{false}}">
+          <div class="card">
+            <div class="eyebrow">Respuesta</div>
+            <h2 class="h2">{{ans.q}}</h2>
+            <p class="ans-text">{{ans.text}}</p>
+            <sc-if value="{{ans.hasItems}}" hint-placeholder-val="{{true}}"><div class="ans-list"><sc-for list="{{ans.items}}" as="it" hint-placeholder-count="3"><div class="ans-item"><span>{{it.label}}</span><strong class="tabnum">{{it.value}}</strong></div></sc-for></div></sc-if>
+            <div class="ans-foot">
+              <span class="muted sm">{{ans.scope}}</span>
+              <sc-if value="{{ans.hasGo}}" hint-placeholder-val="{{true}}"><button type="button" class="btn" onClick="{{ans.go}}">Abrir {{ans.goName}}</button></sc-if>
+            </div>
+          </div>
+        </sc-if>
+      </div>
+      <p class="sim-note">En este prototipo las respuestas de la IA son ejemplos predefinidos calculados con los datos de ejemplo. En la versión real las genera Claude, siempre dentro de los permisos de cada usuario.</p>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{scrPerm}}" hint-placeholder-val="{{false}}">
+    <div class="page">
+      <div class="db-head">
+        <div><h1 class="h1">Miembros y permisos</h1><p class="sub">Maqueta de la fase 2: aquí se decidirá quién entra, qué tablas ve, qué columnas y qué filas.</p></div>
+        <button type="button" class="btn" onClick="{{previewLuis}}">[[ics:ICON.eye]]Probar como Luis (Ventas)</button>
+      </div>
+      <div class="toolbar"><div class="vtabs"><sc-for list="{{permTabs}}" as="ptab" hint-placeholder-count="4"><button type="button" class="vtab {{ptab.cls}}" onClick="{{ptab.pick}}">{{ptab.label}}</button></sc-for></div></div>
+
+      <sc-if value="{{ptMembers}}" hint-placeholder-val="{{true}}">
+        <div class="stack">
+          <div class="card">
+            <div class="invite">
+              <div class="grow"><label class="lbl" for="inv-email">Invitar por correo</label><input id="inv-email" class="finput bordered" value="{{inviteEmail}}" onChange="{{setInviteEmail}}" placeholder="nombre@tuempresa.com"></div>
+              <div>
+                <label class="lbl" for="inv-role">Rol</label>
+                <select id="inv-role" class="select" value="{{inviteRole}}" onChange="{{setInviteRole}}">
+                  <option value="admin">Administración</option>
+                  <option value="finanzas">Finanzas</option>
+                  <option value="ventas">Ventas</option>
+                  <option value="almacen">Almacén</option>
+                  <option value="invitado">Invitado</option>
+                </select>
+              </div>
+              <button type="button" class="btn btn-primary" onClick="{{invite}}">Enviar invitación</button>
+            </div>
+            <sc-if value="{{hasInviteErr}}" hint-placeholder-val="{{false}}"><p class="err">{{inviteErr}}</p></sc-if>
+          </div>
+          <div class="card flush">
+            <div class="scroll-x">
+              <div class="mem-table">
+                <div class="mem-row mem-head"><span>Miembro</span><span>Equipo</span><span>Rol</span><span>Último acceso</span><span></span></div>
+                <sc-for list="{{members}}" as="m" hint-placeholder-count="6">
+                  <div class="mem-row">
+                    <span class="mem-name"><span class="av" style="background: {{m.color}}">{{m.initials}}</span><span class="mem-txt"><strong>{{m.name}}</strong><sc-if value="{{m.isYou}}" hint-placeholder-val="{{false}}"><span class="you">Tú</span></sc-if><sc-if value="{{m.pending}}" hint-placeholder-val="{{false}}"><span class="you pend">Pendiente</span></sc-if></span></span>
+                    <span class="muted">{{m.team}}</span>
+                    <span>
+                      <select class="select" value="{{m.role}}" onChange="{{m.setRole}}" disabled="{{m.isYou}}" aria-label="{{m.roleAria}}">
+                        <option value="admin">Administración</option>
+                        <option value="finanzas">Finanzas</option>
+                        <option value="ventas">Ventas</option>
+                        <option value="almacen">Almacén</option>
+                        <option value="invitado">Invitado</option>
+                      </select>
+                    </span>
+                    <span class="muted">{{m.last}}</span>
+                    <span><sc-if value="{{m.canPreview}}" hint-placeholder-val="{{true}}"><button type="button" class="btn btn-sm" onClick="{{m.preview}}">Ver como</button></sc-if></span>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ptAccess}}" hint-placeholder-val="{{false}}">
+        <div class="stack">
+          <div class="card flush">
+            <div class="scroll-x">
+              <div class="mx">
+                <div class="mx-row mx-head"><div class="mx-cell">Base de datos</div><sc-for list="{{roles}}" as="ro" hint-placeholder-count="5"><div class="mx-cell">{{ro.name}}</div></sc-for></div>
+                <sc-for list="{{matrix}}" as="mr" hint-placeholder-count="4">
+                  <div class="mx-row">
+                    <div class="mx-cell mx-db"><span class="tico sm" style="--c: {{mr.color}}">[[ics:mr.icon]]</span>{{mr.name}}</div>
+                    <sc-for list="{{mr.cells}}" as="c" hint-placeholder-count="5">
+                      <div class="mx-cell"><button type="button" class="lvl {{c.cls}}" onClick="{{c.cycle}}" disabled="{{c.locked}}" aria-label="{{c.aria}}" title="{{c.aria}}"><sc-if value="{{c.locked}}" hint-placeholder-val="{{false}}">[[icx:ICON.lock]]</sc-if>{{c.label}}</button></div>
+                    </sc-for>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="sec-label">Qué permite cada nivel · pulsa una celda para cambiarlo</div>
+            <div class="legend">
+              <div class="lg-item"><span class="lvl dashed">Sin acceso</span>No ve la base de datos ni sus registros.</div>
+              <div class="lg-item"><span class="lvl p-blue">Ver</span>Lee los registros sin cambiar nada.</div>
+              <div class="lg-item"><span class="lvl p-teal">Comentar</span>Lee y deja comentarios en los registros.</div>
+              <div class="lg-item"><span class="lvl p-violet">Editar</span>Crea, edita, vincula y elimina registros. Crea vistas.</div>
+              <div class="lg-item"><span class="lvl p-green">Total</span>Además cambia columnas, automatizaciones y bloqueos.</div>
+            </div>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ptCols}}" hint-placeholder-val="{{false}}">
+        <div class="stack">
+          <div><div class="seg"><sc-for list="{{permTables}}" as="ptb" hint-placeholder-count="4"><button type="button" class="seg-btn {{ptb.cls}}" onClick="{{ptb.pick}}"><span class="tico xs" style="--c: {{ptb.color}}">[[icx:ptb.icon]]</span>{{ptb.name}}</button></sc-for></div></div>
+          <div class="grid2">
+            <div class="card">
+              <h2 class="h3">Columnas visibles por rol</h2>
+              <p class="sub sm" style="margin: 0 0 8px">Administración siempre ve todo. Pulsa un rol para ocultarle o mostrarle la columna en todas las vistas.</p>
+              <sc-for list="{{colRows}}" as="cr" hint-placeholder-count="6">
+                <div class="cv-row">
+                  <div class="cv-name">[[ics:cr.icon]]{{cr.label}}</div>
+                  <sc-if value="{{cr.always}}" hint-placeholder-val="{{false}}"><span class="muted sm">Siempre visible</span></sc-if>
+                  <sc-if value="{{cr.notAlways}}" hint-placeholder-val="{{true}}">
+                    <div class="cv-roles">
+                      <sc-for list="{{cr.roles}}" as="rr" hint-placeholder-count="4">
+                        <button type="button" class="rolechip {{rr.cls}}" onClick="{{rr.toggle}}" aria-pressed="{{rr.on}}" aria-label="{{rr.aria}}" title="{{rr.aria}}"><sc-if value="{{rr.on}}" hint-placeholder-val="{{true}}">[[ics:ICON.eye]]</sc-if><sc-if value="{{rr.off}}" hint-placeholder-val="{{false}}">[[ics:ICON.eyeoff]]</sc-if>{{rr.name}}</button>
+                      </sc-for>
+                    </div>
+                  </sc-if>
+                </div>
+              </sc-for>
+            </div>
+            <div class="card">
+              <h2 class="h3">Reglas de filas</h2>
+              <p class="sub sm" style="margin: 0 0 8px">Filtran qué registros ve cada rol, aunque tenga acceso a la base de datos.</p>
+              <sc-for list="{{rules}}" as="ru" hint-placeholder-count="3">
+                <div class="rule">
+                  <button type="button" class="switch {{ru.onCls}}" onClick="{{ru.toggle}}" aria-pressed="{{ru.on}}" aria-label="{{ru.text}}"><span class="knob"></span></button>
+                  <div><div class="rule-title">{{ru.text}}</div><div class="muted sm"><span class="tag tag-sm">{{ru.roleName}}</span>{{ru.detail}}</div></div>
+                </div>
+              </sc-for>
+              <sc-if value="{{noRules}}" hint-placeholder-val="{{false}}"><p class="muted sm">Esta base de datos no tiene reglas de filas: cada rol con acceso ve todos sus registros.</p></sc-if>
+            </div>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ptSec}}" hint-placeholder-val="{{false}}">
+        <div class="grid2">
+          <div class="card">
+            <h2 class="h3">Seguridad del espacio</h2>
+            <sc-for list="{{secRows}}" as="sr" hint-placeholder-count="5">
+              <div class="set-row">
+                <div><div class="rule-title">{{sr.text}}</div><div class="muted sm">{{sr.detail}}</div></div>
+                <button type="button" class="switch {{sr.onCls}}" onClick="{{sr.toggle}}" aria-pressed="{{sr.on}}" aria-label="{{sr.text}}"><span class="knob"></span></button>
+              </div>
+            </sc-for>
+          </div>
+          <div class="card">
+            <h2 class="h3">Registro de auditoría</h2>
+            <p class="sub sm" style="margin: 0 0 8px">Cada cambio que hagas en el prototipo aparece aquí.</p>
+            <sc-for list="{{logRows}}" as="lg" hint-placeholder-count="5">
+              <div class="log-item"><span class="av sm" style="background: {{lg.color}}">{{lg.initials}}</span><div><div><strong>{{lg.who}}</strong> {{lg.what}}</div><div class="muted sm">{{lg.when}}</div></div></div>
+            </sc-for>
+          </div>
+        </div>
+      </sc-if>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{scrTheme}}" hint-placeholder-val="{{false}}">
+    <div class="page">
+      <h1 class="h1">Personalizar</h1>
+      <p class="sub">El aspecto se aplica a todo el espacio de trabajo y se ve al instante.</p>
+      <div class="theme-grid">
+        <div class="card">
+          <div class="set"><label class="set-label" for="ws-name">Nombre del espacio</label><input id="ws-name" class="finput bordered" value="{{ws}}" onChange="{{setWs}}"></div>
+          <div class="set">
+            <span class="set-label">Color de acento</span>
+            <div class="swatches"><sc-for list="{{swatches}}" as="sw" hint-placeholder-count="6"><button type="button" class="swatch {{sw.cls}}" style="background: {{sw.hex}}" onClick="{{sw.pick}}" aria-label="{{sw.name}}" aria-pressed="{{sw.on}}" title="{{sw.name}}"><sc-if value="{{sw.on}}" hint-placeholder-val="{{false}}">[[CHECK]]</sc-if></button></sc-for></div>
+          </div>
+          <div class="set"><span class="set-label">Modo</span><div class="seg"><sc-for list="{{modeOpts}}" as="o" hint-placeholder-count="2"><button type="button" class="seg-btn {{o.cls}}" onClick="{{o.pick}}">{{o.label}}</button></sc-for></div></div>
+          <div class="set"><span class="set-label">Densidad de las tablas</span><div class="seg"><sc-for list="{{densOpts}}" as="o" hint-placeholder-count="2"><button type="button" class="seg-btn {{o.cls}}" onClick="{{o.pick}}">{{o.label}}</button></sc-for></div></div>
+          <div class="set"><span class="set-label">Esquinas</span><div class="seg"><sc-for list="{{cornerOpts}}" as="o" hint-placeholder-count="2"><button type="button" class="seg-btn {{o.cls}}" onClick="{{o.pick}}">{{o.label}}</button></sc-for></div></div>
+          <div class="set"><span class="set-label">Tipografía</span><div class="seg"><sc-for list="{{fontOpts}}" as="o" hint-placeholder-count="3"><button type="button" class="seg-btn {{o.cls}}" onClick="{{o.pick}}">{{o.label}}</button></sc-for></div></div>
+        </div>
+        <div class="card prev">
+          <div class="sec-label">Vista previa</div>
+          <div class="prev-head"><span class="tico lg" style="--c: var(--acc)">[[icl:previewIcon]]</span><div><div class="h2">Pedidos de noviembre</div><div class="muted sm">Así se verán títulos, etiquetas y botones</div></div></div>
+          <div class="prev-row"><span class="pill p-amber"><span class="sdot"></span>Pendiente</span><span class="pill p-blue"><span class="sdot"></span>En preparación</span><span class="pill p-green"><span class="sdot"></span>Entregado</span><span class="chip"><span class="chip-dot" style="background: #0E7490"></span>Ferretería Andina SAC</span></div>
+          <div class="prev-tbl">
+            <div class="prev-tr prev-th"><span>Pedido</span><span>Estado</span><span style="text-align: right">Total</span></div>
+            <div class="prev-tr"><strong>PED-1042</strong><span><span class="pill p-amber"><span class="sdot"></span>Pendiente</span></span><span class="tabnum" style="text-align: right">S/ 4,850</span></div>
+            <div class="prev-tr"><strong>PED-1041</strong><span><span class="pill p-blue"><span class="sdot"></span>En preparación</span></span><span class="tabnum" style="text-align: right">S/ 12,300</span></div>
+          </div>
+          <div class="prev-row"><button type="button" class="btn btn-primary">Botón principal</button><button type="button" class="btn">Secundario</button><span class="sw on" aria-hidden="true"></span></div>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+</main>
+
+<sc-if value="{{hasRec}}" hint-placeholder-val="{{false}}">
+  <sc-if value="{{recFullB}}" hint-placeholder-val="{{false}}"><button type="button" class="scrim rec-scrim" onClick="{{closeRec}}" aria-label="Cerrar registro"></button></sc-if>
+  <aside class="rec {{recMode}}" aria-label="Detalle del registro">
+    <div class="rec-top">
+      <span class="crumb-sm"><span class="tico xs" style="--c: {{rec.tcolor}}">[[icx:rec.ticon]]</span>{{rec.tname}}</span>
+      <span class="rec-actions">
+        <sc-if value="{{rec.notInTable}}" hint-placeholder-val="{{true}}"><button type="button" class="btn btn-xs" onClick="{{rec.openTable}}">[[icx:ICON.db]]Ver en su tabla</button></sc-if>
+        <button type="button" class="icon-btn" onClick="{{toggleRecFull}}" aria-label="{{recFullAria}}" title="{{recFullAria}}">[[ic:ICON.expand]]</button>
+        <sc-if value="{{rec.canTpl}}" hint-placeholder-val="{{true}}"><button type="button" class="icon-btn" onClick="{{rec.saveTpl}}" aria-label="Guardar como plantilla" title="Guardar como plantilla">[[ic:ICON.template]]</button></sc-if>
+        <sc-if value="{{rec.canEdit}}" hint-placeholder-val="{{true}}"><button type="button" class="icon-btn" onClick="{{rec.del}}" aria-label="Eliminar registro" title="Eliminar registro">[[ic:ICON.trash]]</button></sc-if>
+        <button type="button" class="icon-btn" onClick="{{closeRec}}" aria-label="Cerrar" title="Cerrar">[[ic:ICON.x]]</button>
+      </span>
+    </div>
+    <div class="rec-scroll">
+      <sc-if value="{{rec.canEdit}}" hint-placeholder-val="{{true}}"><input class="rec-title" value="{{rec.title}}" onChange="{{rec.setTitle}}" placeholder="Sin título" aria-label="Título del registro"></sc-if>
+      <sc-if value="{{rec.cannotEdit}}" hint-placeholder-val="{{false}}"><h2 class="rec-title-ro">{{rec.titleText}}</h2></sc-if>
+      <div class="rec-meta">{{rec.meta}}</div>
+      <div class="fields">
+        [[fields:rec.fields]]
+      </div>
+      <sc-if value="{{rec.hasOrigin}}" hint-placeholder-val="{{false}}"><div class="rec-origin">[[icx:ICON.mobile]]{{rec.originTxt}}</div></sc-if>
+      <sc-if value="{{rec.hasLinked}}" hint-placeholder-val="{{false}}">
+        <div class="lk-wrap">
+          <div class="sec-label">[[ics:ICON.relation]]Listas vinculadas</div>
+          <sc-for list="{{rec.linked}}" as="lk" hint-placeholder-count="2">
+            <div class="lk-list">
+              <div class="lk-head">
+                <button type="button" class="lk-tog" onClick="{{lk.toggle}}" aria-expanded="{{lk.open}}"><span class="chev {{lk.chevCls}}">[[icx:ICON.right]]</span><span class="tico xs" style="--c: {{lk.color}}">[[icx:lk.icon]]</span><strong>{{lk.name}}</strong><span class="muted sm">{{lk.count}}</span></button>
+                <sc-if value="{{lk.canAdd}}" hint-placeholder-val="{{true}}"><button type="button" class="btn btn-xs" onClick="{{lk.add}}" aria-label="{{lk.addAria}}" title="{{lk.addAria}}">[[icx:ICON.plus]]Nuevo</button></sc-if>
+              </div>
+              <sc-if value="{{lk.open}}" hint-placeholder-val="{{true}}">
+                <div class="lk-rows">
+                  <sc-for list="{{lk.rows}}" as="lr" hint-placeholder-count="3">
+                    <div class="lk-row">
+                      <sc-if value="{{lr.editing}}" hint-placeholder-val="{{false}}"><input class="finput bordered lk-in" value="{{lr.title}}" onChange="{{lr.setTitle}}" placeholder="Escribe el nombre…" aria-label="Nombre del nuevo registro"><button type="button" class="btn btn-xs" onClick="{{lr.done}}">Listo</button></sc-if>
+                      <sc-if value="{{lr.notEditing}}" hint-placeholder-val="{{true}}"><button type="button" class="lk-title" onClick="{{lr.open}}">{{lr.title}}</button></sc-if>
+                      <sc-if value="{{lr.hasPill}}" hint-placeholder-val="{{true}}"><span class="pill {{lr.pillCls}}">{{lr.pill}}</span></sc-if>
+                      <sc-if value="{{lr.hasAv}}" hint-placeholder-val="{{true}}"><span class="av xs" style="background: {{lr.avColor}}" title="{{lr.avName}}">{{lr.av}}</span></sc-if>
+                      <span class="muted sm lk-date">{{lr.date}}</span>
+                    </div>
+                  </sc-for>
+                  <sc-if value="{{lk.empty}}" hint-placeholder-val="{{false}}"><div class="muted sm lk-empty">Sin registros vinculados.</div></sc-if>
+                  <sc-if value="{{lk.more}}" hint-placeholder-val="{{false}}"><button type="button" class="link-btn" onClick="{{lk.openTable}}">{{lk.moreTxt}}</button></sc-if>
+                </div>
+              </sc-if>
+            </div>
+          </sc-for>
+        </div>
+      </sc-if>
+      <sc-if value="{{rec.hasBacklinks}}" hint-placeholder-val="{{false}}"><div class="backlinks"><span class="dlabel">Mencionado en</span><sc-for list="{{rec.backlinks}}" as="bk2" hint-placeholder-count="1"><button type="button" class="men-chip" onClick="{{bk2.go}}"><span class="tico xs" style="--c: {{bk2.color}}">[[icx:bk2.icon]]</span>{{bk2.name}}</button></sc-for></div></sc-if>
+      <sc-if value="{{rec.sol.has}}" hint-placeholder-val="{{false}}">
+        <div class="apr-card">
+          <div class="sec-label">[[ics:ICON.check]]Aprobación: jefe directo y administración</div>
+          <div class="apr-steps"><sc-for list="{{rec.sol.steps}}" as="as2" hint-placeholder-count="3"><div class="apr-step {{as2.cls}}"><span class="apr-n">{{as2.n}}</span><span class="apr-txt"><strong>{{as2.label}}</strong><span class="muted sm">{{as2.who}}</span></span><span class="apr-st">{{as2.txt}}</span></div></sc-for></div>
+          <sc-if value="{{rec.sol.canAct}}" hint-placeholder-val="{{true}}"><div class="apr-acts"><button type="button" class="btn btn-primary btn-sm" onClick="{{rec.sol.approve}}">[[ics:ICON.check]]Aprobar</button><button type="button" class="btn btn-sm btn-danger" onClick="{{rec.sol.reject}}">[[ics:ICON.x]]Rechazar</button></div></sc-if>
+          <sc-if value="{{rec.sol.hasOverride}}" hint-placeholder-val="{{false}}"><p class="muted sm" style="margin: 0">{{rec.sol.overrideNote}}</p></sc-if>
+          <sc-if value="{{rec.sol.waiting}}" hint-placeholder-val="{{false}}"><p class="muted sm" style="margin: 0">{{rec.sol.waitTxt}}</p></sc-if>
+          <ul class="apr-hist"><sc-for list="{{rec.sol.hist}}" as="ah" hint-placeholder-count="2"><li>{{ah.text}}</li></sc-for></ul>
+        </div>
+      </sc-if>
+      <sc-if value="{{rec.pm.has}}" hint-placeholder-val="{{false}}">
+        <div class="pm-rec">
+          <div class="sec-label">[[ics:ICON.shield]]Buenas prácticas · {{rec.pm.edName}}</div>
+          <sc-for list="{{rec.pm.items}}" as="ri" hint-placeholder-count="2">
+            <div class="pm-item {{ri.sevCls}}">
+              <span class="pm-sev">{{ri.sevName}}</span>
+              <div class="pm-body"><strong class="pm-msg">{{ri.title}}</strong><span class="pm-tip">{{ri.tip}}</span><span class="pm-ref">[[icx:ICON.book]]{{ri.ref}}</span></div>
+              <div class="pm-acts"><button type="button" class="btn btn-xs" onClick="{{ri.fix}}">{{ri.fixLabel}}</button></div>
+            </div>
+          </sc-for>
+          <sc-if value="{{rec.pm.ok}}" hint-placeholder-val="{{false}}"><div class="pm-ok">[[ic:ICON.check]]Este registro cumple las reglas revisadas.</div></sc-if>
+          <ul class="pm-tips"><sc-for list="{{rec.pm.tips}}" as="tp" hint-placeholder-count="3"><li>{{tp.text}}</li></sc-for></ul>
+        </div>
+      </sc-if>
+      <div class="trace">
+        <div class="sec-label">[[ics:ICON.trace]]Trazabilidad</div>
+        <sc-for list="{{rec.trace}}" as="tg" hint-placeholder-count="2">
+          <div class="tr-grp">
+            <div class="tr-head">[[icx:tg.icon]]{{tg.name}}</div>
+            <sc-for list="{{tg.items}}" as="ti" hint-placeholder-count="2">
+              <div class="tr-item">
+                <button type="button" class="tr-node" onClick="{{ti.open}}" style="--c: {{ti.color}}"><span class="tico xs">[[icx:ti.icon]]</span><span>{{ti.title}}</span></button>
+                <sc-if value="{{ti.hasSubs}}" hint-placeholder-val="{{false}}">
+                  <div class="tr-subs">
+                    <sc-for list="{{ti.subs}}" as="ts" hint-placeholder-count="1">
+                      <div class="tr-sub"><span class="tr-subname">[[icx:ts.icon]]{{ts.name}}</span><span class="tr-chips"><sc-for list="{{ts.chips}}" as="tc" hint-placeholder-count="2"><button type="button" class="chip" onClick="{{tc.open}}"><span class="chip-dot" style="background: {{tc.color}}"></span>{{tc.title}}</button></sc-for></span></div>
+                    </sc-for>
+                  </div>
+                </sc-if>
+              </div>
+            </sc-for>
+          </div>
+        </sc-for>
+        <sc-if value="{{rec.noTrace}}" hint-placeholder-val="{{false}}"><p class="muted sm" style="margin: 0">Este registro aún no está vinculado con otras tablas.</p></sc-if>
+      </div>
+      <div class="rec-body">
+        <div class="sec-label">Contenido</div>
+        <sc-if value="{{rec.canEdit}}" hint-placeholder-val="{{true}}"><textarea class="body-ta" value="{{rec.body}}" onChange="{{rec.setBody}}" placeholder="Escribe notas, acuerdos o instrucciones de este registro…" aria-label="Contenido del registro"></textarea></sc-if>
+        <sc-if value="{{rec.cannotEdit}}" hint-placeholder-val="{{false}}"><p class="body-ro">{{rec.bodyText}}</p></sc-if>
+      </div>
+      <div class="comments">
+        <div class="sec-label">Comentarios</div>
+        <sc-for list="{{rec.comments}}" as="cm" hint-placeholder-count="1">
+          <div class="cm"><span class="av sm" style="background: {{cm.color}}">{{cm.initials}}</span><div class="cm-body"><div class="cm-head"><strong>{{cm.name}}</strong><span class="muted"> · {{cm.when}}</span></div><div>{{cm.text}}</div></div></div>
+        </sc-for>
+        <sc-if value="{{rec.noComments}}" hint-placeholder-val="{{false}}"><p class="muted sm" style="margin: 0">Aún no hay comentarios.</p></sc-if>
+        <sc-if value="{{rec.canComment}}" hint-placeholder-val="{{true}}">
+          <div class="cm-form"><input class="finput bordered" value="{{draft}}" onChange="{{setDraft}}" placeholder="Escribe un comentario…" aria-label="Escribe un comentario"><button type="button" class="btn" onClick="{{rec.addComment}}">Enviar</button></div>
+        </sc-if>
+        <sc-if value="{{rec.cannotComment}}" hint-placeholder-val="{{false}}"><p class="muted sm" style="margin: 0">Con el permiso «Ver» no se puede comentar.</p></sc-if>
+      </div>
+    </div>
+  </aside>
+</sc-if>
+
+<sc-if value="{{hasToast}}" hint-placeholder-val="{{false}}">
+  <div class="toast" role="status"><span>{{toast}}</span><button type="button" class="icon-btn sm" onClick="{{closeToast}}" aria-label="Cerrar aviso">[[ics:ICON.x]]</button></div>
+</sc-if>
+
+<sc-if value="{{drawerOpen}}" hint-placeholder-val="{{false}}">
+  <button type="button" class="scrim" onClick="{{closeDrawer}}" aria-label="Cerrar configuración"></button>
+  <aside class="drawer" aria-label="{{dTitle}}">
+    <div class="dr-head">
+      <sc-if value="{{dHasBack}}" hint-placeholder-val="{{false}}"><button type="button" class="icon-btn" onClick="{{dBack}}" aria-label="Atrás">[[ic:ICON.left]]</button></sc-if>
+      <sc-if value="{{dNoBack}}" hint-placeholder-val="{{true}}"><span class="dr-spacer"></span></sc-if>
+      <div class="dr-title">{{dTitle}}<sc-if value="{{hasDCtx}}" hint-placeholder-val="{{true}}"><span class="dr-ctx">{{dCtxName}}</span></sc-if></div>
+      <button type="button" class="icon-btn" onClick="{{closeDrawer}}" aria-label="Cerrar">[[ic:ICON.x]]</button>
+    </div>
+    <div class="dr-body">
+      <sc-if value="{{hasDNote}}" hint-placeholder-val="{{false}}"><div class="dnote">{{dNote}}</div></sc-if>
+
+      <sc-if value="{{dp_block}}" hint-placeholder-val="{{false}}">
+        <sc-if value="{{bk.hasTitle}}" hint-placeholder-val="{{true}}"><div class="dfield"><label class="dlabel" for="bk-title">Título</label><input id="bk-title" class="finput bordered" value="{{bk.title}}" onChange="{{bk.setTitle}}"></div></sc-if>
+        <sc-if value="{{bk.isChart}}" hint-placeholder-val="{{true}}"><div class="dfield"><span class="dlabel">Tipo de gráfico</span><div class="kind-grid"><sc-for list="{{bk.kindSeg}}" as="o" hint-placeholder-count="4"><button type="button" class="lay-btn {{o.cls}}" onClick="{{o.pick}}">[[icl:o.icon]]{{o.label}}</button></sc-for></div></div></sc-if>
+        <sc-if value="{{bk.hasSource}}" hint-placeholder-val="{{true}}"><div class="dfield"><span class="dlabel">Origen de los datos</span>[[radio:bk.srcRadio]]</div></sc-if>
+        <sc-if value="{{bk.isChart}}" hint-placeholder-val="{{true}}">
+          <div class="dfield"><span class="dlabel">Eje: agrupar por</span>[[radio:bk.byRadio]]</div>
+          <sc-if value="{{bk.hasBucket}}" hint-placeholder-val="{{false}}"><div class="dfield"><span class="dlabel">Agrupar fechas por</span>[[seg:bk.bucketSeg]]</div></sc-if>
+        </sc-if>
+        <sc-if value="{{bk.isSlicer}}" hint-placeholder-val="{{false}}"><div class="dfield"><span class="dlabel">Segmentar por</span>[[radio:bk.propRadio]]</div><p class="muted sm" style="margin: 0">Al elegir una opción se filtra toda la página. El filtro viaja por las relaciones a las demás tablas.</p></sc-if>
+        <sc-if value="{{bk.hasRules}}" hint-placeholder-val="{{true}}">
+          <div class="dfield"><span class="dlabel">Valor</span>[[seg:bk.aggSeg]]</div>
+          <sc-if value="{{bk.needsVal}}" hint-placeholder-val="{{true}}"><div class="dfield"><span class="dlabel">De la columna</span>[[radio:bk.valRadio]]</div></sc-if>
+          <sc-if value="{{bk.noAggProps}}" hint-placeholder-val="{{false}}"><p class="dnote">Esta tabla no tiene columnas numéricas. Usa «Contar» o añade una columna Número o Fórmula.</p></sc-if>
+        </sc-if>
+        <sc-if value="{{bk.isChart}}" hint-placeholder-val="{{true}}">
+          <div class="dfield"><span class="dlabel">Orden</span>[[seg:bk.sortSeg]]</div>
+          <div class="dfield"><span class="dlabel">Mostrar</span>[[seg:bk.topSeg]]</div>
+        </sc-if>
+        <sc-if value="{{bk.hasRules}}" hint-placeholder-val="{{true}}"><div class="dsec">Filtros propios del bloque</div>[[rules:brl]]</sc-if>
+        <sc-if value="{{bk.isSheet}}" hint-placeholder-val="{{false}}">
+          <div class="dfield"><span class="dlabel">Columnas</span>[[seg:bk.colsSeg]]</div>
+          <div class="dfield"><span class="dlabel">Filas</span>[[seg:bk.rowsSeg]]</div>
+          <div class="help-card">
+            <strong>Cómo escribir fórmulas</strong>
+            <span>Empieza con <code class="mono">=</code>. Separa los argumentos con <code class="mono">;</code>. Ejemplos:</span>
+            <code class="mono">=SUMA(B2:B8)</code>
+            <code class="mono">=SUMAR.SI(Pedidos[Estado]; "Entregado"; Pedidos[Total])</code>
+            <code class="mono">=SI(B2 &gt;= E2; "Meta cumplida"; "Faltan " &amp; TEXTO(E2 - B2))</code>
+          </div>
+          <button type="button" class="btn btn-sm" onClick="{{bk.clearAll}}">[[ics:ICON.trash]]Vaciar todas las celdas</button>
+        </sc-if>
+        <sc-if value="{{bk.isDb}}" hint-placeholder-val="{{false}}"><p class="muted sm" style="margin: 0">Las vistas, filtros, columnas y colores se configuran con el botón «Configuración» de la propia tabla. Los cambios se comparten con la tabla original.</p></sc-if>
+        <div class="dfield"><span class="dlabel">Ancho en la página</span>[[seg:bk.widthSeg]]</div>
+        <div class="dgroup">
+          <button type="button" class="drow" onClick="{{bk.up}}">[[ic:ICON.up]]<span class="drow-label">Mover arriba</span></button>
+          <button type="button" class="drow" onClick="{{bk.down}}">[[ic:ICON.down]]<span class="drow-label">Mover abajo</span></button>
+          <button type="button" class="drow danger" onClick="{{bk.del}}">[[ic:ICON.trash]]<span class="drow-label">{{bk.delLabel}}</span></button>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{dp_root}}" hint-placeholder-val="{{true}}">
+        <div class="dview">
+          <span class="dview-ic">[[ic:viewIcon]]</span>
+          <sc-if value="{{canRenameView}}" hint-placeholder-val="{{true}}"><input class="dview-name" value="{{viewName}}" onChange="{{renameView}}" aria-label="Nombre de la vista"></sc-if>
+          <sc-if value="{{cannotRenameView}}" hint-placeholder-val="{{false}}"><span class="dview-name" style="display: flex; align-items: center">{{viewName}}</span></sc-if>
+        </div>
+        <sc-for list="{{rootGroups}}" as="rg" hint-placeholder-count="5">
+          <sc-if value="{{rg.hasTitle}}" hint-placeholder-val="{{false}}"><div class="dsec">{{rg.title}}</div></sc-if>
+          <div class="dgroup">
+            <sc-for list="{{rg.rows}}" as="dr" hint-placeholder-count="5">
+              <button type="button" class="drow {{dr.cls}}" onClick="{{dr.go}}" aria-pressed="{{dr.pressed}}">
+                [[ic:dr.icon]]
+                <span class="drow-label">{{dr.label}}</span>
+                <sc-if value="{{dr.hasValue}}" hint-placeholder-val="{{false}}"><span class="drow-val">{{dr.value}}</span></sc-if>
+                <sc-if value="{{dr.isSwitch}}" hint-placeholder-val="{{false}}"><span class="sw {{dr.swCls}}" aria-hidden="true"></span></sc-if>
+                <sc-if value="{{dr.chev}}" hint-placeholder-val="{{true}}"><span class="drow-chev">[[ics:ICON.right]]</span></sc-if>
+              </button>
+            </sc-for>
+          </div>
+        </sc-for>
+      </sc-if>
+
+      <sc-if value="{{dp_layout}}" hint-placeholder-val="{{false}}">
+        <div class="lay-grid"><sc-for list="{{layOpts}}" as="lo" hint-placeholder-count="7"><button type="button" class="lay-btn {{lo.cls}}" onClick="{{lo.pick}}">[[icl:lo.icon]]{{lo.name}}</button></sc-for></div>
+        <sc-if value="{{layBoard}}" hint-placeholder-val="{{false}}"><div class="dfield"><span class="dlabel">Columnas del tablero según</span>[[radio:groupRadio]]</div></sc-if>
+        <sc-if value="{{layCal}}" hint-placeholder-val="{{false}}"><div class="dfield"><span class="dlabel">Mostrar en el calendario según</span>[[radio:dateRadio]]</div></sc-if>
+        <sc-if value="{{layChart}}" hint-placeholder-val="{{false}}">
+          <div class="dfield"><span class="dlabel">Tipo de gráfico</span><div class="kind-grid"><sc-for list="{{chartKindSeg}}" as="o" hint-placeholder-count="4"><button type="button" class="lay-btn {{o.cls}}" onClick="{{o.pick}}">[[icl:o.icon]]{{o.label}}</button></sc-for></div></div>
+          <div class="dfield"><span class="dlabel">Eje: agrupar por</span>[[radio:chartByRadio]]</div>
+          <sc-if value="{{hasBucket}}" hint-placeholder-val="{{false}}"><div class="dfield"><span class="dlabel">Agrupar fechas por</span>[[seg:bucketSeg]]</div></sc-if>
+          <div class="dfield"><span class="dlabel">Valor</span>[[radio:chartValRadio]]</div>
+        </sc-if>
+        <div class="dfield"><span class="dlabel">Abrir registros en</span>[[radio:openRadio]]</div>
+      </sc-if>
+
+      <sc-if value="{{dp_visibility}}" hint-placeholder-val="{{false}}">
+        <div class="head-actions"><button type="button" class="btn btn-sm" onClick="{{showAll}}">Mostrar todas</button><button type="button" class="btn btn-sm" onClick="{{hideAll}}">Ocultar todas</button></div>
+        <div class="prop-list">
+          <sc-for list="{{visRows}}" as="vr" hint-placeholder-count="8">
+            <div class="prow">
+              <span class="pl-item" style="cursor: default">[[ic:vr.icon]]<span class="pl-name">{{vr.name}}</span></span>
+              <sc-if value="{{vr.notTitle}}" hint-placeholder-val="{{true}}"><button type="button" class="icon-btn" onClick="{{vr.toggle}}" aria-label="{{vr.aria}}" aria-pressed="{{vr.on}}" title="{{vr.aria}}"><sc-if value="{{vr.on}}" hint-placeholder-val="{{true}}">[[ic:ICON.eye]]</sc-if><sc-if value="{{vr.notOn}}" hint-placeholder-val="{{false}}">[[ic:ICON.eyeoff]]</sc-if></button></sc-if>
+              <sc-if value="{{vr.isTitle}}" hint-placeholder-val="{{false}}"><span class="muted sm" style="padding-right: 12px">Siempre visible</span></sc-if>
+            </div>
+          </sc-for>
+        </div>
+        <sc-if value="{{hasRoleHidden}}" hint-placeholder-val="{{false}}">
+          <div class="dsec">Ocultas por permisos para tu rol</div>
+          <div class="prop-list"><sc-for list="{{roleHiddenRows}}" as="rh" hint-placeholder-count="1"><span class="pl-item disabled">[[ic:rh.icon]]<span class="pl-name">{{rh.name}}</span>[[ics:ICON.lock]]</span></sc-for></div>
+        </sc-if>
+      </sc-if>
+
+      <sc-if value="{{dp_rules}}" hint-placeholder-val="{{false}}">[[rules:rl]]</sc-if>
+
+      <sc-if value="{{dp_sort}}" hint-placeholder-val="{{false}}">
+        <p class="sub sm" style="margin: 0">El primer orden manda; los siguientes desempatan.</p>
+        <sc-for list="{{sortsV}}" as="so" hint-placeholder-count="1">
+          <div class="rule-card">
+            <div class="rc-top">[[ic:so.icon]]<strong>{{so.name}}</strong><sc-if value="{{so.notFirst}}" hint-placeholder-val="{{false}}"><button type="button" class="icon-btn sm" onClick="{{so.up}}" aria-label="Subir prioridad">[[ics:ICON.up]]</button></sc-if><button type="button" class="icon-btn sm" onClick="{{so.remove}}" aria-label="{{so.removeAria}}">[[ics:ICON.trash]]</button></div>
+            <div class="ops"><button type="button" class="op {{so.ascCls}}" onClick="{{so.setAsc}}">Ascendente</button><button type="button" class="op {{so.descCls}}" onClick="{{so.setDesc}}">Descendente</button></div>
+          </div>
+        </sc-for>
+        <sc-if value="{{sortsEmpty}}" hint-placeholder-val="{{false}}"><p class="muted sm" style="margin: 0">Sin orden: los registros aparecen en el orden en que se crearon.</p></sc-if>
+        <button type="button" class="link-btn" onClick="{{toggleSortAdd}}" aria-expanded="{{sortAdding}}">[[ics:ICON.plus]]Añadir orden</button>
+        <sc-if value="{{sortAdding}}" hint-placeholder-val="{{false}}"><div class="prop-list"><sc-for list="{{sortProps}}" as="sp" hint-placeholder-count="6"><button type="button" class="pl-item" onClick="{{sp.pick}}">[[ic:sp.icon]]<span class="pl-name">{{sp.name}}</span></button></sc-for></div></sc-if>
+      </sc-if>
+
+      <sc-if value="{{dp_group}}" hint-placeholder-val="{{false}}">
+        [[radio:groupAll]]
+        <div class="dgroup"><button type="button" class="drow" onClick="{{toggleHideEmpty}}" aria-pressed="{{hideEmptyOn}}"><span class="drow-label">Ocultar grupos vacíos</span><span class="sw {{hideEmptyCls}}" aria-hidden="true"></span></button></div>
+        <p class="muted sm" style="margin: 0">{{groupNote}}</p>
+      </sc-if>
+
+      <sc-if value="{{dp_props}}" hint-placeholder-val="{{false}}">
+        <div class="prop-list">
+          <sc-for list="{{propsV}}" as="pv" hint-placeholder-count="8">
+            <div class="prow">
+              <button type="button" class="pl-item" onClick="{{pv.edit}}">[[ic:pv.icon]]<span class="pl-name">{{pv.name}}<span class="pl-sub" style="display: block">{{pv.typeName}}</span></span>[[ics:ICON.right]]</button>
+              <sc-if value="{{pv.canUp}}" hint-placeholder-val="{{false}}"><button type="button" class="icon-btn sm" onClick="{{pv.up}}" aria-label="{{pv.upAria}}">[[ics:ICON.up]]</button></sc-if>
+              <sc-if value="{{pv.canDown}}" hint-placeholder-val="{{false}}"><button type="button" class="icon-btn sm" onClick="{{pv.down}}" aria-label="{{pv.downAria}}">[[ics:ICON.down]]</button></sc-if>
+            </div>
+          </sc-for>
+        </div>
+        <sc-if value="{{canStructureD}}" hint-placeholder-val="{{true}}"><button type="button" class="btn btn-primary" onClick="{{openNewPropD}}">[[ics:ICON.plus]]Nueva columna</button></sc-if>
+      </sc-if>
+
+      <sc-if value="{{dp_newProp}}" hint-placeholder-val="{{false}}">
+        <div class="dview"><span class="dview-ic">[[ic:ICON.text]]</span><input class="dview-name" value="{{newPropName}}" onChange="{{setNewPropName}}" placeholder="Nombre de la columna" aria-label="Nombre de la columna"></div>
+        <div class="dsec">Relacionar con otra tabla</div>
+        <div class="prop-list"><sc-for list="{{relQuick}}" as="rq" hint-placeholder-count="3"><button type="button" class="pl-item" onClick="{{rq.pick}}"><span class="tico sm" style="--c: {{rq.color}}">[[ics:rq.icon]]</span><span class="pl-name">{{rq.name}}<span class="pl-sub" style="display: block">Relación de ida y vuelta</span></span>[[ics:ICON.relation]]</button></sc-for></div>
+        <div class="dsec">Tipo</div>
+        <label class="search" style="min-width: 0">[[ics:ICON.search]]<input class="search-in" value="{{newPropSearch}}" onChange="{{setNewPropSearch}}" placeholder="Buscar tipo" aria-label="Buscar tipo de columna"></label>
+        <div class="type-grid"><sc-for list="{{typesV}}" as="ty" hint-placeholder-count="12"><button type="button" class="type-btn" onClick="{{ty.pick}}">[[ic:ty.icon]]<span>{{ty.name}}</span></button></sc-for></div>
+        <sc-if value="{{typesEmpty}}" hint-placeholder-val="{{false}}"><p class="muted sm" style="margin: 0">Ningún tipo coincide.</p></sc-if>
+        <div class="dsec">Autocompletado con IA</div>
+        <div class="prop-list"><sc-for list="{{aiItems}}" as="ai" hint-placeholder-count="2"><button type="button" class="pl-item" onClick="{{ai.pick}}">[[ic:ai.icon]]<span class="pl-name">{{ai.name}}<span class="basic">Básico</span></span>[[ics:ICON.right]]</button></sc-for></div>
+        <div class="dsec">Conexiones (fase posterior)</div>
+        <div class="prop-list"><sc-for list="{{conns}}" as="cn" hint-placeholder-count="4"><span class="pl-item disabled">[[ic:ICON.link]]<span class="pl-name">{{cn.name}}</span><span class="tag tag-sm">Requiere conectar</span></span></sc-for></div>
+      </sc-if>
+
+      <sc-if value="{{dp_propEdit}}" hint-placeholder-val="{{false}}">
+        <div class="dview"><span class="dview-ic">[[ic:pe.icon]]</span><input class="dview-name" value="{{pe.name}}" onChange="{{pe.setName}}" aria-label="Nombre de la columna"></div>
+        <input class="finput bordered" value="{{pe.desc}}" onChange="{{pe.setDesc}}" placeholder="Descripción (se ve al pasar por el encabezado)" aria-label="Descripción de la columna">
+        <div class="dgroup">
+          <sc-if value="{{pe.notTitle}}" hint-placeholder-val="{{true}}"><button type="button" class="drow" onClick="{{pe.toggleType}}" aria-expanded="{{pe.typeChanging}}">[[ic:pe.icon]]<span class="drow-label">Tipo</span><span class="drow-val">{{pe.typeName}}</span><span class="drow-chev">[[ics:ICON.right]]</span></button></sc-if>
+          <sc-if value="{{pe.isTitle}}" hint-placeholder-val="{{false}}"><span class="drow">[[ic:pe.icon]]<span class="drow-label">Tipo</span><span class="drow-val">Título (no se puede cambiar)</span></span></sc-if>
+        </div>
+        <sc-if value="{{pe.typeChanging}}" hint-placeholder-val="{{false}}"><div class="dsec">Cambiar a</div><div class="type-grid"><sc-for list="{{pe.typeList}}" as="tl" hint-placeholder-count="10"><button type="button" class="type-btn" onClick="{{tl.pick}}">[[ic:tl.icon]]<span>{{tl.name}}</span></button></sc-for></div></sc-if>
+
+        <sc-if value="{{pe.cNumber}}" hint-placeholder-val="{{false}}">
+          <div class="dfield"><span class="dlabel">Formato del número</span>[[radio:pe.fmtOpts]]</div>
+          <div class="dfield"><span class="dlabel">Decimales</span>[[seg:pe.decSeg]]</div>
+          <div class="dgroup"><button type="button" class="drow" onClick="{{pe.toggleSep}}" aria-pressed="{{pe.sepOn}}"><span class="drow-label">Separador de miles</span><span class="sw {{pe.sepCls}}" aria-hidden="true"></span></button></div>
+          <div class="dfield"><span class="dlabel">Mostrar como</span>[[seg:pe.showSeg]]</div>
+          <sc-if value="{{pe.hasMax}}" hint-placeholder-val="{{false}}"><div class="dfield"><label class="dlabel" for="pe-max">Valor que llena la barra (100 %)</label><input id="pe-max" class="finput bordered" value="{{pe.max}}" onChange="{{pe.setMax}}" inputmode="decimal"></div></sc-if>
+          <div class="dfield"><label class="dlabel" for="pe-def">Valor por defecto</label><input id="pe-def" class="finput bordered" value="{{pe.def}}" onChange="{{pe.setDef}}" placeholder="Vacío" inputmode="decimal"></div>
+          <p class="fx-ok">{{pe.example}}</p>
+        </sc-if>
+        <sc-if value="{{pe.cDate}}" hint-placeholder-val="{{false}}">
+          <div class="dfield"><span class="dlabel">Formato de fecha</span>[[radio:pe.dateSeg]]</div>
+          <div class="dfield"><span class="dlabel">Al crear un registro</span>[[seg:pe.defDateSeg]]</div>
+        </sc-if>
+        <sc-if value="{{pe.cCheck}}" hint-placeholder-val="{{false}}">
+          <div class="dfield"><span class="dlabel">Estilo</span>[[seg:pe.checkSeg]]</div>
+          <div class="dgroup"><button type="button" class="drow" onClick="{{pe.toggleDefCheck}}" aria-pressed="{{pe.defCheckOn}}"><span class="drow-label">Marcada por defecto</span><span class="sw {{pe.defCheckCls}}" aria-hidden="true"></span></button></div>
+        </sc-if>
+        <sc-if value="{{pe.cText}}" hint-placeholder-val="{{false}}"><div class="dfield"><label class="dlabel" for="pe-deft">Texto por defecto</label><input id="pe-deft" class="finput bordered" value="{{pe.def}}" onChange="{{pe.setDef}}" placeholder="Vacío"></div></sc-if>
+        <sc-if value="{{pe.cUrl}}" hint-placeholder-val="{{false}}"><div class="dgroup"><button type="button" class="drow" onClick="{{pe.toggleUrl}}" aria-pressed="{{pe.urlOn}}"><span class="drow-label">Mostrar solo el dominio</span><span class="sw {{pe.urlCls}}" aria-hidden="true"></span></button></div></sc-if>
+        <sc-if value="{{pe.cPerson}}" hint-placeholder-val="{{false}}"><div class="dgroup"><button type="button" class="drow" onClick="{{pe.toggleSingle}}" aria-pressed="{{pe.singleOn}}"><span class="drow-label">Solo una persona</span><span class="sw {{pe.singleCls}}" aria-hidden="true"></span></button></div></sc-if>
+
+        <sc-if value="{{pe.cOptions}}" hint-placeholder-val="{{false}}">
+          <div class="dfield">
+            <div class="dlabel-row"><span class="dlabel">Opciones</span><button type="button" class="link-btn" onClick="{{pe.sortAZ}}">[[icx:ICON.az]]Ordenar A-Z</button></div>
+            <sc-for list="{{pe.opts}}" as="op" hint-placeholder-count="3">
+              <div class="opt-row">
+                <button type="button" class="opt-sw {{op.cls}}" onClick="{{op.cycleColor}}" aria-label="{{op.colorAria}}" title="{{op.colorAria}}"></button>
+                <input class="finput bordered" value="{{op.v}}" onChange="{{op.rename}}" aria-label="Nombre de la opción">
+                <sc-if value="{{pe.isStatus}}" hint-placeholder-val="{{false}}"><button type="button" class="grp-btn" onClick="{{op.cycleGroup}}" title="Cambiar grupo">{{op.groupName}}</button></sc-if>
+                <sc-if value="{{op.canUp}}" hint-placeholder-val="{{true}}"><button type="button" class="icon-btn sm" onClick="{{op.up}}" aria-label="{{op.upAria}}">[[ics:ICON.up]]</button></sc-if>
+                <button type="button" class="icon-btn sm" onClick="{{op.remove}}" aria-label="{{op.aria}}">[[ics:ICON.trash]]</button>
+              </div>
+            </sc-for>
+            <div class="opt-row"><input class="finput bordered" value="{{pe.optDraft}}" onChange="{{pe.setOptDraft}}" placeholder="Nueva opción" aria-label="Nueva opción"><button type="button" class="btn btn-sm" onClick="{{pe.addOpt}}">Añadir</button></div>
+            <sc-if value="{{pe.isStatus}}" hint-placeholder-val="{{false}}"><p class="muted sm" style="margin: 0">Los estados se agrupan en Por hacer, En curso y Completado. Pulsa el grupo para cambiarlo.</p></sc-if>
+          </div>
+          <sc-if value="{{pe.cDefOpt}}" hint-placeholder-val="{{true}}"><div class="dfield"><span class="dlabel">Valor por defecto</span>[[radio:pe.defOpts]]</div></sc-if>
+        </sc-if>
+
+        <sc-if value="{{pe.cRelation}}" hint-placeholder-val="{{false}}">
+          <div class="dfield"><span class="dlabel">Vinculada con</span><div class="rel-target"><span class="tico" style="--c: {{pe.relColor}}">[[ic:pe.relIcon]]</span><strong>{{pe.relTarget}}</strong></div><p class="muted sm" style="margin: 0">{{pe.relPair}}</p></div>
+          <div class="dgroup">
+            <button type="button" class="drow" onClick="{{pe.toggleSingle}}" aria-pressed="{{pe.singleOn}}"><span class="drow-label">Limitar a un solo registro (1 en lugar de N)</span><span class="sw {{pe.singleCls}}" aria-hidden="true"></span></button>
+            <button type="button" class="drow" onClick="{{pe.goMap}}">[[ic:ICON.map]]<span class="drow-label">Ver en el mapa de relaciones</span><span class="drow-chev">[[ics:ICON.right]]</span></button>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{pe.cRollup}}" hint-placeholder-val="{{false}}">
+          <sc-if value="{{pe.rollNone}}" hint-placeholder-val="{{false}}"><p class="dnote">Primero añade una columna de tipo Relación en esta base de datos.</p></sc-if>
+          <div class="dfield"><span class="dlabel">Relación</span>[[radio:pe.rollRels]]</div>
+          <sc-if value="{{pe.hasRollTarget}}" hint-placeholder-val="{{false}}"><div class="dfield"><span class="dlabel">Columna</span>[[radio:pe.rollProps]]</div></sc-if>
+          <div class="dfield"><span class="dlabel">Calcular</span>[[radio:pe.rollFns]]</div>
+        </sc-if>
+
+        <sc-if value="{{pe.cFormula}}" hint-placeholder-val="{{false}}">
+          <div class="dfield">
+            <span class="dlabel">Fórmula</span>
+            <textarea class="fx-ta" value="{{pe.expr}}" onChange="{{pe.setExpr}}" aria-label="Fórmula" spellcheck="false"></textarea>
+            <sc-if value="{{pe.previewOk}}" hint-placeholder-val="{{true}}"><div class="fx-ok">{{pe.preview}}</div></sc-if>
+            <sc-if value="{{pe.previewErr}}" hint-placeholder-val="{{false}}"><div class="fx-err">{{pe.preview}}</div></sc-if>
+          </div>
+          <div class="dfield"><span class="dlabel">Insertar columna</span><div class="mini-chips"><sc-for list="{{pe.insertProps}}" as="ip" hint-placeholder-count="5"><button type="button" class="mini-chip" onClick="{{ip.pick}}">{{ip.label}}</button></sc-for></div></div>
+          <div class="dfield"><span class="dlabel">Insertar función</span><div class="mini-chips"><sc-for list="{{pe.insertFns}}" as="ifn" hint-placeholder-count="5"><button type="button" class="mini-chip mono" onClick="{{ifn.pick}}">{{ifn.label}}</button></sc-for></div></div>
+          <div class="dfield"><span class="dlabel">Formato del resultado</span>[[radio:pe.resSeg]]</div>
+          <div class="dfield"><span class="dlabel">Decimales del resultado</span>[[seg:pe.resDecSeg]]</div>
+          <div class="help-card">
+            <strong>Dos estilos, el mismo motor</strong>
+            <span>Tipo Excel: <code class="mono">=[Precio] * [Stock]</code>, <code class="mono">=SI([Stock] &lt; 20; "Reponer"; "OK")</code></span>
+            <span>Tipo Notion: <code class="mono">prop("Precio") * prop("Stock")</code></span>
+            <span>Otra tabla: <code class="mono">=SUMAR.SI(Pedidos[Cliente]; [Nombre]; Pedidos[Total])</code></span>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{pe.cButton}}" hint-placeholder-val="{{false}}">
+          <div class="dfield"><label class="dlabel" for="btn-label">Texto del botón</label><input id="btn-label" class="finput bordered" value="{{pe.btnLabel}}" onChange="{{pe.setBtnLabel}}"></div>
+          <div class="dfield"><span class="dlabel">Al pulsarlo, cambia</span>[[radio:pe.btnProps]]</div>
+          <sc-if value="{{pe.hasBtnVals}}" hint-placeholder-val="{{false}}"><div class="dfield"><span class="dlabel">A este valor</span>[[radio:pe.btnVals]]</div></sc-if>
+        </sc-if>
+
+        <sc-if value="{{pe.cId}}" hint-placeholder-val="{{false}}">
+          <div class="dfield"><label class="dlabel" for="id-prefix">Prefijo</label><input id="id-prefix" class="finput bordered mono" value="{{pe.prefix}}" onChange="{{pe.setPrefix}}"><p class="muted sm" style="margin: 0">{{pe.idPreview}}. Se numera solo y nunca se repite.</p></div>
+        </sc-if>
+
+        <sc-if value="{{pe.cAi}}" hint-placeholder-val="{{false}}">
+          <div class="dfield"><span class="dlabel">Qué hace</span>[[radio:pe.aiModes]]</div>
+          <div class="dgroup"><button type="button" class="drow" onClick="{{pe.toggleAiAuto}}" aria-pressed="{{pe.aiAutoOn}}"><span class="drow-label">Actualizar al editar el registro</span><span class="sw {{pe.aiAutoCls}}" aria-hidden="true"></span></button></div>
+          <p class="muted sm" style="margin: 0">{{pe.aiNote}}</p>
+          <button type="button" class="btn btn-sm" onClick="{{pe.aiRefresh}}">[[ics:ICON.ai]]Actualizar todos los registros</button>
+        </sc-if>
+
+        <sc-if value="{{pe.cAuto}}" hint-placeholder-val="{{false}}"><p class="muted sm" style="margin: 0">{{pe.autoNote}}</p></sc-if>
+
+        <sc-if value="{{pe.canRequire}}" hint-placeholder-val="{{true}}">
+          <div class="dgroup"><button type="button" class="drow" onClick="{{pe.toggleReq}}" aria-pressed="{{pe.reqOn}}">[[ic:ICON.required]]<span class="drow-label">Obligatoria en formularios</span><span class="sw {{pe.reqCls}}" aria-hidden="true"></span></button></div>
+        </sc-if>
+
+        <div class="dsec">En la vista «{{pe.viewName}}»</div>
+        <div class="dfield"><span class="dlabel">Ancho de la columna</span>[[seg:pe.widthSeg]]</div>
+        <div class="dgroup">
+          <button type="button" class="drow" onClick="{{pe.toggleWrap}}" aria-pressed="{{pe.wrapOn}}">[[ic:ICON.wrap]]<span class="drow-label">Ajustar texto</span><span class="sw {{pe.wrapCls}}" aria-hidden="true"></span></button>
+          <button type="button" class="drow" onClick="{{pe.toggleHidden}}">[[ic:ICON.eyeoff]]<span class="drow-label">{{pe.visLabel}}</span></button>
+        </div>
+        <div class="dgroup">
+          <sc-if value="{{pe.canDup}}" hint-placeholder-val="{{true}}"><button type="button" class="drow" onClick="{{pe.dup}}">[[ic:ICON.copy]]<span class="drow-label">Duplicar columna</span></button></sc-if>
+          <sc-if value="{{pe.notTitle}}" hint-placeholder-val="{{true}}"><button type="button" class="drow danger" onClick="{{pe.del}}">[[ic:ICON.trash]]<span class="drow-label">{{pe.delLabel}}</span></button></sc-if>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{dp_automations}}" hint-placeholder-val="{{false}}">
+        <p class="sub sm" style="margin: 0">Reglas que se ejecutan solas cuando pasa algo en esta base de datos.</p>
+        <sc-for list="{{autosV}}" as="au" hint-placeholder-count="2">
+          <div class="auto-card">
+            <span class="auto-ic">[[ic:ICON.bolt]]</span>
+            <div class="auto-txt"><div>{{au.text}}</div><div class="muted sm">{{au.runs}}</div></div>
+            <button type="button" class="dsw" onClick="{{au.toggle}}" aria-pressed="{{au.on}}" aria-label="{{au.aria}}"><span class="sw {{au.swCls}}"></span></button>
+            <button type="button" class="icon-btn sm" onClick="{{au.remove}}" aria-label="Eliminar automatización">[[ics:ICON.trash]]</button>
+          </div>
+        </sc-for>
+        <sc-if value="{{autosEmpty}}" hint-placeholder-val="{{false}}"><p class="muted sm" style="margin: 0">Esta base de datos no tiene automatizaciones.</p></sc-if>
+        <button type="button" class="btn btn-primary" onClick="{{newAuto}}">[[ics:ICON.plus]]Nueva automatización</button>
+      </sc-if>
+
+      <sc-if value="{{dp_autoNew}}" hint-placeholder-val="{{false}}">
+        <div class="dfield"><span class="dlabel">Cuándo</span>[[seg:trigSeg]]</div>
+        <sc-if value="{{trigChanged}}" hint-placeholder-val="{{true}}"><div class="dfield"><span class="dlabel">Columna</span>[[radio:trigProps]]</div></sc-if>
+        <sc-if value="{{hasTrigVals}}" hint-placeholder-val="{{false}}"><div class="dfield"><span class="dlabel">Cambia a</span>[[radio:trigVals]]</div></sc-if>
+        <div class="dfield"><span class="dlabel">Entonces</span>[[seg:actSeg]]</div>
+        <sc-if value="{{actNotify}}" hint-placeholder-val="{{true}}"><div class="dfield"><span class="dlabel">Avisar a</span>[[radio:whoOpts]]</div></sc-if>
+        <sc-if value="{{actSet}}" hint-placeholder-val="{{false}}"><div class="dfield"><span class="dlabel">Columna que cambia</span>[[radio:actProps]]</div></sc-if>
+        <sc-if value="{{hasActVals}}" hint-placeholder-val="{{false}}"><div class="dfield"><span class="dlabel">Nuevo valor</span>[[radio:actVals]]</div></sc-if>
+        <div class="dnote neutral">{{autoPreview}}</div>
+        <sc-if value="{{autoReady}}" hint-placeholder-val="{{false}}"><button type="button" class="btn btn-primary" onClick="{{autoCreate}}">Crear automatización</button></sc-if>
+      </sc-if>
+
+      <sc-if value="{{dp_ai}}" hint-placeholder-val="{{false}}">
+        <p class="sub sm" style="margin: 0">Las columnas con IA se rellenan solas en cada registro: resúmenes, traducciones y más.</p>
+        <div class="prop-list"><sc-for list="{{aiPropsV}}" as="ap" hint-placeholder-count="1"><button type="button" class="pl-item" onClick="{{ap.edit}}">[[ic:ap.icon]]<span class="pl-name">{{ap.name}}<span class="pl-sub" style="display: block">{{ap.mode}}</span></span>[[ics:ICON.right]]</button></sc-for></div>
+        <sc-if value="{{aiNone}}" hint-placeholder-val="{{false}}"><p class="muted sm" style="margin: 0">Aún no hay columnas con IA en esta base de datos.</p></sc-if>
+        <div class="head-actions"><button type="button" class="btn btn-sm" onClick="{{aiAddSummary}}">[[ics:ICON.ai]]Añadir Resumir</button><button type="button" class="btn btn-sm" onClick="{{aiAddTranslate}}">[[ics:ICON.translate]]Añadir Traducir</button></div>
+        <p class="muted sm" style="margin: 0">En el prototipo los resúmenes se arman con los datos del registro. En la versión real los escribe Claude (necesita una API key, que te pediré antes de usar).</p>
+      </sc-if>
+
+      <sc-if value="{{dp_more}}" hint-placeholder-val="{{false}}">
+        <div class="dfield"><label class="dlabel" for="db-name">Nombre de la base de datos</label><input id="db-name" class="finput bordered" value="{{dbName}}" onChange="{{setDbName}}"></div>
+        <div class="dfield"><label class="dlabel" for="db-desc">Descripción</label><input id="db-desc" class="finput bordered" value="{{dbDesc}}" onChange="{{setDbDesc}}"></div>
+        <div class="dfield"><span class="dlabel">Icono</span><div class="icon-grid"><sc-for list="{{dbIcons}}" as="di" hint-placeholder-count="12"><button type="button" class="icon-opt {{di.cls}}" onClick="{{di.pick}}" aria-label="{{di.aria}}" aria-pressed="{{di.on}}">[[ic:di.icon]]</button></sc-for></div></div>
+        <div class="dfield"><span class="dlabel">Color</span><div class="swatches sm"><sc-for list="{{dbColors}}" as="dc" hint-placeholder-count="8"><button type="button" class="swatch {{dc.cls}}" style="background: {{dc.hex}}" onClick="{{dc.pick}}" aria-label="{{dc.aria}}" aria-pressed="{{dc.on}}"></button></sc-for></div></div>
+        <p class="muted sm" style="margin: 0">{{dbStats}}</p>
+        <sc-if value="{{isAdminD}}" hint-placeholder-val="{{true}}">
+          <div class="dgroup">
+            <button type="button" class="drow" onClick="{{dupDb}}">[[ic:ICON.copy]]<span class="drow-label">Duplicar base de datos</span></button>
+            <button type="button" class="drow danger" onClick="{{delDb}}">[[ic:ICON.trash]]<span class="drow-label">{{delDbLabel}}</span></button>
+          </div>
+        </sc-if>
+      </sc-if>
+
+      <sc-if value="{{dp_sources}}" hint-placeholder-val="{{false}}">
+        <p class="sub sm" style="margin: 0">{{srcIntro}}</p>
+        <div class="prop-list"><sc-for list="{{srcs}}" as="sc" hint-placeholder-count="4"><button type="button" class="src {{sc.cls}}" onClick="{{sc.open}}"><span class="tico" style="--c: {{sc.color}}">[[ic:sc.icon]]</span><span class="pl-name">{{sc.name}}<span class="pl-sub" style="display: block">{{sc.meta}}</span></span><sc-if value="{{sc.isCur}}" hint-placeholder-val="{{false}}"><span class="tag tag-sm">Actual</span></sc-if></button></sc-for></div>
+        <sc-if value="{{canNewDb}}" hint-placeholder-val="{{true}}"><button type="button" class="btn" onClick="{{newDbD}}">[[ics:ICON.plus]]Nueva base de datos</button></sc-if>
+      </sc-if>
+    </div>
+  </aside>
+</sc-if>
+</div>

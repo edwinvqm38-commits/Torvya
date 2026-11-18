@@ -1,0 +1,48 @@
+<div class="chart-box">
+  <sc-if value="{{$.empty}}" hint-placeholder-val="{{false}}"><div class="ch-empty">[[ic:ICON.chart]]<span>{{$.emptyText}}</span></div></sc-if>
+  <sc-if value="{{$.showCol}}" hint-placeholder-val="{{true}}">
+    <div class="colchart {{$.colTall}}">
+      <sc-for list="{{$.bars}}" as="b" hint-placeholder-count="5">
+        <button type="button" class="cc {{b.cls}}" onClick="{{b.pick}}" aria-label="{{b.aria}}" aria-pressed="{{b.on}}" title="{{b.aria}}">
+          <span class="cc-val">{{b.valueText}}</span>
+          <span class="cc-track"><span class="cc-bar" style="height: {{b.pct}}%; background: {{b.color}}"></span></span>
+          <span class="cc-lab">{{b.label}}</span>
+        </button>
+      </sc-for>
+    </div>
+  </sc-if>
+  <sc-if value="{{$.showBar}}" hint-placeholder-val="{{false}}">
+    <div class="hbars">
+      <sc-for list="{{$.bars}}" as="b" hint-placeholder-count="5">
+        <button type="button" class="hb {{b.cls}}" onClick="{{b.pick}}" aria-label="{{b.aria}}" aria-pressed="{{b.on}}" title="{{b.aria}}">
+          <span class="hb-lab">{{b.label}}</span>
+          <span class="hb-track"><span class="hb-fill" style="width: {{b.pct}}%; background: {{b.color}}"></span></span>
+          <span class="hb-val">{{b.valueText}}</span>
+        </button>
+      </sc-for>
+    </div>
+  </sc-if>
+  <sc-if value="{{$.showLine}}" hint-placeholder-val="{{false}}">
+    <div class="lnchart">
+      <div class="ln-plot">
+        <sc-for list="{{$.lgrid}}" as="lg" hint-placeholder-count="4"><div class="ln-grid" style="top: {{lg.top}}%"><span>{{lg.label}}</span></div></sc-for>
+        <svg class="ln-svg" viewBox="0 0 640 200" aria-hidden="true"><path class="ln-area" d="{{$.area}}"></path><path class="ln-line" d="{{$.path}}"></path></svg>
+        <sc-for list="{{$.ldots}}" as="ld" hint-placeholder-count="6"><button type="button" class="ln-dot {{ld.cls}}" style="left: {{ld.left}}%; top: {{ld.top}}%" onClick="{{ld.pick}}" aria-label="{{ld.aria}}" aria-pressed="{{ld.on}}" title="{{ld.tip}}"></button></sc-for>
+      </div>
+      <div class="ln-x"><sc-for list="{{$.lxl}}" as="lx" hint-placeholder-count="6"><span class="ln-xl" style="left: {{lx.left}}%">{{lx.label}}</span></sc-for></div>
+    </div>
+  </sc-if>
+  <sc-if value="{{$.showDonut}}" hint-placeholder-val="{{false}}">
+    <div class="donut-wrap">
+      <div class="donut">
+        <sc-for list="{{$.segs}}" as="sg" hint-placeholder-count="4"><svg class="dn-svg" viewBox="0 0 120 120" aria-hidden="true"><circle class="dn-seg {{sg.cls}}" cx="60" cy="60" r="44" style="stroke: {{sg.color}}; stroke-dasharray: {{sg.dash}}; stroke-dashoffset: {{sg.off}}"></circle></svg></sc-for>
+        <div class="dn-center"><strong>{{$.total}}</strong><span>{{$.totalCaption}}</span></div>
+      </div>
+      <div class="dn-legend">
+        <sc-for list="{{$.bars}}" as="b" hint-placeholder-count="4">
+          <button type="button" class="dl {{b.cls}}" onClick="{{b.pick}}" aria-label="{{b.aria}}" aria-pressed="{{b.on}}"><span class="dl-dot" style="background: {{b.color}}"></span><span class="dl-lab">{{b.label}}</span><span class="dl-val">{{b.valueText}}</span><span class="dl-share">{{b.share}}</span></button>
+        </sc-for>
+      </div>
+    </div>
+  </sc-if>
+</div>

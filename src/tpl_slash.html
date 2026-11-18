@@ -1,0 +1,5 @@
+<div class="slash-menu" role="listbox" aria-label="Insertar bloque">
+  <div class="slash-head">Insertar bloque</div>
+  <sc-for list="{{$.slash}}" as="sx2" hint-placeholder-count="6"><button type="button" class="slash-item {{sx2.cls}}" onClick="{{sx2.pick}}"><span class="ab-ic">[[ic:sx2.icon]]</span><span class="ab-txt"><strong>{{sx2.name}}</strong><span>{{sx2.desc}}</span></span></button></sc-for>
+  <sc-if value="{{$.slashEmpty}}" hint-placeholder-val="{{false}}"><div class="slash-none">Ningún bloque coincide. Prueba con «tabla», «gráfico» o «columnas».</div></sc-if>
+</div>
