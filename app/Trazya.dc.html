@@ -1761,6 +1761,9 @@ body.td-active .board{scroll-snap-type:none!important}
 .rec.full .lk-row>.av{grid-column:4}
 .rec.full .lk-row>.lk-date{grid-column:5;text-align:right;white-space:nowrap}
 .rec.full .lk-row>.btn{grid-column:2}
+.rec.full .lk-cells{grid-template-columns:repeat(3,minmax(0,1fr))}
+.rec.full .rec-cols{grid-template-columns:minmax(0,1fr) minmax(0,1.2fr)}
+.rec.full .lk-row{grid-template-columns:minmax(0,1.2fr) minmax(0,2.4fr) 96px 22px 72px}
 </style>
 </helmet>
 <div class="app theme-{{mode}} acc-{{accent}} dens-{{density}} rad-{{corners}} font-{{font}}">
