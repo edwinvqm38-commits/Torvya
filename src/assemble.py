@@ -55,6 +55,8 @@ def fields(lst):
 <div class="flabel" title="{{f.desc}}">%(ICON)s<span>{{f.label}}</span></div>
 <div class="fval">
 <sc-if value="{{f.eInput}}" H="{{true}}"><div class="fin-row"><input class="finput" type="{{f.itype}}" value="{{f.value}}" onChange="{{f.onChange}}" placeholder="{{f.placeholder}}" aria-label="{{f.label}}"><sc-if value="{{f.hasLink}}" H="{{false}}"><a class="icon-btn sm" href="{{f.linkHref}}" target="_blank" rel="noopener noreferrer" aria-label="{{f.linkAria}}" title="{{f.linkAria}}">%(EXT)s</a></sc-if></div></sc-if>
+<sc-if value="{{f.eNum}}" H="{{false}}"><div class="fin-row fnum {{f.numCls}}"><input class="finput" type="text" inputmode="decimal" value="{{f.value}}" onChange="{{f.onChange}}" placeholder="{{f.placeholder}}" aria-label="{{f.label}}"><span class="fnum-disp" aria-hidden="true">{{f.fmtText}}</span><sc-if value="{{f.hasMeter}}" H="{{false}}"><span class="fnum-meter" aria-hidden="true"><span style="width: {{f.meterPct}}%%"></span></span></sc-if></div></sc-if>
+<sc-if value="{{f.eDrop}}" H="{{false}}"><div class="fdrop" data-opa="{{f.opa}}"><button type="button" class="fdrop-btn" onClick="{{f.openDrop}}" aria-haspopup="listbox" aria-label="{{f.dropAria}}"><sc-for list="{{f.dropPills}}" as="dq" hint-placeholder-count="2"><sc-if value="{{dq.isPerson}}" H="{{false}}"><span class="person"><span class="av xs" style="background: {{dq.color}}">{{dq.initials}}</span>{{dq.text}}</span></sc-if><sc-if value="{{dq.isPill}}" H="{{true}}"><span class="pill {{dq.cls}}"><sc-if value="{{dq.dot}}" H="{{false}}"><span class="sdot"></span></sc-if>{{dq.text}}</span></sc-if></sc-for><sc-if value="{{f.dropEmpty}}" H="{{false}}"><span class="fdrop-ph">Vacío</span></sc-if><span class="fdrop-chev">%(CHEV)s</span></button></div></sc-if>
 <sc-if value="{{f.eSelect}}" H="{{false}}"><div class="opts"><sc-for list="{{f.options}}" as="o" hint-placeholder-count="3"><button type="button" class="pill pill-btn {{o.cls}}" onClick="{{o.pick}}" aria-pressed="{{o.on}}"><sc-if value="{{o.dot}}" H="{{false}}"><span class="sdot"></span></sc-if>{{o.v}}</button></sc-for></div></sc-if>
 <sc-if value="{{f.ePeople}}" H="{{false}}"><div class="opts"><sc-for list="{{f.people}}" as="p" hint-placeholder-count="4"><button type="button" class="person-opt {{p.cls}}" onClick="{{p.pick}}" aria-pressed="{{p.on}}"><span class="av sm" style="background: {{p.color}}">{{p.initials}}</span>{{p.first}}</button></sc-for></div></sc-if>
 <sc-if value="{{f.eCheck}}" H="{{false}}"><div><button type="button" class="cbox lg {{f.checkCls}}" onClick="{{f.toggle}}" aria-pressed="{{f.checked}}" aria-label="{{f.label}}">%(CHECK)s</button></div></sc-if>
@@ -72,12 +74,12 @@ def fields(lst):
 </sc-if>
 <sc-if value="{{f.eButton}}" H="{{false}}"><div><button type="button" class="btn btn-sm" onClick="{{f.run}}">%(BOLT)s{{f.btnLabel}}</button></div></sc-if>
 <sc-if value="{{f.eAi}}" H="{{false}}"><div class="ai-val"><span class="v-ai">{{f.aiText}}</span><button type="button" class="link-btn" onClick="{{f.aiGen}}">%(AI)s{{f.aiBtn}}</button></div></sc-if>
-<sc-if value="{{f.eRead}}" H="{{false}}"><div class="fro">%(DISP)s</div></sc-if>
+<sc-if value="{{f.eRead}}" H="{{false}}"><div class="fro">%(DISP)s<sc-if value="{{f.hasFx}}" H="{{false}}"><button type="button" class="fx-tog {{f.fxCls}}" onClick="{{f.fxToggle}}" aria-expanded="{{f.fxOpen}}" aria-label="Ver cómo se calcula" title="Ver cómo se calcula">ƒx</button></sc-if></div><sc-if value="{{f.fxOpen}}" H="{{false}}"><div class="fx-detail">{{f.fxText}}</div></sc-if></sc-if>
 <sc-if value="{{f.hasNote}}" H="{{false}}"><span class="fnote">{{f.note}}</span></sc-if><sc-if value="{{f.hasRefs}}" H="{{false}}"><span class="frefs" title="{{f.refsTip}}"><span class="frefs-t">Se calcula con</span><sc-for list="{{f.refs}}" as="rf" hint-placeholder-count="2"><button type="button" class="fref {{rf.cls}}" onClick="{{rf.go}}" title="{{rf.tip}}">{{rf.label}}</button></sc-for></span></sc-if>
 </div>
 </div>
 </sc-for>''' % dict(L=lst, ICON=ic('f.icon', 'sm'), EXT=ic('ICON.ext', 'sm'), CHECK=CHECK, FILE=ic('ICON.files', 'xs'), X12=ic('ICON.x', 'xs'),
-                    LINK=ic('ICON.link', 'xs'), BOLT=ic('ICON.bolt', 'sm'), AI=ic('ICON.ai', 'xs'), DISP=disp('f.d'))).replace(' H="', ' ' + H + '="')
+                    LINK=ic('ICON.link', 'xs'), BOLT=ic('ICON.bolt', 'sm'), AI=ic('ICON.ai', 'xs'), CHEV=ic('ICON.chevdown', 'xs'), DISP=disp('f.d'))).replace(' H="', ' ' + H + '="')
 
 
 def tpl(name):
@@ -87,7 +89,7 @@ def tpl(name):
 markup = open(BASE + 'markup.html', encoding='utf-8').read()
 # plantillas reutilizables (el prefijo $ se cambia por la ruta real)
 for _ in range(3):
-    for name in ('dbview', 'chart', 'rules', 'slash', 'fill'):
+    for name in ('dbview', 'chart', 'rules', 'slash', 'fill', 'rt'):
         body = tpl(name)
         markup = re.sub(r'\[\[' + name + r':([\w.]+)\]\]', lambda m: body.replace('$.', m.group(1) + '.'), markup)
 markup = re.sub(r'\[\[disp:([\w.]+)\]\]', lambda m: disp(m.group(1)), markup)
@@ -103,7 +105,7 @@ assert '[[' not in markup, markup[markup.index('[['):markup.index('[[') + 60]
 assert '$.' not in markup
 
 css = open(BASE + 'style.css', encoding='utf-8').read()
-js = '\n'.join(open(BASE + f, encoding='utf-8').read() for f in ['icons.js', 'lib.js', 'core.js', 'actions.js', 'views.js', 'drawer.js', 'render.js', 'pm.js', 'org2.js', 'doc.js', 'forms.js', 'costos.js', 'tecsur_data.js', 'tecsur.js', 'portafolio.js', 'touchdrag.js', 'officegen.js', 'report.js', 'negocio.js'])
+js = '\n'.join(open(BASE + f, encoding='utf-8').read() for f in ['icons.js', 'lib.js', 'core.js', 'actions.js', 'views.js', 'drawer.js', 'render.js', 'pm.js', 'org2.js', 'doc.js', 'forms.js', 'costos.js', 'tecsur_data.js', 'tecsur.js', 'portafolio.js', 'touchdrag.js', 'officegen.js', 'report.js', 'negocio.js', 'v6.js'])
 assert '</' not in js
 
 props = {

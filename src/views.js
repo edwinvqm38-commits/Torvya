@@ -391,6 +391,7 @@ Object.assign(Component.prototype, {
     function rowColor(r) {
       var c = '';
       (vw.colors || []).some(function (rule) { if (rprops.some(function (p) { return p.key === rule.prop; }) && !(rule.value === '' && !NOVAL[rule.op]) && self.ruleMatch(s, t, rule, r, v)) { c = 'rc-' + rule.color; return true; } return false; });
+      if (!c && r._bg) c = 'rc-' + r._bg;
       return c;
     }
     function propsFor(r) { return vprops.filter(function (p) { return p.type !== 'title'; }).map(function (p) { return { name: p.name, hasLbl: ['select', 'status', 'multi_select', 'person', 'relation', 'created_by', 'last_edited_by'].indexOf(p.type) < 0, d: self.dispOf(s, t, p, r, v, canEdit) }; }).filter(function (x) { return !x.d.empty; }); }
@@ -420,7 +421,7 @@ Object.assign(Component.prototype, {
           var isSel = sel && sel.row === r.id && sel.prop === p.key;
           var dd = self.dispOf(s, t, p, r, v, canEdit);
           var emp = !(dd.text || (dd.pills || []).length || (dd.chips || []).length || (dd.people || []).length || dd.kCheck || dd.kLink || (dd.files || []).length || dd.kBar || dd.kRing || dd.kButton);
-          return { isTitle: false, notTitle: true, title: '', open: null, align: isNumericProp(p) ? 'num' : '', wrapCls: wc + (emp ? ' td-emp' : ''), selCls: isSel ? 'cell-sel' : '', lbl: p.name, d: dd, aria: 'Editar ' + p.name + ' de ' + self.titleOf(t, r), select: function () { self.setState({ selCell: isSel ? null : { where: where, tid: tid, row: r.id, prop: p.key }, headMenu: null }); } };
+          return { isTitle: false, notTitle: true, title: '', open: null, align: isNumericProp(p) ? 'num' : '', wrapCls: wc + (emp ? ' td-emp' : ''), selCls: isSel ? 'cell-sel' : '', lbl: p.name, d: dd, aria: 'Editar ' + p.name + ' de ' + self.titleOf(t, r), select: function () { var ddp = canEdit && DROP_TYPES[p.type]; self.setState({ selCell: isSel && !ddp ? null : { where: where, tid: tid, row: r.id, prop: p.key }, headMenu: null, opPop: ddp ? { tid: tid, rid: r.id, key: p.key, anchor: '.td.cell-sel' } : null, opQ: '' }); } };
         })
       };
     }
@@ -474,7 +475,7 @@ Object.assign(Component.prototype, {
     /* barra de edición de celda (tipo Excel) */
     var cb = { icon: '', prop: '', rowTitle: '', fields: [], isFormula: false, formula: '', editFormula: null, openRec: null, close: null };
     var selRow = sel ? findRow(t, sel.row) : null, selProp = sel ? propOf(t, sel.prop) : null;
-    if (selRow && selProp && baseRows.indexOf(selRow) >= 0) {
+    if (selRow && selProp && baseRows.indexOf(selRow) >= 0 && !(canEdit && DROP_TYPES[selProp.type])) {
       var fv = this.fieldView(s, t, selProp, selRow, v, canEdit, this.recCtx(tid, selRow.id));
       cb = { icon: ICON[selProp.type], prop: selProp.name, rowTitle: this.titleOf(t, selRow), fields: [fv], isFormula: selProp.type === 'formula', formula: selProp.expr || '', canEditFormula: canStructure && !locked,
         editFormula: function () { self.openDrawer('propEdit', { dCtx: ctxD, dProp: selProp.key }); }, openRec: function () { self.openRec(tid, selRow.id); }, close: function () { self.setState({ selCell: null }); } };

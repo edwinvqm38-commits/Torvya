@@ -192,10 +192,19 @@
                 <button type="button" class="bt bt-grip" draggable="true" onDragStart="{{bl.dragStart}}" onDragEnd="{{bl.dragEnd}}" aria-label="Arrastrar para mover el bloque" title="Arrastra para mover">[[icx:ICON.grip]]</button>
                 <sc-if value="{{bl.canUp}}" hint-placeholder-val="{{true}}"><button type="button" class="bt" onClick="{{bl.up}}" aria-label="Mover arriba" title="Mover arriba">[[icx:ICON.up]]</button></sc-if>
                 <sc-if value="{{bl.canDown}}" hint-placeholder-val="{{true}}"><button type="button" class="bt" onClick="{{bl.down}}" aria-label="Mover abajo" title="Mover abajo">[[icx:ICON.down]]</button></sc-if>
+                <button type="button" class="bt {{bl.palCls}}" onClick="{{bl.togglePal}}" aria-expanded="{{bl.palOpen}}" aria-label="Color del bloque" title="Color de fondo y de texto">[[icx:ICON.palette]]</button>
                 <button type="button" class="bt bt-w" onClick="{{bl.cycleW}}" aria-label="{{bl.wAria}}" title="{{bl.wAria}}">[[icx:ICON.width]]<span>{{bl.wLabel}}</span></button>
                 <sc-if value="{{bl.hasConfig}}" hint-placeholder-val="{{true}}"><button type="button" class="bt" onClick="{{bl.config}}" aria-label="{{bl.configAria}}" title="{{bl.configAria}}">[[icx:ICON.settings]]</button></sc-if>
                 <button type="button" class="bt {{bl.delCls}}" onClick="{{bl.del}}" aria-label="{{bl.delAria}}" title="{{bl.delAria}}">[[icx:ICON.trash]]</button>
               </div>
+              <sc-if value="{{bl.palOpen}}" hint-placeholder-val="{{false}}">
+                <div class="tone-pop blk-pal" role="dialog" aria-label="Color del bloque">
+                  <div class="pp-title">Fondo</div>
+                  <div class="tone-grid"><sc-for list="{{bl.bgOpts}}" as="tb" hint-placeholder-count="9"><button type="button" class="tone-opt {{tb.cls}}" onClick="{{tb.pick}}" aria-label="Fondo {{tb.name}}" aria-pressed="{{tb.on}}" title="{{tb.name}}"></button></sc-for></div>
+                  <sc-if value="{{bl.hasFg}}" hint-placeholder-val="{{true}}"><div class="pp-title">Texto</div>
+                  <div class="tone-grid"><sc-for list="{{bl.fgOpts}}" as="tf" hint-placeholder-count="9"><button type="button" class="tone-opt tx {{tf.cls}}" onClick="{{tf.pick}}" aria-label="Texto {{tf.name}}" aria-pressed="{{tf.on}}" title="{{tf.name}}">A</button></sc-for></div></sc-if>
+                </div>
+              </sc-if>
             </sc-if>
 
             <sc-if value="{{bl.isDoc}}" hint-placeholder-val="{{false}}">
@@ -203,9 +212,34 @@
                 <sc-if value="{{bl.isBullet}}" hint-placeholder-val="{{false}}"><span class="doc-mk" aria-hidden="true">•</span></sc-if>
                 <sc-if value="{{bl.isNumber}}" hint-placeholder-val="{{false}}"><span class="doc-mk num" aria-hidden="true">{{bl.num}}</span></sc-if>
                 <sc-if value="{{bl.isCheck}}" hint-placeholder-val="{{false}}"><button type="button" class="cbox doc-cb {{bl.chkCls}}" onClick="{{bl.toggleDone}}" aria-pressed="{{bl.done}}" aria-label="Marcar como hecho">[[CHECK]]</button></sc-if>
-                <sc-if value="{{bl.canEdit}}" hint-placeholder-val="{{true}}"><textarea class="doc-in" rows="1" value="{{bl.text}}" onChange="{{bl.setText}}" onKeyDown="{{bl.key}}" placeholder="{{bl.docPh}}" aria-label="{{bl.typeName}}"></textarea></sc-if>
-                <sc-if value="{{bl.readOnly}}" hint-placeholder-val="{{false}}"><p class="doc-in ro">{{bl.textRo}}</p></sc-if>
+                <sc-if value="{{bl.isToggle}}" hint-placeholder-val="{{false}}"><button type="button" class="doc-tg {{bl.tgCls}}" onClick="{{bl.tgToggle}}" aria-expanded="{{bl.tgOpen}}" aria-label="Mostrar u ocultar el contenido">[[icx:ICON.right]]</button></sc-if>
+                <sc-if value="{{bl.editRaw}}" hint-placeholder-val="{{true}}"><textarea class="doc-in" rows="1" value="{{bl.text}}" onChange="{{bl.setText}}" onKeyDown="{{bl.key}}" onFocus="{{bl.onFocus}}" onBlur="{{bl.onBlur}}" placeholder="{{bl.docPh}}" aria-label="{{bl.typeName}}"></textarea></sc-if>
+                <sc-if value="{{bl.showRich}}" hint-placeholder-val="{{false}}"><div class="doc-rt" role="textbox" tabindex="0" onClick="{{bl.editRich}}" onFocus="{{bl.editRich}}" aria-label="{{bl.typeName}}: pulsa para editar">[[rt:bl.rt]]</div></sc-if>
+                <sc-if value="{{bl.readOnly}}" hint-placeholder-val="{{false}}"><p class="doc-in ro">[[rt:bl.rt]]</p></sc-if>
               </div>
+              <sc-if value="{{bl.fmtOpen}}" hint-placeholder-val="{{false}}">
+                <div class="fmt-bar" role="toolbar" aria-label="Formato del texto">
+                  <sc-for list="{{bl.fmtBtns}}" as="fb" hint-placeholder-count="6"><button type="button" class="fmt-b {{fb.cls}}" onMouseDown="{{fb.down}}" onClick="{{fb.click}}" aria-label="{{fb.aria}}" title="{{fb.aria}}">{{fb.label}}</button></sc-for>
+                  <span class="fmt-sep"></span>
+                  <button type="button" class="fmt-b {{bl.fmtColCls}}" onMouseDown="{{bl.fmtColDown}}" aria-expanded="{{bl.fmtColOpen}}" aria-label="Color del texto seleccionado" title="Color y resaltado">[[icx:ICON.tcolor]]</button>
+                  <span class="fmt-sep"></span>
+                  <sc-for list="{{bl.fmtTypes}}" as="ft" hint-placeholder-count="6"><button type="button" class="fmt-b {{ft.cls}}" onMouseDown="{{ft.down}}" aria-label="{{ft.aria}}" title="{{ft.aria}}">[[icx:ft.icon]]</button></sc-for>
+                  <sc-if value="{{bl.fmtColOpen}}" hint-placeholder-val="{{false}}">
+                    <div class="fmt-pal">
+                      <div class="pp-title">Color del texto</div>
+                      <div class="tone-grid"><sc-for list="{{bl.fmtFg}}" as="fc" hint-placeholder-count="9"><button type="button" class="tone-opt tx {{fc.cls}}" onMouseDown="{{fc.down}}" aria-label="Texto {{fc.name}}" title="{{fc.name}}">A</button></sc-for></div>
+                      <div class="pp-title">Resaltado</div>
+                      <div class="tone-grid"><sc-for list="{{bl.fmtBg}}" as="fh" hint-placeholder-count="9"><button type="button" class="tone-opt {{fh.cls}}" onMouseDown="{{fh.down}}" aria-label="Resaltado {{fh.name}}" title="{{fh.name}}"></button></sc-for></div>
+                    </div>
+                  </sc-if>
+                </div>
+              </sc-if>
+              <sc-if value="{{bl.tgShow}}" hint-placeholder-val="{{false}}">
+                <div class="doc-tg-body">
+                  <sc-if value="{{bl.canEdit}}" hint-placeholder-val="{{true}}"><textarea class="doc-tg-in" value="{{bl.tgBody}}" onChange="{{bl.setTgBody}}" placeholder="Contenido que se despliega…" aria-label="Contenido del desplegable"></textarea></sc-if>
+                  <sc-if value="{{bl.readOnly}}" hint-placeholder-val="{{false}}"><p class="doc-tg-ro">{{bl.tgBody}}</p></sc-if>
+                </div>
+              </sc-if>
               <sc-if value="{{bl.hasMentions}}" hint-placeholder-val="{{false}}"><div class="men-row"><sc-for list="{{bl.mentions}}" as="mn" hint-placeholder-count="2"><button type="button" class="men-chip" onClick="{{mn.open}}" title="{{mn.kindTxt}}"><span class="chip-dot" style="background: {{mn.color}}"></span>@{{mn.label}}</button></sc-for></div></sc-if>
               <sc-if value="{{bl.menOpen}}" hint-placeholder-val="{{false}}">
                 <div class="slash-menu men-menu" role="listbox" aria-label="Mencionar">
@@ -490,7 +524,8 @@
             <sc-for list="{{org.links}}" as="ol" hint-placeholder-count="5"><svg class="map-svg" data-key="{{ol.key}}" viewBox="{{org.vb}}" aria-hidden="true"><path class="org-ln {{ol.cls}}" d="{{ol.d}}" style="d: {{ol.cd}}"></path></svg></sc-for>
             <sc-if value="{{org.hasGhost}}" hint-placeholder-val="{{false}}"><div class="org-ghost" data-key="ghost" style="{{org.ghost.style}}" aria-hidden="true"></div></sc-if>
             <sc-for list="{{org.boxes}}" as="ob" hint-placeholder-count="6">
-              <button type="button" class="org-node {{ob.cls}}" data-key="{{ob.key}}" data-hint="{{ob.hint}}" style="{{ob.style}}" onClick="{{ob.pick}}" onPointerDown="{{ob.ptrDown}}" aria-label="{{ob.aria}}">
+              <div class="org-slot {{ob.slotCls}}" data-key="{{ob.key}}" data-cid="{{ob.id}}" style="{{ob.style}}"><div class="org-jel">
+              <button type="button" class="org-node {{ob.cls}}" data-hint="{{ob.hint}}" onClick="{{ob.pick}}" onPointerDown="{{ob.ptrDown}}" aria-label="{{ob.aria}}">
                 <span class="on-top"><span class="on-area"><span class="tico xs">[[icx:ob.icon]]</span><span class="on-areatxt">{{ob.areaName}}</span></span><span class="on-lv">{{ob.lvl}}</span></span>
                 <strong class="on-name">{{ob.name}}</strong>
                 <span class="on-person"><sc-if value="{{ob.hasPerson}}" hint-placeholder-val="{{true}}"><span class="av xs" style="background: {{ob.avatar}}">{{ob.initials}}</span></sc-if><sc-if value="{{ob.vacant}}" hint-placeholder-val="{{false}}"><span class="vac-dot"></span></sc-if><span class="on-pname">{{ob.person}}</span></span>
@@ -498,6 +533,7 @@
                 <sc-if value="{{ob.hasAlerts}}" hint-placeholder-val="{{false}}"><span class="on-al" title="{{ob.alertsAria}}">{{ob.alerts}}</span></sc-if>
                 <sc-if value="{{ob.hasKids}}" hint-placeholder-val="{{false}}"><span class="on-kids" title="Cargos a su cargo">{{ob.kidsTxt}}</span></sc-if>
               </button>
+              </div></div>
             </sc-for>
           </div>
         </div>
@@ -1312,12 +1348,12 @@
 
 <sc-if value="{{hasRec}}" hint-placeholder-val="{{false}}">
   <sc-if value="{{recFullB}}" hint-placeholder-val="{{false}}"><button type="button" class="scrim rec-scrim" onClick="{{closeRec}}" aria-label="Cerrar registro"></button></sc-if>
-  <aside class="rec {{recMode}}" aria-label="Detalle del registro">
+  <aside class="rec {{recMode}} {{rec.bgCls}}" aria-label="Detalle del registro">
     <div class="rec-top">
       <span class="crumb-sm"><span class="tico xs" style="--c: {{rec.tcolor}}">[[icx:rec.ticon]]</span>{{rec.tname}}</span>
       <span class="rec-actions">
         <sc-if value="{{rec.notInTable}}" hint-placeholder-val="{{true}}"><button type="button" class="btn btn-xs" onClick="{{rec.openTable}}">[[icx:ICON.db]]Ver en su tabla</button></sc-if>
-        <button type="button" class="icon-btn" onClick="{{toggleRecFull}}" aria-label="{{recFullAria}}" title="{{recFullAria}}">[[ic:ICON.expand]]</button>
+        <div class="seg seg-sm rec-modes" role="group" aria-label="Cómo abrir el registro"><button type="button" class="seg-btn {{recSideCls}}" onClick="{{recAsSide}}" aria-pressed="{{recIsSide}}" title="Panel lateral">[[ics:ICON.sidebar]]<span>Panel</span></button><button type="button" class="seg-btn {{recFullCls}}" onClick="{{recAsFull}}" aria-pressed="{{recFullB}}" title="Ventana centrada amplia">[[ics:ICON.expand]]<span>Ventana</span></button></div><sc-if value="{{rec.canEdit}}" hint-placeholder-val="{{true}}"><span class="pick-wrap"><button type="button" class="icon-btn" onClick="{{rec.togglePal}}" aria-expanded="{{rec.palOpen}}" aria-label="Color de fondo de la tarjeta" title="Color de fondo de la tarjeta">[[ic:ICON.palette]]</button><sc-if value="{{rec.palOpen}}" hint-placeholder-val="{{false}}"><div class="tone-pop"><div class="pp-title">Fondo de la tarjeta</div><div class="tone-grid"><sc-for list="{{rec.pal}}" as="rp" hint-placeholder-count="9"><button type="button" class="tone-opt {{rp.cls}}" onClick="{{rp.pick}}" aria-label="{{rp.name}}" aria-pressed="{{rp.on}}" title="{{rp.name}}"></button></sc-for></div><p class="muted sm" style="margin: 0">Se ve en la tabla, el tablero y aquí. Las reglas de color de la vista tienen prioridad.</p></div></sc-if></span></sc-if>
         <sc-if value="{{rec.canTpl}}" hint-placeholder-val="{{true}}"><button type="button" class="icon-btn" onClick="{{rec.saveTpl}}" aria-label="Guardar como plantilla" title="Guardar como plantilla">[[ic:ICON.template]]</button></sc-if>
         <sc-if value="{{rec.canEdit}}" hint-placeholder-val="{{true}}"><button type="button" class="icon-btn" onClick="{{rec.del}}" aria-label="Eliminar registro" title="Eliminar registro">[[ic:ICON.trash]]</button></sc-if>
         <button type="button" class="icon-btn" onClick="{{closeRec}}" aria-label="Cerrar" title="Cerrar">[[ic:ICON.x]]</button>
@@ -1327,10 +1363,19 @@
       <sc-if value="{{rec.canEdit}}" hint-placeholder-val="{{true}}"><input class="rec-title" value="{{rec.title}}" onChange="{{rec.setTitle}}" placeholder="Sin título" aria-label="Título del registro"></sc-if>
       <sc-if value="{{rec.cannotEdit}}" hint-placeholder-val="{{false}}"><h2 class="rec-title-ro">{{rec.titleText}}</h2></sc-if>
       <div class="rec-meta">{{rec.meta}}</div>
+      <div class="rec-cols">
+      <div class="rec-ca">
       <div class="fields">
         [[fields:rec.fields]]
       </div>
       <sc-if value="{{rec.hasOrigin}}" hint-placeholder-val="{{false}}"><div class="rec-origin">[[icx:ICON.mobile]]{{rec.originTxt}}</div></sc-if>
+      <div class="rec-body">
+        <div class="sec-label">Contenido</div>
+        <sc-if value="{{rec.canEdit}}" hint-placeholder-val="{{true}}"><textarea class="body-ta" value="{{rec.body}}" onChange="{{rec.setBody}}" placeholder="Escribe notas, acuerdos o instrucciones de este registro…" aria-label="Contenido del registro"></textarea></sc-if>
+        <sc-if value="{{rec.cannotEdit}}" hint-placeholder-val="{{false}}"><p class="body-ro">{{rec.bodyText}}</p></sc-if>
+      </div>
+      </div>
+      <div class="rec-cb">
       <sc-if value="{{rec.hasLinked}}" hint-placeholder-val="{{false}}">
         <div class="lk-wrap">
           <div class="sec-label">[[ics:ICON.relation]]Listas vinculadas</div>
@@ -1342,10 +1387,12 @@
               </div>
               <sc-if value="{{lk.open}}" hint-placeholder-val="{{true}}">
                 <div class="lk-rows">
+                  <sc-if value="{{lk.hasCols}}" hint-placeholder-val="{{false}}"><div class="lk-row lk-hd"><span class="lk-title">Nombre</span><span class="lk-cells"><sc-for list="{{lk.cols}}" as="lcol" hint-placeholder-count="2"><span class="lk-cell">{{lcol.name}}</span></sc-for></span></div></sc-if>
                   <sc-for list="{{lk.rows}}" as="lr" hint-placeholder-count="3">
                     <div class="lk-row">
                       <sc-if value="{{lr.editing}}" hint-placeholder-val="{{false}}"><input class="finput bordered lk-in" value="{{lr.title}}" onChange="{{lr.setTitle}}" placeholder="Escribe el nombre…" aria-label="Nombre del nuevo registro"><button type="button" class="btn btn-xs" onClick="{{lr.done}}">Listo</button></sc-if>
                       <sc-if value="{{lr.notEditing}}" hint-placeholder-val="{{true}}"><button type="button" class="lk-title" onClick="{{lr.open}}">{{lr.title}}</button></sc-if>
+                      <span class="lk-cells"><sc-for list="{{lr.cells}}" as="lc" hint-placeholder-count="2"><span class="lk-cell" title="{{lc.name}}">{{lc.text}}</span></sc-for></span>
                       <sc-if value="{{lr.hasPill}}" hint-placeholder-val="{{true}}"><span class="pill {{lr.pillCls}}">{{lr.pill}}</span></sc-if>
                       <sc-if value="{{lr.hasAv}}" hint-placeholder-val="{{true}}"><span class="av xs" style="background: {{lr.avColor}}" title="{{lr.avName}}">{{lr.av}}</span></sc-if>
                       <span class="muted sm lk-date">{{lr.date}}</span>
@@ -1405,11 +1452,6 @@
         </sc-for>
         <sc-if value="{{rec.noTrace}}" hint-placeholder-val="{{false}}"><p class="muted sm" style="margin: 0">Este registro aún no está vinculado con otras tablas.</p></sc-if>
       </div>
-      <div class="rec-body">
-        <div class="sec-label">Contenido</div>
-        <sc-if value="{{rec.canEdit}}" hint-placeholder-val="{{true}}"><textarea class="body-ta" value="{{rec.body}}" onChange="{{rec.setBody}}" placeholder="Escribe notas, acuerdos o instrucciones de este registro…" aria-label="Contenido del registro"></textarea></sc-if>
-        <sc-if value="{{rec.cannotEdit}}" hint-placeholder-val="{{false}}"><p class="body-ro">{{rec.bodyText}}</p></sc-if>
-      </div>
       <div class="comments">
         <div class="sec-label">Comentarios</div>
         <sc-for list="{{rec.comments}}" as="cm" hint-placeholder-count="1">
@@ -1421,8 +1463,35 @@
         </sc-if>
         <sc-if value="{{rec.cannotComment}}" hint-placeholder-val="{{false}}"><p class="muted sm" style="margin: 0">Con el permiso «Ver» no se puede comentar.</p></sc-if>
       </div>
+      </div>
+      </div>
     </div>
   </aside>
+</sc-if>
+
+<sc-if value="{{op.has}}" hint-placeholder-val="{{false}}">
+  <button type="button" class="op-scrim" onClick="{{op.close}}" aria-label="Cerrar lista"></button>
+  <div class="oppop" role="dialog" aria-label="{{op.title}}">
+    <div class="op-head"><input class="op-q" value="{{op.q}}" onChange="{{op.setQ}}" onKeyDown="{{op.key}}" placeholder="{{op.ph}}" aria-label="Buscar opción"><span class="op-mode">{{op.modeTxt}}</span></div>
+    <div class="op-list" role="listbox" aria-multiselectable="{{op.multi}}">
+      <sc-for list="{{op.opts}}" as="oo" hint-placeholder-count="5">
+        <button type="button" class="op-item {{oo.cls}}" onClick="{{oo.pick}}" role="option" aria-selected="{{oo.on}}">
+          <span class="op-ck"><sc-if value="{{oo.on}}" hint-placeholder-val="{{false}}">[[CHECK]]</sc-if></span>
+          <sc-if value="{{oo.isPerson}}" hint-placeholder-val="{{false}}"><span class="person"><span class="av xs" style="background: {{oo.color}}">{{oo.initials}}</span>{{oo.label}}</span></sc-if>
+          <sc-if value="{{oo.isPill}}" hint-placeholder-val="{{true}}"><span class="pill {{oo.pcls}}"><sc-if value="{{oo.dot}}" hint-placeholder-val="{{false}}"><span class="sdot"></span></sc-if>{{oo.label}}</span></sc-if>
+          <sc-if value="{{oo.isRow}}" hint-placeholder-val="{{false}}"><span class="op-row"><span class="chip-dot" style="background: {{oo.color}}"></span>{{oo.label}}</span></sc-if>
+        </button>
+      </sc-for>
+      <sc-if value="{{op.empty}}" hint-placeholder-val="{{false}}"><div class="op-none">Sin coincidencias.</div></sc-if>
+      <sc-if value="{{op.canCreate}}" hint-placeholder-val="{{false}}"><button type="button" class="op-item op-new" onClick="{{op.create}}">[[icx:ICON.plus]]Crear «{{op.q}}»</button></sc-if>
+    </div>
+    <div class="op-foot">
+      <sc-if value="{{op.hasClear}}" hint-placeholder-val="{{true}}"><button type="button" class="link-btn" onClick="{{op.clear}}">Quitar selección</button></sc-if>
+      <span class="op-sp"></span>
+      <sc-if value="{{op.canOpenRec}}" hint-placeholder-val="{{true}}"><button type="button" class="link-btn" onClick="{{op.openRec}}">[[icx:ICON.expand]]Abrir registro</button></sc-if>
+      <button type="button" class="btn btn-xs" onClick="{{op.close}}">Listo</button>
+    </div>
+  </div>
 </sc-if>
 
 <sc-if value="{{hasToast}}" hint-placeholder-val="{{false}}">

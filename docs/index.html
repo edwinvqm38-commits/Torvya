@@ -1011,7 +1011,7 @@ button.pmp-row:hover{background:var(--hover)}
 .org-ln{fill:none;stroke:var(--muted);stroke-width:1.4;opacity:.55;transition:d .5s var(--spring,ease)}
 .org-ln.hi{stroke:var(--acc);stroke-width:2.4;opacity:1}
 .org-chart{--spring:cubic-bezier(.34,1.45,.5,1)}
-.org-node{position:absolute;z-index:2;display:flex;flex-direction:column;align-items:flex-start;gap:3px;padding:9px 11px;border:1px solid color-mix(in srgb,var(--c) 30%,var(--line));border-radius:12px;background:linear-gradient(155deg,color-mix(in srgb,var(--c) 14%,var(--panel)) 0%,color-mix(in srgb,var(--c) 4%,var(--panel)) 72%);box-shadow:0 1px 2px rgba(20,20,16,.05),0 5px 14px color-mix(in srgb,var(--c) 11%,transparent);text-align:left;color:var(--text);overflow:hidden;user-select:none;-webkit-user-select:none;transition:left .5s var(--spring),top .5s var(--spring),box-shadow .2s,opacity .2s,border-color .2s}
+.org-node{position:relative;width:100%;height:100%;z-index:2;display:flex;flex-direction:column;align-items:flex-start;gap:3px;padding:9px 11px;border:1px solid color-mix(in srgb,var(--c) 30%,var(--line));border-radius:12px;background:linear-gradient(155deg,color-mix(in srgb,var(--c) 14%,var(--panel)) 0%,color-mix(in srgb,var(--c) 4%,var(--panel)) 72%);box-shadow:0 1px 2px rgba(20,20,16,.05),0 5px 14px color-mix(in srgb,var(--c) 11%,transparent);text-align:left;color:var(--text);overflow:hidden;user-select:none;-webkit-user-select:none;transition:box-shadow .2s,opacity .2s,border-color .2s}
 .org-node:hover{box-shadow:0 2px 4px rgba(20,20,16,.06),0 8px 20px color-mix(in srgb,var(--c) 20%,transparent)}
 .org-node.on{border-color:var(--acc);box-shadow:0 0 0 2px var(--acc),0 8px 20px color-mix(in srgb,var(--c) 18%,transparent)}
 .org-node.me{outline:2px dashed color-mix(in srgb,var(--acc) 55%,transparent);outline-offset:3px}
@@ -1406,7 +1406,7 @@ button.cos-tr:hover{background:var(--hover)}
 
 /* ---------- organigrama: arrastrar con efecto gelatina ---------- */
 .org-node.can-drag{cursor:grab;touch-action:none}
-.org-node.dragging{z-index:60;cursor:grabbing;transition:none;will-change:transform;border-color:var(--c);box-shadow:0 24px 46px rgba(20,20,16,.3),0 8px 16px rgba(20,20,16,.14)}
+.org-node.dragging{cursor:grabbing;transition:none;border-color:var(--c);box-shadow:0 24px 46px rgba(20,20,16,.3),0 8px 16px rgba(20,20,16,.14)}
 body.org-dragging,body.org-dragging *{cursor:grabbing!important;user-select:none;-webkit-user-select:none}
 .org-ghost{position:absolute;z-index:1;border-radius:12px;border:2px dashed color-mix(in srgb,var(--c) 65%,transparent);background:color-mix(in srgb,var(--c) 9%,transparent);transition:left .5s var(--spring,ease),top .5s var(--spring,ease);animation:orgGhost .28s ease-out}
 @keyframes orgGhost{from{opacity:0;transform:scale(.92)}to{opacity:1;transform:scale(1)}}
@@ -1608,6 +1608,159 @@ body.td-active .board{scroll-snap-type:none!important}
 .rp-foot{display:flex;justify-content:flex-end;gap:8px;padding:12px 18px;border-top:1px solid var(--line);flex-wrap:wrap}
 @media (max-width:760px){.rp-body{grid-template-columns:1fr}.rp-modal{top:auto;bottom:0;left:0;transform:none;width:100%;max-height:92vh;border-radius:18px 18px 0 0}.rp-foot .btn{flex:1;justify-content:center;min-height:44px}.rp-head{padding:14px}}
 .rp-sec .cbox .ic{width:13px;height:13px;stroke:currentColor;stroke-width:3}
+/* ================= v6 ================= */
+/* organigrama: contenedores de posición y de movimiento */
+.org-slot{position:absolute;z-index:2;transition:left .5s var(--spring,ease),top .5s var(--spring,ease)}
+.org-slot.is-held{z-index:60;transition:none}
+.org-slot.is-tgt{z-index:5}
+.org-jel{width:100%;height:100%;transform-origin:50% 40%;backface-visibility:hidden}
+@media (prefers-reduced-motion:reduce){.org-slot{transition:none!important}}
+
+/* menú lateral compacto */
+.side{padding:10px 8px}
+.side .nav-item{min-height:30px;padding:3px 8px;gap:8px;font-size:13.5px;border-radius:7px}
+.side .nav-item .tico.sm{width:22px;height:22px;border-radius:6px}
+.side .nav-item .tico.sm .ic{width:14px;height:14px}
+.side .nav-ic{width:22px;height:22px}
+.side .nav-ic .ic{width:16px;height:16px}
+.side .nav-label{min-height:0;padding:12px 6px 3px 8px;font-size:10.5px}
+.side .nav-sub{padding:7px 8px 2px;font-size:11px}
+.side .nav-count{font-size:11.5px}
+.side .side-foot{padding-top:8px}
+
+/* campos del detalle: una sola fila, más compactos */
+.frow{padding:2px 0;gap:8px}
+.flabel{min-height:32px;font-size:12.5px}
+.fval{min-height:32px;gap:4px}
+.finput{height:32px}
+.fnum{position:relative}
+.fnum .finput{font-variant-numeric:tabular-nums}
+.fnum.has-v .finput:not(:focus){color:transparent;caret-color:transparent}
+.fnum-disp{position:absolute;left:9px;top:50%;transform:translateY(-50%);pointer-events:none;font-variant-numeric:tabular-nums;white-space:nowrap;color:var(--text)}
+.fnum .finput:focus ~ .fnum-disp{display:none}
+.fnum-meter{flex:none;width:72px;height:6px;border-radius:99px;background:var(--line2);overflow:hidden;margin-right:6px}
+.fnum-meter>span{display:block;height:100%;border-radius:99px;background:var(--acc)}
+.fro{display:flex;align-items:center;gap:8px;min-height:32px;padding:0 8px}
+.fx-tog{flex:none;margin-left:auto;height:22px;min-width:26px;padding:0 6px;border:1px solid transparent;border-radius:6px;background:transparent;color:var(--muted);font-size:11.5px;font-style:italic;font-weight:600;opacity:0;transition:opacity .12s}
+.frow:hover .fx-tog,.fx-tog:focus-visible,.fx-tog.on{opacity:1}
+.fx-tog:hover,.fx-tog.on{background:var(--hover);color:var(--text)}
+.fx-detail{margin:0 8px 4px;padding:6px 10px;border-radius:7px;background:var(--hover);font-family:var(--mono,ui-monospace,monospace);font-size:12px;color:var(--muted);white-space:pre-wrap;word-break:break-word}
+.fdrop-btn{display:flex;flex-wrap:wrap;align-items:center;gap:4px;width:100%;min-height:32px;padding:3px 30px 3px 8px;border:1px solid transparent;border-radius:6px;background:transparent;text-align:left;color:var(--text);position:relative;cursor:pointer}
+.fdrop-btn:hover{border-color:var(--line)}
+.fdrop-ph{color:var(--muted);font-size:13px}
+.fdrop-chev{position:absolute;right:8px;top:50%;transform:translateY(-50%);color:var(--muted);display:inline-grid}
+.fdrop-btn .person{display:inline-flex;align-items:center;gap:5px;font-size:13px}
+
+/* lista desplegable de opciones */
+.op-scrim{position:fixed;inset:0;z-index:80;border:0;padding:0;background:transparent;cursor:default}
+.oppop{position:fixed;left:50%;top:30%;z-index:81;visibility:hidden;width:min(300px,calc(100vw - 16px));max-height:min(380px,70vh);display:flex;flex-direction:column;border:1px solid var(--line);border-radius:12px;background:var(--panel);box-shadow:0 16px 40px rgba(20,20,16,.18),0 2px 6px rgba(20,20,16,.08);overflow:hidden;animation:opIn .14s ease-out}
+@keyframes opIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
+.op-head{display:flex;align-items:center;gap:6px;padding:8px;border-bottom:1px solid var(--line2)}
+.op-q{flex:1;min-width:0;height:30px;border:1px solid var(--line);border-radius:7px;background:var(--bg,var(--panel));padding:0 9px;color:var(--text);font-size:13px;outline:none}
+.op-q:focus{border-color:var(--acc);box-shadow:0 0 0 3px var(--soft)}
+.op-mode{flex:none;font-size:10.5px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
+.op-list{flex:1;overflow-y:auto;padding:4px;display:flex;flex-direction:column;gap:1px}
+.op-item{display:flex;align-items:center;gap:8px;width:100%;min-height:32px;padding:4px 8px;border:0;border-radius:7px;background:transparent;text-align:left;color:var(--text);font-size:13px}
+.op-item:hover,.op-item:focus-visible{background:var(--hover)}
+.op-item.on{background:color-mix(in srgb,var(--acc) 8%,transparent)}
+.op-ck{flex:none;width:16px;height:16px;display:inline-grid;place-items:center;color:var(--acc)}
+.op-ck .ic{width:14px;height:14px}
+.op-row{display:inline-flex;align-items:center;gap:6px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.op-item .person{display:inline-flex;align-items:center;gap:6px}
+.op-new{color:var(--muted);gap:6px}
+.op-none{padding:10px;color:var(--muted);font-size:12.5px}
+.op-foot{display:flex;align-items:center;gap:8px;padding:6px 8px;border-top:1px solid var(--line2)}
+
+/* registro: panel o ventana centrada amplia */
+.rec-modes .seg-btn{gap:5px}
+.rec-modes .seg-btn span{font-size:12px}
+.rec.full{top:20px;bottom:20px;width:min(1180px,calc(100% - 40px))}
+.rec-cols{display:flex;flex-direction:column;gap:14px}
+.rec:not(.full) .rec-ca,.rec:not(.full) .rec-cb{display:contents}
+.rec:not(.full) .rec-body{order:5}
+.rec:not(.full) .comments{order:6}
+.rec.full .rec-cols{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:28px;align-items:start}
+.rec.full .rec-ca,.rec.full .rec-cb{display:flex;flex-direction:column;gap:14px;min-width:0}
+.rec.full .rec-cb{padding-left:28px;border-left:1px solid var(--line2)}
+.lk-cells{display:none}
+.lk-hd{display:none}
+.rec.full .lk-cells{display:grid;grid-template-columns:repeat(3,minmax(70px,1fr));gap:8px;flex:2;min-width:0}
+.rec.full .lk-hd{display:flex;font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;border-bottom:1px solid var(--line2)}
+.rec.full .lk-hd .lk-title{font-weight:600;cursor:default}
+.lk-cell{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12.5px;color:var(--muted)}
+.rec.full .lk-row{gap:10px}
+.rec.full .lk-row .lk-title{flex:1.4}
+@media (max-width:900px){.rec.full .rec-cols{grid-template-columns:1fr}.rec.full .rec-cb{padding-left:0;border-left:0}}
+.rec[class*="rc-"] .rec-top{background:transparent}
+
+/* paleta de tonos (fondo de bloques, tarjetas y texto) */
+.tone-pop{position:absolute;right:0;top:calc(100% + 6px);z-index:30;width:248px;display:flex;flex-direction:column;gap:8px;padding:12px;border:1px solid var(--line);border-radius:12px;background:var(--panel);box-shadow:0 12px 32px rgba(20,20,16,.16)}
+.blk-pal{top:18px;right:10px}
+.tone-grid{display:grid;grid-template-columns:repeat(9,1fr);gap:4px}
+.tone-opt{aspect-ratio:1;min-width:0;border:1px solid color-mix(in srgb,var(--text) 14%,transparent);border-radius:7px;padding:0;background:var(--panel);color:var(--text);font-weight:700;font-size:12px;display:grid;place-items:center}
+.tone-opt.on{box-shadow:0 0 0 2px var(--acc)}
+.tone-opt.tone-none{background:linear-gradient(135deg,transparent 46%,#D33 47%,#D33 53%,transparent 54%),var(--panel)}
+.tone-opt.tx{background:var(--panel)}
+.tone-opt.tx.tone-none{background:var(--panel)}
+.tone-gray{background:#F1F1EF}.tone-blue{background:#E7EFFD}.tone-green{background:#E6F4EC}.tone-amber{background:#FDF1DB}.tone-violet{background:#F1EAFD}.tone-teal{background:#E1F3F2}.tone-red{background:#FCE9E7}.tone-pink{background:#FCE8F1}
+.tone-opt.tx.tone-gray,.fg-gray,.rt-fg-gray{color:#787774}.tone-opt.tx.tone-blue,.fg-blue,.rt-fg-blue{color:#2F6BD8}.tone-opt.tx.tone-green,.fg-green,.rt-fg-green{color:#2E8A57}.tone-opt.tx.tone-amber,.fg-amber,.rt-fg-amber{color:#B7791F}
+.tone-opt.tx.tone-violet,.fg-violet,.rt-fg-violet{color:#7C4DD6}.tone-opt.tx.tone-teal,.fg-teal,.rt-fg-teal{color:#14857F}.tone-opt.tx.tone-red,.fg-red,.rt-fg-red{color:#D1453B}.tone-opt.tx.tone-pink,.fg-pink,.rt-fg-pink{color:#C2407F}
+.tone-opt.tx[class*="tone-"]:not(.tone-none){background:var(--panel)}
+.fg-gray .doc-in,.fg-blue .doc-in,.fg-green .doc-in,.fg-amber .doc-in,.fg-violet .doc-in,.fg-teal .doc-in,.fg-red .doc-in,.fg-pink .doc-in,[class*="fg-"] .doc-rt,[class*="fg-"] .co-txt,[class*="fg-"] .blk-txt{color:inherit}
+.blk.has-bg{border-radius:var(--r)}
+.blk-doc.has-bg,.blk-text.has-bg,.blk-heading.has-bg{padding:6px 12px;margin-top:0}
+.blk.has-bg.blk-kpi,.blk.has-bg.blk-chart,.blk.has-bg.blk-slicer,.blk.has-bg.blk-sheet,.blk.has-bg.blk-map,.blk.has-bg.blk-todo,.blk.has-bg.blk-pm{border-color:color-mix(in srgb,currentColor 10%,var(--line))}
+.blk.has-bg.blk-db .tbl-wrap,.blk.has-bg.blk-db .card{background:transparent}
+.blk.has-bg.blk-db{padding:12px 14px}
+.blk.pal-open .blk-tools{opacity:1;pointer-events:auto}
+.bt.on{color:var(--acc)}
+
+/* texto con formato */
+.doc-rt{flex:1;min-width:0;padding:4px 2px;font-size:15px;line-height:1.6;min-height:30px;white-space:pre-wrap;word-break:break-word;color:var(--text);border-radius:6px;cursor:text;outline:none}
+.doc-rt:focus-visible{box-shadow:0 0 0 2px var(--soft)}
+.doc-h1 .doc-rt{font-family:var(--hfont);font-size:24px;font-weight:600;letter-spacing:-.015em;line-height:1.3;padding-top:10px}
+.doc-h2 .doc-rt{font-family:var(--hfont);font-size:19px;font-weight:600;line-height:1.35;padding-top:8px}
+.doc-h3 .doc-rt{font-size:16px;font-weight:600;padding-top:6px}
+.doc-check.done .doc-rt{text-decoration:line-through;color:var(--muted)}
+.rt-b{font-weight:700}.rt-i{font-style:italic}.rt-u{text-decoration:underline;text-underline-offset:3px}.rt-s{text-decoration:line-through}
+.rt-u.rt-s{text-decoration:underline line-through}
+.rt-code{font-family:var(--mono,ui-monospace,SFMono-Regular,Menlo,monospace);font-size:.88em;padding:1px 5px;border-radius:5px;background:color-mix(in srgb,#D1453B 9%,var(--hover));color:#C2410C}
+.rt-hl{background:#FDF1B8;border-radius:3px;padding:0 2px}
+.rt-bg-gray{background:#EDEDEB}.rt-bg-blue{background:#DDE8FC}.rt-bg-green{background:#DBF0E3}.rt-bg-amber{background:#FBE9C6}.rt-bg-violet{background:#E9DEFB}.rt-bg-teal{background:#D3EEEC}.rt-bg-red{background:#FADCD9}.rt-bg-pink{background:#F9DAE8}
+[class*="rt-bg-"],.rt-hl{border-radius:4px;padding:1px 3px;-webkit-box-decoration-break:clone;box-decoration-break:clone}
+.theme-dark .rt-hl,.theme-dark [class*="rt-bg-"]{color:#1F1F1C}
+.fmt-bar{position:absolute;left:0;top:-40px;z-index:12;display:flex;align-items:center;gap:1px;padding:3px;border:1px solid var(--line);border-radius:10px;background:var(--panel);box-shadow:0 8px 24px rgba(20,20,16,.14);flex-wrap:wrap;max-width:min(560px,100%)}
+.blk-doc{position:relative}
+.fmt-b{height:28px;min-width:28px;padding:0 6px;border:0;border-radius:7px;background:transparent;color:var(--text);font-size:13px;display:inline-grid;place-items:center}
+.fmt-b:hover{background:var(--hover)}
+.fmt-b.on{background:color-mix(in srgb,var(--acc) 12%,transparent);color:var(--acc)}
+.fb-b{font-weight:800}.fb-i{font-style:italic;font-family:Georgia,serif}.fb-u{text-decoration:underline}.fb-s{text-decoration:line-through}.fb-c{font-family:ui-monospace,monospace;font-size:12px}
+.fmt-sep{width:1px;height:18px;background:var(--line);margin:0 3px}
+.fmt-pal{position:absolute;left:0;top:calc(100% + 6px);width:248px;display:flex;flex-direction:column;gap:8px;padding:12px;border:1px solid var(--line);border-radius:12px;background:var(--panel);box-shadow:0 12px 32px rgba(20,20,16,.16)}
+/* cita, desplegable y código */
+.doc-quote{border-left:0;padding:6px 14px 6px 34px;border-radius:10px;background:color-mix(in srgb,var(--text) 4%,transparent);position:relative}
+.doc-quote::before{content:'\201C';position:absolute;left:10px;top:-2px;font-family:Georgia,serif;font-size:34px;line-height:1;color:color-mix(in srgb,var(--text) 35%,transparent)}
+.doc-quote .doc-in,.doc-quote .doc-rt{font-style:italic}
+.doc-tg{flex:none;width:24px;height:24px;margin-top:5px;border:0;border-radius:6px;background:transparent;color:var(--muted);display:inline-grid;place-items:center;transition:transform .18s ease}
+.doc-tg:hover{background:var(--hover);color:var(--text)}
+.doc-tg.open{transform:rotate(90deg)}
+.doc-toggle .doc-in,.doc-toggle .doc-rt{font-weight:500}
+.doc-tg-body{margin:0 0 4px 32px;padding:4px 0 4px 12px;border-left:1px solid var(--line2)}
+.doc-tg-in{display:block;width:100%;border:0;background:transparent;color:var(--text);font-size:14.5px;line-height:1.6;resize:none;outline:none;field-sizing:content;min-height:28px;padding:2px}
+.doc-tg-ro{margin:0;white-space:pre-wrap;font-size:14.5px;line-height:1.6}
+.doc-code{border-radius:10px;background:color-mix(in srgb,var(--text) 5%,transparent);padding:4px 10px}
+.doc-code .doc-in,.doc-code .doc-rt{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:13px;line-height:1.55;white-space:pre}
+
+.op-sp{flex:1}
+.op-foot .link-btn{white-space:nowrap;border-style:solid;border-color:transparent}
+.op-foot .link-btn:hover{border-color:var(--line)}
+.rec.full .lk-row{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,2.3fr) 104px 22px 76px;align-items:center;gap:10px}
+.rec.full .lk-row>.lk-title,.rec.full .lk-row>.lk-in{grid-column:1}
+.rec.full .lk-row>.lk-cells{grid-column:2}
+.rec.full .lk-row>.pill{grid-column:3;justify-self:start;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rec.full .lk-row>.av{grid-column:4}
+.rec.full .lk-row>.lk-date{grid-column:5;text-align:right;white-space:nowrap}
+.rec.full .lk-row>.btn{grid-column:2}
 </style>
 </helmet>
 <div class="app theme-{{mode}} acc-{{accent}} dens-{{density}} rad-{{corners}} font-{{font}}">
@@ -1804,10 +1957,19 @@ body.td-active .board{scroll-snap-type:none!important}
                 <button type="button" class="bt bt-grip" draggable="true" onDragStart="{{bl.dragStart}}" onDragEnd="{{bl.dragEnd}}" aria-label="Arrastrar para mover el bloque" title="Arrastra para mover"><svg class="ic ic-xs" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.grip}}"></path></svg></button>
                 <sc-if value="{{bl.canUp}}" hint-placeholder-val="{{true}}"><button type="button" class="bt" onClick="{{bl.up}}" aria-label="Mover arriba" title="Mover arriba"><svg class="ic ic-xs" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.up}}"></path></svg></button></sc-if>
                 <sc-if value="{{bl.canDown}}" hint-placeholder-val="{{true}}"><button type="button" class="bt" onClick="{{bl.down}}" aria-label="Mover abajo" title="Mover abajo"><svg class="ic ic-xs" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.down}}"></path></svg></button></sc-if>
+                <button type="button" class="bt {{bl.palCls}}" onClick="{{bl.togglePal}}" aria-expanded="{{bl.palOpen}}" aria-label="Color del bloque" title="Color de fondo y de texto"><svg class="ic ic-xs" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.palette}}"></path></svg></button>
                 <button type="button" class="bt bt-w" onClick="{{bl.cycleW}}" aria-label="{{bl.wAria}}" title="{{bl.wAria}}"><svg class="ic ic-xs" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.width}}"></path></svg><span>{{bl.wLabel}}</span></button>
                 <sc-if value="{{bl.hasConfig}}" hint-placeholder-val="{{true}}"><button type="button" class="bt" onClick="{{bl.config}}" aria-label="{{bl.configAria}}" title="{{bl.configAria}}"><svg class="ic ic-xs" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.settings}}"></path></svg></button></sc-if>
                 <button type="button" class="bt {{bl.delCls}}" onClick="{{bl.del}}" aria-label="{{bl.delAria}}" title="{{bl.delAria}}"><svg class="ic ic-xs" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.trash}}"></path></svg></button>
               </div>
+              <sc-if value="{{bl.palOpen}}" hint-placeholder-val="{{false}}">
+                <div class="tone-pop blk-pal" role="dialog" aria-label="Color del bloque">
+                  <div class="pp-title">Fondo</div>
+                  <div class="tone-grid"><sc-for list="{{bl.bgOpts}}" as="tb" hint-placeholder-count="9"><button type="button" class="tone-opt {{tb.cls}}" onClick="{{tb.pick}}" aria-label="Fondo {{tb.name}}" aria-pressed="{{tb.on}}" title="{{tb.name}}"></button></sc-for></div>
+                  <sc-if value="{{bl.hasFg}}" hint-placeholder-val="{{true}}"><div class="pp-title">Texto</div>
+                  <div class="tone-grid"><sc-for list="{{bl.fgOpts}}" as="tf" hint-placeholder-count="9"><button type="button" class="tone-opt tx {{tf.cls}}" onClick="{{tf.pick}}" aria-label="Texto {{tf.name}}" aria-pressed="{{tf.on}}" title="{{tf.name}}">A</button></sc-for></div></sc-if>
+                </div>
+              </sc-if>
             </sc-if>
 
             <sc-if value="{{bl.isDoc}}" hint-placeholder-val="{{false}}">
@@ -1815,9 +1977,36 @@ body.td-active .board{scroll-snap-type:none!important}
                 <sc-if value="{{bl.isBullet}}" hint-placeholder-val="{{false}}"><span class="doc-mk" aria-hidden="true">•</span></sc-if>
                 <sc-if value="{{bl.isNumber}}" hint-placeholder-val="{{false}}"><span class="doc-mk num" aria-hidden="true">{{bl.num}}</span></sc-if>
                 <sc-if value="{{bl.isCheck}}" hint-placeholder-val="{{false}}"><button type="button" class="cbox doc-cb {{bl.chkCls}}" onClick="{{bl.toggleDone}}" aria-pressed="{{bl.done}}" aria-label="Marcar como hecho"><svg class="ic ic-check" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></button></sc-if>
-                <sc-if value="{{bl.canEdit}}" hint-placeholder-val="{{true}}"><textarea class="doc-in" rows="1" value="{{bl.text}}" onChange="{{bl.setText}}" onKeyDown="{{bl.key}}" placeholder="{{bl.docPh}}" aria-label="{{bl.typeName}}"></textarea></sc-if>
-                <sc-if value="{{bl.readOnly}}" hint-placeholder-val="{{false}}"><p class="doc-in ro">{{bl.textRo}}</p></sc-if>
+                <sc-if value="{{bl.isToggle}}" hint-placeholder-val="{{false}}"><button type="button" class="doc-tg {{bl.tgCls}}" onClick="{{bl.tgToggle}}" aria-expanded="{{bl.tgOpen}}" aria-label="Mostrar u ocultar el contenido"><svg class="ic ic-xs" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.right}}"></path></svg></button></sc-if>
+                <sc-if value="{{bl.editRaw}}" hint-placeholder-val="{{true}}"><textarea class="doc-in" rows="1" value="{{bl.text}}" onChange="{{bl.setText}}" onKeyDown="{{bl.key}}" onFocus="{{bl.onFocus}}" onBlur="{{bl.onBlur}}" placeholder="{{bl.docPh}}" aria-label="{{bl.typeName}}"></textarea></sc-if>
+                <sc-if value="{{bl.showRich}}" hint-placeholder-val="{{false}}"><div class="doc-rt" role="textbox" tabindex="0" onClick="{{bl.editRich}}" onFocus="{{bl.editRich}}" aria-label="{{bl.typeName}}: pulsa para editar"><sc-for list="{{bl.rt.segs}}" as="sg" hint-placeholder-count="2"><span class="{{sg.cls}}">{{sg.t}}</span></sc-for>
+</div></sc-if>
+                <sc-if value="{{bl.readOnly}}" hint-placeholder-val="{{false}}"><p class="doc-in ro"><sc-for list="{{bl.rt.segs}}" as="sg" hint-placeholder-count="2"><span class="{{sg.cls}}">{{sg.t}}</span></sc-for>
+</p></sc-if>
               </div>
+              <sc-if value="{{bl.fmtOpen}}" hint-placeholder-val="{{false}}">
+                <div class="fmt-bar" role="toolbar" aria-label="Formato del texto">
+                  <sc-for list="{{bl.fmtBtns}}" as="fb" hint-placeholder-count="6"><button type="button" class="fmt-b {{fb.cls}}" onMouseDown="{{fb.down}}" onClick="{{fb.click}}" aria-label="{{fb.aria}}" title="{{fb.aria}}">{{fb.label}}</button></sc-for>
+                  <span class="fmt-sep"></span>
+                  <button type="button" class="fmt-b {{bl.fmtColCls}}" onMouseDown="{{bl.fmtColDown}}" aria-expanded="{{bl.fmtColOpen}}" aria-label="Color del texto seleccionado" title="Color y resaltado"><svg class="ic ic-xs" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.tcolor}}"></path></svg></button>
+                  <span class="fmt-sep"></span>
+                  <sc-for list="{{bl.fmtTypes}}" as="ft" hint-placeholder-count="6"><button type="button" class="fmt-b {{ft.cls}}" onMouseDown="{{ft.down}}" aria-label="{{ft.aria}}" title="{{ft.aria}}"><svg class="ic ic-xs" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ft.icon}}"></path></svg></button></sc-for>
+                  <sc-if value="{{bl.fmtColOpen}}" hint-placeholder-val="{{false}}">
+                    <div class="fmt-pal">
+                      <div class="pp-title">Color del texto</div>
+                      <div class="tone-grid"><sc-for list="{{bl.fmtFg}}" as="fc" hint-placeholder-count="9"><button type="button" class="tone-opt tx {{fc.cls}}" onMouseDown="{{fc.down}}" aria-label="Texto {{fc.name}}" title="{{fc.name}}">A</button></sc-for></div>
+                      <div class="pp-title">Resaltado</div>
+                      <div class="tone-grid"><sc-for list="{{bl.fmtBg}}" as="fh" hint-placeholder-count="9"><button type="button" class="tone-opt {{fh.cls}}" onMouseDown="{{fh.down}}" aria-label="Resaltado {{fh.name}}" title="{{fh.name}}"></button></sc-for></div>
+                    </div>
+                  </sc-if>
+                </div>
+              </sc-if>
+              <sc-if value="{{bl.tgShow}}" hint-placeholder-val="{{false}}">
+                <div class="doc-tg-body">
+                  <sc-if value="{{bl.canEdit}}" hint-placeholder-val="{{true}}"><textarea class="doc-tg-in" value="{{bl.tgBody}}" onChange="{{bl.setTgBody}}" placeholder="Contenido que se despliega…" aria-label="Contenido del desplegable"></textarea></sc-if>
+                  <sc-if value="{{bl.readOnly}}" hint-placeholder-val="{{false}}"><p class="doc-tg-ro">{{bl.tgBody}}</p></sc-if>
+                </div>
+              </sc-if>
               <sc-if value="{{bl.hasMentions}}" hint-placeholder-val="{{false}}"><div class="men-row"><sc-for list="{{bl.mentions}}" as="mn" hint-placeholder-count="2"><button type="button" class="men-chip" onClick="{{mn.open}}" title="{{mn.kindTxt}}"><span class="chip-dot" style="background: {{mn.color}}"></span>@{{mn.label}}</button></sc-for></div></sc-if>
               <sc-if value="{{bl.menOpen}}" hint-placeholder-val="{{false}}">
                 <div class="slash-menu men-menu" role="listbox" aria-label="Mencionar">
@@ -2060,6 +2249,8 @@ body.td-active .board{scroll-snap-type:none!important}
 <div class="flabel" title="{{f.desc}}"><svg class="ic ic-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="{{f.icon}}"></path></svg><span>{{f.label}}</span></div>
 <div class="fval">
 <sc-if value="{{f.eInput}}" hint-placeholder-val="{{true}}"><div class="fin-row"><input class="finput" type="{{f.itype}}" value="{{f.value}}" onChange="{{f.onChange}}" placeholder="{{f.placeholder}}" aria-label="{{f.label}}"><sc-if value="{{f.hasLink}}" hint-placeholder-val="{{false}}"><a class="icon-btn sm" href="{{f.linkHref}}" target="_blank" rel="noopener noreferrer" aria-label="{{f.linkAria}}" title="{{f.linkAria}}"><svg class="ic ic-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.ext}}"></path></svg></a></sc-if></div></sc-if>
+<sc-if value="{{f.eNum}}" hint-placeholder-val="{{false}}"><div class="fin-row fnum {{f.numCls}}"><input class="finput" type="text" inputmode="decimal" value="{{f.value}}" onChange="{{f.onChange}}" placeholder="{{f.placeholder}}" aria-label="{{f.label}}"><span class="fnum-disp" aria-hidden="true">{{f.fmtText}}</span><sc-if value="{{f.hasMeter}}" hint-placeholder-val="{{false}}"><span class="fnum-meter" aria-hidden="true"><span style="width: {{f.meterPct}}%"></span></span></sc-if></div></sc-if>
+<sc-if value="{{f.eDrop}}" hint-placeholder-val="{{false}}"><div class="fdrop" data-opa="{{f.opa}}"><button type="button" class="fdrop-btn" onClick="{{f.openDrop}}" aria-haspopup="listbox" aria-label="{{f.dropAria}}"><sc-for list="{{f.dropPills}}" as="dq" hint-placeholder-count="2"><sc-if value="{{dq.isPerson}}" hint-placeholder-val="{{false}}"><span class="person"><span class="av xs" style="background: {{dq.color}}">{{dq.initials}}</span>{{dq.text}}</span></sc-if><sc-if value="{{dq.isPill}}" hint-placeholder-val="{{true}}"><span class="pill {{dq.cls}}"><sc-if value="{{dq.dot}}" hint-placeholder-val="{{false}}"><span class="sdot"></span></sc-if>{{dq.text}}</span></sc-if></sc-for><sc-if value="{{f.dropEmpty}}" hint-placeholder-val="{{false}}"><span class="fdrop-ph">Vacío</span></sc-if><span class="fdrop-chev"><svg class="ic ic-xs" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.chevdown}}"></path></svg></span></button></div></sc-if>
 <sc-if value="{{f.eSelect}}" hint-placeholder-val="{{false}}"><div class="opts"><sc-for list="{{f.options}}" as="o" hint-placeholder-count="3"><button type="button" class="pill pill-btn {{o.cls}}" onClick="{{o.pick}}" aria-pressed="{{o.on}}"><sc-if value="{{o.dot}}" hint-placeholder-val="{{false}}"><span class="sdot"></span></sc-if>{{o.v}}</button></sc-for></div></sc-if>
 <sc-if value="{{f.ePeople}}" hint-placeholder-val="{{false}}"><div class="opts"><sc-for list="{{f.people}}" as="p" hint-placeholder-count="4"><button type="button" class="person-opt {{p.cls}}" onClick="{{p.pick}}" aria-pressed="{{p.on}}"><span class="av sm" style="background: {{p.color}}">{{p.initials}}</span>{{p.first}}</button></sc-for></div></sc-if>
 <sc-if value="{{f.eCheck}}" hint-placeholder-val="{{false}}"><div><button type="button" class="cbox lg {{f.checkCls}}" onClick="{{f.toggle}}" aria-pressed="{{f.checked}}" aria-label="{{f.label}}"><svg class="ic ic-check" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></button></div></sc-if>
@@ -2077,7 +2268,7 @@ body.td-active .board{scroll-snap-type:none!important}
 </sc-if>
 <sc-if value="{{f.eButton}}" hint-placeholder-val="{{false}}"><div><button type="button" class="btn btn-sm" onClick="{{f.run}}"><svg class="ic ic-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.bolt}}"></path></svg>{{f.btnLabel}}</button></div></sc-if>
 <sc-if value="{{f.eAi}}" hint-placeholder-val="{{false}}"><div class="ai-val"><span class="v-ai">{{f.aiText}}</span><button type="button" class="link-btn" onClick="{{f.aiGen}}"><svg class="ic ic-xs" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.ai}}"></path></svg>{{f.aiBtn}}</button></div></sc-if>
-<sc-if value="{{f.eRead}}" hint-placeholder-val="{{false}}"><div class="fro"><sc-if value="{{f.d.kText}}" hint-placeholder-val="{{true}}"><span class="v-text {{f.d.cls}}">{{f.d.text}}</span></sc-if><sc-if value="{{f.d.kPills}}" hint-placeholder-val="{{false}}"><span class="v-pills"><sc-for list="{{f.d.pills}}" as="pl" hint-placeholder-count="1"><span class="pill {{pl.cls}}"><sc-if value="{{pl.dot}}" hint-placeholder-val="{{false}}"><span class="sdot"></span></sc-if>{{pl.text}}</span></sc-for></span></sc-if><sc-if value="{{f.d.kChips}}" hint-placeholder-val="{{false}}"><span class="chips"><sc-for list="{{f.d.chips}}" as="ch" hint-placeholder-count="1"><sc-if value="{{ch.locked}}" hint-placeholder-val="{{false}}"><span class="chip chip-locked">Restringido</span></sc-if><sc-if value="{{ch.ok}}" hint-placeholder-val="{{true}}"><button type="button" class="chip lift" onClick="{{ch.open}}"><span class="chip-dot" style="background: {{ch.color}}"></span>{{ch.label}}</button></sc-if></sc-for></span></sc-if><sc-if value="{{f.d.kPeople}}" hint-placeholder-val="{{false}}"><span class="v-people"><sc-for list="{{f.d.people}}" as="pp" hint-placeholder-count="1"><span class="person"><span class="av sm" style="background: {{pp.color}}">{{pp.initials}}</span>{{pp.name}}</span></sc-for></span></sc-if><sc-if value="{{f.d.kCheck}}" hint-placeholder-val="{{false}}"><sc-if value="{{f.d.canToggle}}" hint-placeholder-val="{{false}}"><button type="button" class="cbox lift {{f.d.checkCls}}" onClick="{{f.d.toggle}}" aria-pressed="{{f.d.checked}}" aria-label="{{f.d.aria}}"><svg class="ic ic-check" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></button></sc-if><sc-if value="{{f.d.noToggle}}" hint-placeholder-val="{{true}}"><span class="cbox {{f.d.checkCls}}"><svg class="ic ic-check" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg><span class="sr-only">{{f.d.srText}}</span></span></sc-if></sc-if><sc-if value="{{f.d.kBar}}" hint-placeholder-val="{{false}}"><span class="v-bar"><span class="vb-track"><span class="vb-fill" style="width: {{f.d.pct}}%"></span></span><span class="vb-txt">{{f.d.text}}</span></span></sc-if><sc-if value="{{f.d.kRing}}" hint-placeholder-val="{{false}}"><span class="v-bar"><svg class="ring" viewBox="0 0 18 18" aria-hidden="true"><circle class="ring-bg" cx="9" cy="9" r="7"></circle><circle class="ring-fg" cx="9" cy="9" r="7" style="stroke-dasharray: {{f.d.dash}}"></circle></svg><span class="vb-txt">{{f.d.text}}</span></span></sc-if><sc-if value="{{f.d.kLink}}" hint-placeholder-val="{{false}}"><a class="v-link lift" href="{{f.d.href}}" target="_blank" rel="noopener noreferrer">{{f.d.linkText}}</a></sc-if><sc-if value="{{f.d.kFiles}}" hint-placeholder-val="{{false}}"><span class="v-files"><sc-for list="{{f.d.files}}" as="fl" hint-placeholder-count="1"><span class="file-chip"><svg class="ic ic-xs" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.files}}"></path></svg>{{fl.name}}</span></sc-for></span></sc-if><sc-if value="{{f.d.kButton}}" hint-placeholder-val="{{false}}"><button type="button" class="btn btn-xs lift" onClick="{{f.d.run}}" disabled="{{f.d.btnDis}}"><svg class="ic ic-xs" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.bolt}}"></path></svg>{{f.d.btnLabel}}</button></sc-if></div></sc-if>
+<sc-if value="{{f.eRead}}" hint-placeholder-val="{{false}}"><div class="fro"><sc-if value="{{f.d.kText}}" hint-placeholder-val="{{true}}"><span class="v-text {{f.d.cls}}">{{f.d.text}}</span></sc-if><sc-if value="{{f.d.kPills}}" hint-placeholder-val="{{false}}"><span class="v-pills"><sc-for list="{{f.d.pills}}" as="pl" hint-placeholder-count="1"><span class="pill {{pl.cls}}"><sc-if value="{{pl.dot}}" hint-placeholder-val="{{false}}"><span class="sdot"></span></sc-if>{{pl.text}}</span></sc-for></span></sc-if><sc-if value="{{f.d.kChips}}" hint-placeholder-val="{{false}}"><span class="chips"><sc-for list="{{f.d.chips}}" as="ch" hint-placeholder-count="1"><sc-if value="{{ch.locked}}" hint-placeholder-val="{{false}}"><span class="chip chip-locked">Restringido</span></sc-if><sc-if value="{{ch.ok}}" hint-placeholder-val="{{true}}"><button type="button" class="chip lift" onClick="{{ch.open}}"><span class="chip-dot" style="background: {{ch.color}}"></span>{{ch.label}}</button></sc-if></sc-for></span></sc-if><sc-if value="{{f.d.kPeople}}" hint-placeholder-val="{{false}}"><span class="v-people"><sc-for list="{{f.d.people}}" as="pp" hint-placeholder-count="1"><span class="person"><span class="av sm" style="background: {{pp.color}}">{{pp.initials}}</span>{{pp.name}}</span></sc-for></span></sc-if><sc-if value="{{f.d.kCheck}}" hint-placeholder-val="{{false}}"><sc-if value="{{f.d.canToggle}}" hint-placeholder-val="{{false}}"><button type="button" class="cbox lift {{f.d.checkCls}}" onClick="{{f.d.toggle}}" aria-pressed="{{f.d.checked}}" aria-label="{{f.d.aria}}"><svg class="ic ic-check" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></button></sc-if><sc-if value="{{f.d.noToggle}}" hint-placeholder-val="{{true}}"><span class="cbox {{f.d.checkCls}}"><svg class="ic ic-check" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg><span class="sr-only">{{f.d.srText}}</span></span></sc-if></sc-if><sc-if value="{{f.d.kBar}}" hint-placeholder-val="{{false}}"><span class="v-bar"><span class="vb-track"><span class="vb-fill" style="width: {{f.d.pct}}%"></span></span><span class="vb-txt">{{f.d.text}}</span></span></sc-if><sc-if value="{{f.d.kRing}}" hint-placeholder-val="{{false}}"><span class="v-bar"><svg class="ring" viewBox="0 0 18 18" aria-hidden="true"><circle class="ring-bg" cx="9" cy="9" r="7"></circle><circle class="ring-fg" cx="9" cy="9" r="7" style="stroke-dasharray: {{f.d.dash}}"></circle></svg><span class="vb-txt">{{f.d.text}}</span></span></sc-if><sc-if value="{{f.d.kLink}}" hint-placeholder-val="{{false}}"><a class="v-link lift" href="{{f.d.href}}" target="_blank" rel="noopener noreferrer">{{f.d.linkText}}</a></sc-if><sc-if value="{{f.d.kFiles}}" hint-placeholder-val="{{false}}"><span class="v-files"><sc-for list="{{f.d.files}}" as="fl" hint-placeholder-count="1"><span class="file-chip"><svg class="ic ic-xs" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.files}}"></path></svg>{{fl.name}}</span></sc-for></span></sc-if><sc-if value="{{f.d.kButton}}" hint-placeholder-val="{{false}}"><button type="button" class="btn btn-xs lift" onClick="{{f.d.run}}" disabled="{{f.d.btnDis}}"><svg class="ic ic-xs" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.bolt}}"></path></svg>{{f.d.btnLabel}}</button></sc-if><sc-if value="{{f.hasFx}}" hint-placeholder-val="{{false}}"><button type="button" class="fx-tog {{f.fxCls}}" onClick="{{f.fxToggle}}" aria-expanded="{{f.fxOpen}}" aria-label="Ver cómo se calcula" title="Ver cómo se calcula">ƒx</button></sc-if></div><sc-if value="{{f.fxOpen}}" hint-placeholder-val="{{false}}"><div class="fx-detail">{{f.fxText}}</div></sc-if></sc-if>
 <sc-if value="{{f.hasNote}}" hint-placeholder-val="{{false}}"><span class="fnote">{{f.note}}</span></sc-if><sc-if value="{{f.hasRefs}}" hint-placeholder-val="{{false}}"><span class="frefs" title="{{f.refsTip}}"><span class="frefs-t">Se calcula con</span><sc-for list="{{f.refs}}" as="rf" hint-placeholder-count="2"><button type="button" class="fref {{rf.cls}}" onClick="{{rf.go}}" title="{{rf.tip}}">{{rf.label}}</button></sc-for></span></sc-if>
 </div>
 </div>
@@ -2279,6 +2470,8 @@ body.td-active .board{scroll-snap-type:none!important}
 <div class="flabel" title="{{f.desc}}"><svg class="ic ic-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="{{f.icon}}"></path></svg><span>{{f.label}}</span></div>
 <div class="fval">
 <sc-if value="{{f.eInput}}" hint-placeholder-val="{{true}}"><div class="fin-row"><input class="finput" type="{{f.itype}}" value="{{f.value}}" onChange="{{f.onChange}}" placeholder="{{f.placeholder}}" aria-label="{{f.label}}"><sc-if value="{{f.hasLink}}" hint-placeholder-val="{{false}}"><a class="icon-btn sm" href="{{f.linkHref}}" target="_blank" rel="noopener noreferrer" aria-label="{{f.linkAria}}" title="{{f.linkAria}}"><svg class="ic ic-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.ext}}"></path></svg></a></sc-if></div></sc-if>
+<sc-if value="{{f.eNum}}" hint-placeholder-val="{{false}}"><div class="fin-row fnum {{f.numCls}}"><input class="finput" type="text" inputmode="decimal" value="{{f.value}}" onChange="{{f.onChange}}" placeholder="{{f.placeholder}}" aria-label="{{f.label}}"><span class="fnum-disp" aria-hidden="true">{{f.fmtText}}</span><sc-if value="{{f.hasMeter}}" hint-placeholder-val="{{false}}"><span class="fnum-meter" aria-hidden="true"><span style="width: {{f.meterPct}}%"></span></span></sc-if></div></sc-if>
+<sc-if value="{{f.eDrop}}" hint-placeholder-val="{{false}}"><div class="fdrop" data-opa="{{f.opa}}"><button type="button" class="fdrop-btn" onClick="{{f.openDrop}}" aria-haspopup="listbox" aria-label="{{f.dropAria}}"><sc-for list="{{f.dropPills}}" as="dq" hint-placeholder-count="2"><sc-if value="{{dq.isPerson}}" hint-placeholder-val="{{false}}"><span class="person"><span class="av xs" style="background: {{dq.color}}">{{dq.initials}}</span>{{dq.text}}</span></sc-if><sc-if value="{{dq.isPill}}" hint-placeholder-val="{{true}}"><span class="pill {{dq.cls}}"><sc-if value="{{dq.dot}}" hint-placeholder-val="{{false}}"><span class="sdot"></span></sc-if>{{dq.text}}</span></sc-if></sc-for><sc-if value="{{f.dropEmpty}}" hint-placeholder-val="{{false}}"><span class="fdrop-ph">Vacío</span></sc-if><span class="fdrop-chev"><svg class="ic ic-xs" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.chevdown}}"></path></svg></span></button></div></sc-if>
 <sc-if value="{{f.eSelect}}" hint-placeholder-val="{{false}}"><div class="opts"><sc-for list="{{f.options}}" as="o" hint-placeholder-count="3"><button type="button" class="pill pill-btn {{o.cls}}" onClick="{{o.pick}}" aria-pressed="{{o.on}}"><sc-if value="{{o.dot}}" hint-placeholder-val="{{false}}"><span class="sdot"></span></sc-if>{{o.v}}</button></sc-for></div></sc-if>
 <sc-if value="{{f.ePeople}}" hint-placeholder-val="{{false}}"><div class="opts"><sc-for list="{{f.people}}" as="p" hint-placeholder-count="4"><button type="button" class="person-opt {{p.cls}}" onClick="{{p.pick}}" aria-pressed="{{p.on}}"><span class="av sm" style="background: {{p.color}}">{{p.initials}}</span>{{p.first}}</button></sc-for></div></sc-if>
 <sc-if value="{{f.eCheck}}" hint-placeholder-val="{{false}}"><div><button type="button" class="cbox lg {{f.checkCls}}" onClick="{{f.toggle}}" aria-pressed="{{f.checked}}" aria-label="{{f.label}}"><svg class="ic ic-check" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></button></div></sc-if>
@@ -2296,7 +2489,7 @@ body.td-active .board{scroll-snap-type:none!important}
 </sc-if>
 <sc-if value="{{f.eButton}}" hint-placeholder-val="{{false}}"><div><button type="button" class="btn btn-sm" onClick="{{f.run}}"><svg class="ic ic-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.bolt}}"></path></svg>{{f.btnLabel}}</button></div></sc-if>
 <sc-if value="{{f.eAi}}" hint-placeholder-val="{{false}}"><div class="ai-val"><span class="v-ai">{{f.aiText}}</span><button type="button" class="link-btn" onClick="{{f.aiGen}}"><svg class="ic ic-xs" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.ai}}"></path></svg>{{f.aiBtn}}</button></div></sc-if>
-<sc-if value="{{f.eRead}}" hint-placeholder-val="{{false}}"><div class="fro"><sc-if value="{{f.d.kText}}" hint-placeholder-val="{{true}}"><span class="v-text {{f.d.cls}}">{{f.d.text}}</span></sc-if><sc-if value="{{f.d.kPills}}" hint-placeholder-val="{{false}}"><span class="v-pills"><sc-for list="{{f.d.pills}}" as="pl" hint-placeholder-count="1"><span class="pill {{pl.cls}}"><sc-if value="{{pl.dot}}" hint-placeholder-val="{{false}}"><span class="sdot"></span></sc-if>{{pl.text}}</span></sc-for></span></sc-if><sc-if value="{{f.d.kChips}}" hint-placeholder-val="{{false}}"><span class="chips"><sc-for list="{{f.d.chips}}" as="ch" hint-placeholder-count="1"><sc-if value="{{ch.locked}}" hint-placeholder-val="{{false}}"><span class="chip chip-locked">Restringido</span></sc-if><sc-if value="{{ch.ok}}" hint-placeholder-val="{{true}}"><button type="button" class="chip lift" onClick="{{ch.open}}"><span class="chip-dot" style="background: {{ch.color}}"></span>{{ch.label}}</button></sc-if></sc-for></span></sc-if><sc-if value="{{f.d.kPeople}}" hint-placeholder-val="{{false}}"><span class="v-people"><sc-for list="{{f.d.people}}" as="pp" hint-placeholder-count="1"><span class="person"><span class="av sm" style="background: {{pp.color}}">{{pp.initials}}</span>{{pp.name}}</span></sc-for></span></sc-if><sc-if value="{{f.d.kCheck}}" hint-placeholder-val="{{false}}"><sc-if value="{{f.d.canToggle}}" hint-placeholder-val="{{false}}"><button type="button" class="cbox lift {{f.d.checkCls}}" onClick="{{f.d.toggle}}" aria-pressed="{{f.d.checked}}" aria-label="{{f.d.aria}}"><svg class="ic ic-check" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></button></sc-if><sc-if value="{{f.d.noToggle}}" hint-placeholder-val="{{true}}"><span class="cbox {{f.d.checkCls}}"><svg class="ic ic-check" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg><span class="sr-only">{{f.d.srText}}</span></span></sc-if></sc-if><sc-if value="{{f.d.kBar}}" hint-placeholder-val="{{false}}"><span class="v-bar"><span class="vb-track"><span class="vb-fill" style="width: {{f.d.pct}}%"></span></span><span class="vb-txt">{{f.d.text}}</span></span></sc-if><sc-if value="{{f.d.kRing}}" hint-placeholder-val="{{false}}"><span class="v-bar"><svg class="ring" viewBox="0 0 18 18" aria-hidden="true"><circle class="ring-bg" cx="9" cy="9" r="7"></circle><circle class="ring-fg" cx="9" cy="9" r="7" style="stroke-dasharray: {{f.d.dash}}"></circle></svg><span class="vb-txt">{{f.d.text}}</span></span></sc-if><sc-if value="{{f.d.kLink}}" hint-placeholder-val="{{false}}"><a class="v-link lift" href="{{f.d.href}}" target="_blank" rel="noopener noreferrer">{{f.d.linkText}}</a></sc-if><sc-if value="{{f.d.kFiles}}" hint-placeholder-val="{{false}}"><span class="v-files"><sc-for list="{{f.d.files}}" as="fl" hint-placeholder-count="1"><span class="file-chip"><svg class="ic ic-xs" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.files}}"></path></svg>{{fl.name}}</span></sc-for></span></sc-if><sc-if value="{{f.d.kButton}}" hint-placeholder-val="{{false}}"><button type="button" class="btn btn-xs lift" onClick="{{f.d.run}}" disabled="{{f.d.btnDis}}"><svg class="ic ic-xs" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.bolt}}"></path></svg>{{f.d.btnLabel}}</button></sc-if></div></sc-if>
+<sc-if value="{{f.eRead}}" hint-placeholder-val="{{false}}"><div class="fro"><sc-if value="{{f.d.kText}}" hint-placeholder-val="{{true}}"><span class="v-text {{f.d.cls}}">{{f.d.text}}</span></sc-if><sc-if value="{{f.d.kPills}}" hint-placeholder-val="{{false}}"><span class="v-pills"><sc-for list="{{f.d.pills}}" as="pl" hint-placeholder-count="1"><span class="pill {{pl.cls}}"><sc-if value="{{pl.dot}}" hint-placeholder-val="{{false}}"><span class="sdot"></span></sc-if>{{pl.text}}</span></sc-for></span></sc-if><sc-if value="{{f.d.kChips}}" hint-placeholder-val="{{false}}"><span class="chips"><sc-for list="{{f.d.chips}}" as="ch" hint-placeholder-count="1"><sc-if value="{{ch.locked}}" hint-placeholder-val="{{false}}"><span class="chip chip-locked">Restringido</span></sc-if><sc-if value="{{ch.ok}}" hint-placeholder-val="{{true}}"><button type="button" class="chip lift" onClick="{{ch.open}}"><span class="chip-dot" style="background: {{ch.color}}"></span>{{ch.label}}</button></sc-if></sc-for></span></sc-if><sc-if value="{{f.d.kPeople}}" hint-placeholder-val="{{false}}"><span class="v-people"><sc-for list="{{f.d.people}}" as="pp" hint-placeholder-count="1"><span class="person"><span class="av sm" style="background: {{pp.color}}">{{pp.initials}}</span>{{pp.name}}</span></sc-for></span></sc-if><sc-if value="{{f.d.kCheck}}" hint-placeholder-val="{{false}}"><sc-if value="{{f.d.canToggle}}" hint-placeholder-val="{{false}}"><button type="button" class="cbox lift {{f.d.checkCls}}" onClick="{{f.d.toggle}}" aria-pressed="{{f.d.checked}}" aria-label="{{f.d.aria}}"><svg class="ic ic-check" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></button></sc-if><sc-if value="{{f.d.noToggle}}" hint-placeholder-val="{{true}}"><span class="cbox {{f.d.checkCls}}"><svg class="ic ic-check" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg><span class="sr-only">{{f.d.srText}}</span></span></sc-if></sc-if><sc-if value="{{f.d.kBar}}" hint-placeholder-val="{{false}}"><span class="v-bar"><span class="vb-track"><span class="vb-fill" style="width: {{f.d.pct}}%"></span></span><span class="vb-txt">{{f.d.text}}</span></span></sc-if><sc-if value="{{f.d.kRing}}" hint-placeholder-val="{{false}}"><span class="v-bar"><svg class="ring" viewBox="0 0 18 18" aria-hidden="true"><circle class="ring-bg" cx="9" cy="9" r="7"></circle><circle class="ring-fg" cx="9" cy="9" r="7" style="stroke-dasharray: {{f.d.dash}}"></circle></svg><span class="vb-txt">{{f.d.text}}</span></span></sc-if><sc-if value="{{f.d.kLink}}" hint-placeholder-val="{{false}}"><a class="v-link lift" href="{{f.d.href}}" target="_blank" rel="noopener noreferrer">{{f.d.linkText}}</a></sc-if><sc-if value="{{f.d.kFiles}}" hint-placeholder-val="{{false}}"><span class="v-files"><sc-for list="{{f.d.files}}" as="fl" hint-placeholder-count="1"><span class="file-chip"><svg class="ic ic-xs" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.files}}"></path></svg>{{fl.name}}</span></sc-for></span></sc-if><sc-if value="{{f.d.kButton}}" hint-placeholder-val="{{false}}"><button type="button" class="btn btn-xs lift" onClick="{{f.d.run}}" disabled="{{f.d.btnDis}}"><svg class="ic ic-xs" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.bolt}}"></path></svg>{{f.d.btnLabel}}</button></sc-if><sc-if value="{{f.hasFx}}" hint-placeholder-val="{{false}}"><button type="button" class="fx-tog {{f.fxCls}}" onClick="{{f.fxToggle}}" aria-expanded="{{f.fxOpen}}" aria-label="Ver cómo se calcula" title="Ver cómo se calcula">ƒx</button></sc-if></div><sc-if value="{{f.fxOpen}}" hint-placeholder-val="{{false}}"><div class="fx-detail">{{f.fxText}}</div></sc-if></sc-if>
 <sc-if value="{{f.hasNote}}" hint-placeholder-val="{{false}}"><span class="fnote">{{f.note}}</span></sc-if><sc-if value="{{f.hasRefs}}" hint-placeholder-val="{{false}}"><span class="frefs" title="{{f.refsTip}}"><span class="frefs-t">Se calcula con</span><sc-for list="{{f.refs}}" as="rf" hint-placeholder-count="2"><button type="button" class="fref {{rf.cls}}" onClick="{{rf.go}}" title="{{rf.tip}}">{{rf.label}}</button></sc-for></span></sc-if>
 </div>
 </div>
@@ -2484,6 +2677,8 @@ body.td-active .board{scroll-snap-type:none!important}
 <div class="flabel" title="{{f.desc}}"><svg class="ic ic-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="{{f.icon}}"></path></svg><span>{{f.label}}</span></div>
 <div class="fval">
 <sc-if value="{{f.eInput}}" hint-placeholder-val="{{true}}"><div class="fin-row"><input class="finput" type="{{f.itype}}" value="{{f.value}}" onChange="{{f.onChange}}" placeholder="{{f.placeholder}}" aria-label="{{f.label}}"><sc-if value="{{f.hasLink}}" hint-placeholder-val="{{false}}"><a class="icon-btn sm" href="{{f.linkHref}}" target="_blank" rel="noopener noreferrer" aria-label="{{f.linkAria}}" title="{{f.linkAria}}"><svg class="ic ic-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.ext}}"></path></svg></a></sc-if></div></sc-if>
+<sc-if value="{{f.eNum}}" hint-placeholder-val="{{false}}"><div class="fin-row fnum {{f.numCls}}"><input class="finput" type="text" inputmode="decimal" value="{{f.value}}" onChange="{{f.onChange}}" placeholder="{{f.placeholder}}" aria-label="{{f.label}}"><span class="fnum-disp" aria-hidden="true">{{f.fmtText}}</span><sc-if value="{{f.hasMeter}}" hint-placeholder-val="{{false}}"><span class="fnum-meter" aria-hidden="true"><span style="width: {{f.meterPct}}%"></span></span></sc-if></div></sc-if>
+<sc-if value="{{f.eDrop}}" hint-placeholder-val="{{false}}"><div class="fdrop" data-opa="{{f.opa}}"><button type="button" class="fdrop-btn" onClick="{{f.openDrop}}" aria-haspopup="listbox" aria-label="{{f.dropAria}}"><sc-for list="{{f.dropPills}}" as="dq" hint-placeholder-count="2"><sc-if value="{{dq.isPerson}}" hint-placeholder-val="{{false}}"><span class="person"><span class="av xs" style="background: {{dq.color}}">{{dq.initials}}</span>{{dq.text}}</span></sc-if><sc-if value="{{dq.isPill}}" hint-placeholder-val="{{true}}"><span class="pill {{dq.cls}}"><sc-if value="{{dq.dot}}" hint-placeholder-val="{{false}}"><span class="sdot"></span></sc-if>{{dq.text}}</span></sc-if></sc-for><sc-if value="{{f.dropEmpty}}" hint-placeholder-val="{{false}}"><span class="fdrop-ph">Vacío</span></sc-if><span class="fdrop-chev"><svg class="ic ic-xs" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.chevdown}}"></path></svg></span></button></div></sc-if>
 <sc-if value="{{f.eSelect}}" hint-placeholder-val="{{false}}"><div class="opts"><sc-for list="{{f.options}}" as="o" hint-placeholder-count="3"><button type="button" class="pill pill-btn {{o.cls}}" onClick="{{o.pick}}" aria-pressed="{{o.on}}"><sc-if value="{{o.dot}}" hint-placeholder-val="{{false}}"><span class="sdot"></span></sc-if>{{o.v}}</button></sc-for></div></sc-if>
 <sc-if value="{{f.ePeople}}" hint-placeholder-val="{{false}}"><div class="opts"><sc-for list="{{f.people}}" as="p" hint-placeholder-count="4"><button type="button" class="person-opt {{p.cls}}" onClick="{{p.pick}}" aria-pressed="{{p.on}}"><span class="av sm" style="background: {{p.color}}">{{p.initials}}</span>{{p.first}}</button></sc-for></div></sc-if>
 <sc-if value="{{f.eCheck}}" hint-placeholder-val="{{false}}"><div><button type="button" class="cbox lg {{f.checkCls}}" onClick="{{f.toggle}}" aria-pressed="{{f.checked}}" aria-label="{{f.label}}"><svg class="ic ic-check" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></button></div></sc-if>
@@ -2501,7 +2696,7 @@ body.td-active .board{scroll-snap-type:none!important}
 </sc-if>
 <sc-if value="{{f.eButton}}" hint-placeholder-val="{{false}}"><div><button type="button" class="btn btn-sm" onClick="{{f.run}}"><svg class="ic ic-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.bolt}}"></path></svg>{{f.btnLabel}}</button></div></sc-if>
 <sc-if value="{{f.eAi}}" hint-placeholder-val="{{false}}"><div class="ai-val"><span class="v-ai">{{f.aiText}}</span><button type="button" class="link-btn" onClick="{{f.aiGen}}"><svg class="ic ic-xs" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.ai}}"></path></svg>{{f.aiBtn}}</button></div></sc-if>
-<sc-if value="{{f.eRead}}" hint-placeholder-val="{{false}}"><div class="fro"><sc-if value="{{f.d.kText}}" hint-placeholder-val="{{true}}"><span class="v-text {{f.d.cls}}">{{f.d.text}}</span></sc-if><sc-if value="{{f.d.kPills}}" hint-placeholder-val="{{false}}"><span class="v-pills"><sc-for list="{{f.d.pills}}" as="pl" hint-placeholder-count="1"><span class="pill {{pl.cls}}"><sc-if value="{{pl.dot}}" hint-placeholder-val="{{false}}"><span class="sdot"></span></sc-if>{{pl.text}}</span></sc-for></span></sc-if><sc-if value="{{f.d.kChips}}" hint-placeholder-val="{{false}}"><span class="chips"><sc-for list="{{f.d.chips}}" as="ch" hint-placeholder-count="1"><sc-if value="{{ch.locked}}" hint-placeholder-val="{{false}}"><span class="chip chip-locked">Restringido</span></sc-if><sc-if value="{{ch.ok}}" hint-placeholder-val="{{true}}"><button type="button" class="chip lift" onClick="{{ch.open}}"><span class="chip-dot" style="background: {{ch.color}}"></span>{{ch.label}}</button></sc-if></sc-for></span></sc-if><sc-if value="{{f.d.kPeople}}" hint-placeholder-val="{{false}}"><span class="v-people"><sc-for list="{{f.d.people}}" as="pp" hint-placeholder-count="1"><span class="person"><span class="av sm" style="background: {{pp.color}}">{{pp.initials}}</span>{{pp.name}}</span></sc-for></span></sc-if><sc-if value="{{f.d.kCheck}}" hint-placeholder-val="{{false}}"><sc-if value="{{f.d.canToggle}}" hint-placeholder-val="{{false}}"><button type="button" class="cbox lift {{f.d.checkCls}}" onClick="{{f.d.toggle}}" aria-pressed="{{f.d.checked}}" aria-label="{{f.d.aria}}"><svg class="ic ic-check" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></button></sc-if><sc-if value="{{f.d.noToggle}}" hint-placeholder-val="{{true}}"><span class="cbox {{f.d.checkCls}}"><svg class="ic ic-check" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg><span class="sr-only">{{f.d.srText}}</span></span></sc-if></sc-if><sc-if value="{{f.d.kBar}}" hint-placeholder-val="{{false}}"><span class="v-bar"><span class="vb-track"><span class="vb-fill" style="width: {{f.d.pct}}%"></span></span><span class="vb-txt">{{f.d.text}}</span></span></sc-if><sc-if value="{{f.d.kRing}}" hint-placeholder-val="{{false}}"><span class="v-bar"><svg class="ring" viewBox="0 0 18 18" aria-hidden="true"><circle class="ring-bg" cx="9" cy="9" r="7"></circle><circle class="ring-fg" cx="9" cy="9" r="7" style="stroke-dasharray: {{f.d.dash}}"></circle></svg><span class="vb-txt">{{f.d.text}}</span></span></sc-if><sc-if value="{{f.d.kLink}}" hint-placeholder-val="{{false}}"><a class="v-link lift" href="{{f.d.href}}" target="_blank" rel="noopener noreferrer">{{f.d.linkText}}</a></sc-if><sc-if value="{{f.d.kFiles}}" hint-placeholder-val="{{false}}"><span class="v-files"><sc-for list="{{f.d.files}}" as="fl" hint-placeholder-count="1"><span class="file-chip"><svg class="ic ic-xs" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.files}}"></path></svg>{{fl.name}}</span></sc-for></span></sc-if><sc-if value="{{f.d.kButton}}" hint-placeholder-val="{{false}}"><button type="button" class="btn btn-xs lift" onClick="{{f.d.run}}" disabled="{{f.d.btnDis}}"><svg class="ic ic-xs" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.bolt}}"></path></svg>{{f.d.btnLabel}}</button></sc-if></div></sc-if>
+<sc-if value="{{f.eRead}}" hint-placeholder-val="{{false}}"><div class="fro"><sc-if value="{{f.d.kText}}" hint-placeholder-val="{{true}}"><span class="v-text {{f.d.cls}}">{{f.d.text}}</span></sc-if><sc-if value="{{f.d.kPills}}" hint-placeholder-val="{{false}}"><span class="v-pills"><sc-for list="{{f.d.pills}}" as="pl" hint-placeholder-count="1"><span class="pill {{pl.cls}}"><sc-if value="{{pl.dot}}" hint-placeholder-val="{{false}}"><span class="sdot"></span></sc-if>{{pl.text}}</span></sc-for></span></sc-if><sc-if value="{{f.d.kChips}}" hint-placeholder-val="{{false}}"><span class="chips"><sc-for list="{{f.d.chips}}" as="ch" hint-placeholder-count="1"><sc-if value="{{ch.locked}}" hint-placeholder-val="{{false}}"><span class="chip chip-locked">Restringido</span></sc-if><sc-if value="{{ch.ok}}" hint-placeholder-val="{{true}}"><button type="button" class="chip lift" onClick="{{ch.open}}"><span class="chip-dot" style="background: {{ch.color}}"></span>{{ch.label}}</button></sc-if></sc-for></span></sc-if><sc-if value="{{f.d.kPeople}}" hint-placeholder-val="{{false}}"><span class="v-people"><sc-for list="{{f.d.people}}" as="pp" hint-placeholder-count="1"><span class="person"><span class="av sm" style="background: {{pp.color}}">{{pp.initials}}</span>{{pp.name}}</span></sc-for></span></sc-if><sc-if value="{{f.d.kCheck}}" hint-placeholder-val="{{false}}"><sc-if value="{{f.d.canToggle}}" hint-placeholder-val="{{false}}"><button type="button" class="cbox lift {{f.d.checkCls}}" onClick="{{f.d.toggle}}" aria-pressed="{{f.d.checked}}" aria-label="{{f.d.aria}}"><svg class="ic ic-check" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></button></sc-if><sc-if value="{{f.d.noToggle}}" hint-placeholder-val="{{true}}"><span class="cbox {{f.d.checkCls}}"><svg class="ic ic-check" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg><span class="sr-only">{{f.d.srText}}</span></span></sc-if></sc-if><sc-if value="{{f.d.kBar}}" hint-placeholder-val="{{false}}"><span class="v-bar"><span class="vb-track"><span class="vb-fill" style="width: {{f.d.pct}}%"></span></span><span class="vb-txt">{{f.d.text}}</span></span></sc-if><sc-if value="{{f.d.kRing}}" hint-placeholder-val="{{false}}"><span class="v-bar"><svg class="ring" viewBox="0 0 18 18" aria-hidden="true"><circle class="ring-bg" cx="9" cy="9" r="7"></circle><circle class="ring-fg" cx="9" cy="9" r="7" style="stroke-dasharray: {{f.d.dash}}"></circle></svg><span class="vb-txt">{{f.d.text}}</span></span></sc-if><sc-if value="{{f.d.kLink}}" hint-placeholder-val="{{false}}"><a class="v-link lift" href="{{f.d.href}}" target="_blank" rel="noopener noreferrer">{{f.d.linkText}}</a></sc-if><sc-if value="{{f.d.kFiles}}" hint-placeholder-val="{{false}}"><span class="v-files"><sc-for list="{{f.d.files}}" as="fl" hint-placeholder-count="1"><span class="file-chip"><svg class="ic ic-xs" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.files}}"></path></svg>{{fl.name}}</span></sc-for></span></sc-if><sc-if value="{{f.d.kButton}}" hint-placeholder-val="{{false}}"><button type="button" class="btn btn-xs lift" onClick="{{f.d.run}}" disabled="{{f.d.btnDis}}"><svg class="ic ic-xs" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.bolt}}"></path></svg>{{f.d.btnLabel}}</button></sc-if><sc-if value="{{f.hasFx}}" hint-placeholder-val="{{false}}"><button type="button" class="fx-tog {{f.fxCls}}" onClick="{{f.fxToggle}}" aria-expanded="{{f.fxOpen}}" aria-label="Ver cómo se calcula" title="Ver cómo se calcula">ƒx</button></sc-if></div><sc-if value="{{f.fxOpen}}" hint-placeholder-val="{{false}}"><div class="fx-detail">{{f.fxText}}</div></sc-if></sc-if>
 <sc-if value="{{f.hasNote}}" hint-placeholder-val="{{false}}"><span class="fnote">{{f.note}}</span></sc-if><sc-if value="{{f.hasRefs}}" hint-placeholder-val="{{false}}"><span class="frefs" title="{{f.refsTip}}"><span class="frefs-t">Se calcula con</span><sc-for list="{{f.refs}}" as="rf" hint-placeholder-count="2"><button type="button" class="fref {{rf.cls}}" onClick="{{rf.go}}" title="{{rf.tip}}">{{rf.label}}</button></sc-for></span></sc-if>
 </div>
 </div>
@@ -2703,6 +2898,8 @@ body.td-active .board{scroll-snap-type:none!important}
 <div class="flabel" title="{{f.desc}}"><svg class="ic ic-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="{{f.icon}}"></path></svg><span>{{f.label}}</span></div>
 <div class="fval">
 <sc-if value="{{f.eInput}}" hint-placeholder-val="{{true}}"><div class="fin-row"><input class="finput" type="{{f.itype}}" value="{{f.value}}" onChange="{{f.onChange}}" placeholder="{{f.placeholder}}" aria-label="{{f.label}}"><sc-if value="{{f.hasLink}}" hint-placeholder-val="{{false}}"><a class="icon-btn sm" href="{{f.linkHref}}" target="_blank" rel="noopener noreferrer" aria-label="{{f.linkAria}}" title="{{f.linkAria}}"><svg class="ic ic-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.ext}}"></path></svg></a></sc-if></div></sc-if>
+<sc-if value="{{f.eNum}}" hint-placeholder-val="{{false}}"><div class="fin-row fnum {{f.numCls}}"><input class="finput" type="text" inputmode="decimal" value="{{f.value}}" onChange="{{f.onChange}}" placeholder="{{f.placeholder}}" aria-label="{{f.label}}"><span class="fnum-disp" aria-hidden="true">{{f.fmtText}}</span><sc-if value="{{f.hasMeter}}" hint-placeholder-val="{{false}}"><span class="fnum-meter" aria-hidden="true"><span style="width: {{f.meterPct}}%"></span></span></sc-if></div></sc-if>
+<sc-if value="{{f.eDrop}}" hint-placeholder-val="{{false}}"><div class="fdrop" data-opa="{{f.opa}}"><button type="button" class="fdrop-btn" onClick="{{f.openDrop}}" aria-haspopup="listbox" aria-label="{{f.dropAria}}"><sc-for list="{{f.dropPills}}" as="dq" hint-placeholder-count="2"><sc-if value="{{dq.isPerson}}" hint-placeholder-val="{{false}}"><span class="person"><span class="av xs" style="background: {{dq.color}}">{{dq.initials}}</span>{{dq.text}}</span></sc-if><sc-if value="{{dq.isPill}}" hint-placeholder-val="{{true}}"><span class="pill {{dq.cls}}"><sc-if value="{{dq.dot}}" hint-placeholder-val="{{false}}"><span class="sdot"></span></sc-if>{{dq.text}}</span></sc-if></sc-for><sc-if value="{{f.dropEmpty}}" hint-placeholder-val="{{false}}"><span class="fdrop-ph">Vacío</span></sc-if><span class="fdrop-chev"><svg class="ic ic-xs" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.chevdown}}"></path></svg></span></button></div></sc-if>
 <sc-if value="{{f.eSelect}}" hint-placeholder-val="{{false}}"><div class="opts"><sc-for list="{{f.options}}" as="o" hint-placeholder-count="3"><button type="button" class="pill pill-btn {{o.cls}}" onClick="{{o.pick}}" aria-pressed="{{o.on}}"><sc-if value="{{o.dot}}" hint-placeholder-val="{{false}}"><span class="sdot"></span></sc-if>{{o.v}}</button></sc-for></div></sc-if>
 <sc-if value="{{f.ePeople}}" hint-placeholder-val="{{false}}"><div class="opts"><sc-for list="{{f.people}}" as="p" hint-placeholder-count="4"><button type="button" class="person-opt {{p.cls}}" onClick="{{p.pick}}" aria-pressed="{{p.on}}"><span class="av sm" style="background: {{p.color}}">{{p.initials}}</span>{{p.first}}</button></sc-for></div></sc-if>
 <sc-if value="{{f.eCheck}}" hint-placeholder-val="{{false}}"><div><button type="button" class="cbox lg {{f.checkCls}}" onClick="{{f.toggle}}" aria-pressed="{{f.checked}}" aria-label="{{f.label}}"><svg class="ic ic-check" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></button></div></sc-if>
@@ -2720,7 +2917,7 @@ body.td-active .board{scroll-snap-type:none!important}
 </sc-if>
 <sc-if value="{{f.eButton}}" hint-placeholder-val="{{false}}"><div><button type="button" class="btn btn-sm" onClick="{{f.run}}"><svg class="ic ic-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.bolt}}"></path></svg>{{f.btnLabel}}</button></div></sc-if>
 <sc-if value="{{f.eAi}}" hint-placeholder-val="{{false}}"><div class="ai-val"><span class="v-ai">{{f.aiText}}</span><button type="button" class="link-btn" onClick="{{f.aiGen}}"><svg class="ic ic-xs" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.ai}}"></path></svg>{{f.aiBtn}}</button></div></sc-if>
-<sc-if value="{{f.eRead}}" hint-placeholder-val="{{false}}"><div class="fro"><sc-if value="{{f.d.kText}}" hint-placeholder-val="{{true}}"><span class="v-text {{f.d.cls}}">{{f.d.text}}</span></sc-if><sc-if value="{{f.d.kPills}}" hint-placeholder-val="{{false}}"><span class="v-pills"><sc-for list="{{f.d.pills}}" as="pl" hint-placeholder-count="1"><span class="pill {{pl.cls}}"><sc-if value="{{pl.dot}}" hint-placeholder-val="{{false}}"><span class="sdot"></span></sc-if>{{pl.text}}</span></sc-for></span></sc-if><sc-if value="{{f.d.kChips}}" hint-placeholder-val="{{false}}"><span class="chips"><sc-for list="{{f.d.chips}}" as="ch" hint-placeholder-count="1"><sc-if value="{{ch.locked}}" hint-placeholder-val="{{false}}"><span class="chip chip-locked">Restringido</span></sc-if><sc-if value="{{ch.ok}}" hint-placeholder-val="{{true}}"><button type="button" class="chip lift" onClick="{{ch.open}}"><span class="chip-dot" style="background: {{ch.color}}"></span>{{ch.label}}</button></sc-if></sc-for></span></sc-if><sc-if value="{{f.d.kPeople}}" hint-placeholder-val="{{false}}"><span class="v-people"><sc-for list="{{f.d.people}}" as="pp" hint-placeholder-count="1"><span class="person"><span class="av sm" style="background: {{pp.color}}">{{pp.initials}}</span>{{pp.name}}</span></sc-for></span></sc-if><sc-if value="{{f.d.kCheck}}" hint-placeholder-val="{{false}}"><sc-if value="{{f.d.canToggle}}" hint-placeholder-val="{{false}}"><button type="button" class="cbox lift {{f.d.checkCls}}" onClick="{{f.d.toggle}}" aria-pressed="{{f.d.checked}}" aria-label="{{f.d.aria}}"><svg class="ic ic-check" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></button></sc-if><sc-if value="{{f.d.noToggle}}" hint-placeholder-val="{{true}}"><span class="cbox {{f.d.checkCls}}"><svg class="ic ic-check" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg><span class="sr-only">{{f.d.srText}}</span></span></sc-if></sc-if><sc-if value="{{f.d.kBar}}" hint-placeholder-val="{{false}}"><span class="v-bar"><span class="vb-track"><span class="vb-fill" style="width: {{f.d.pct}}%"></span></span><span class="vb-txt">{{f.d.text}}</span></span></sc-if><sc-if value="{{f.d.kRing}}" hint-placeholder-val="{{false}}"><span class="v-bar"><svg class="ring" viewBox="0 0 18 18" aria-hidden="true"><circle class="ring-bg" cx="9" cy="9" r="7"></circle><circle class="ring-fg" cx="9" cy="9" r="7" style="stroke-dasharray: {{f.d.dash}}"></circle></svg><span class="vb-txt">{{f.d.text}}</span></span></sc-if><sc-if value="{{f.d.kLink}}" hint-placeholder-val="{{false}}"><a class="v-link lift" href="{{f.d.href}}" target="_blank" rel="noopener noreferrer">{{f.d.linkText}}</a></sc-if><sc-if value="{{f.d.kFiles}}" hint-placeholder-val="{{false}}"><span class="v-files"><sc-for list="{{f.d.files}}" as="fl" hint-placeholder-count="1"><span class="file-chip"><svg class="ic ic-xs" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.files}}"></path></svg>{{fl.name}}</span></sc-for></span></sc-if><sc-if value="{{f.d.kButton}}" hint-placeholder-val="{{false}}"><button type="button" class="btn btn-xs lift" onClick="{{f.d.run}}" disabled="{{f.d.btnDis}}"><svg class="ic ic-xs" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.bolt}}"></path></svg>{{f.d.btnLabel}}</button></sc-if></div></sc-if>
+<sc-if value="{{f.eRead}}" hint-placeholder-val="{{false}}"><div class="fro"><sc-if value="{{f.d.kText}}" hint-placeholder-val="{{true}}"><span class="v-text {{f.d.cls}}">{{f.d.text}}</span></sc-if><sc-if value="{{f.d.kPills}}" hint-placeholder-val="{{false}}"><span class="v-pills"><sc-for list="{{f.d.pills}}" as="pl" hint-placeholder-count="1"><span class="pill {{pl.cls}}"><sc-if value="{{pl.dot}}" hint-placeholder-val="{{false}}"><span class="sdot"></span></sc-if>{{pl.text}}</span></sc-for></span></sc-if><sc-if value="{{f.d.kChips}}" hint-placeholder-val="{{false}}"><span class="chips"><sc-for list="{{f.d.chips}}" as="ch" hint-placeholder-count="1"><sc-if value="{{ch.locked}}" hint-placeholder-val="{{false}}"><span class="chip chip-locked">Restringido</span></sc-if><sc-if value="{{ch.ok}}" hint-placeholder-val="{{true}}"><button type="button" class="chip lift" onClick="{{ch.open}}"><span class="chip-dot" style="background: {{ch.color}}"></span>{{ch.label}}</button></sc-if></sc-for></span></sc-if><sc-if value="{{f.d.kPeople}}" hint-placeholder-val="{{false}}"><span class="v-people"><sc-for list="{{f.d.people}}" as="pp" hint-placeholder-count="1"><span class="person"><span class="av sm" style="background: {{pp.color}}">{{pp.initials}}</span>{{pp.name}}</span></sc-for></span></sc-if><sc-if value="{{f.d.kCheck}}" hint-placeholder-val="{{false}}"><sc-if value="{{f.d.canToggle}}" hint-placeholder-val="{{false}}"><button type="button" class="cbox lift {{f.d.checkCls}}" onClick="{{f.d.toggle}}" aria-pressed="{{f.d.checked}}" aria-label="{{f.d.aria}}"><svg class="ic ic-check" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></button></sc-if><sc-if value="{{f.d.noToggle}}" hint-placeholder-val="{{true}}"><span class="cbox {{f.d.checkCls}}"><svg class="ic ic-check" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg><span class="sr-only">{{f.d.srText}}</span></span></sc-if></sc-if><sc-if value="{{f.d.kBar}}" hint-placeholder-val="{{false}}"><span class="v-bar"><span class="vb-track"><span class="vb-fill" style="width: {{f.d.pct}}%"></span></span><span class="vb-txt">{{f.d.text}}</span></span></sc-if><sc-if value="{{f.d.kRing}}" hint-placeholder-val="{{false}}"><span class="v-bar"><svg class="ring" viewBox="0 0 18 18" aria-hidden="true"><circle class="ring-bg" cx="9" cy="9" r="7"></circle><circle class="ring-fg" cx="9" cy="9" r="7" style="stroke-dasharray: {{f.d.dash}}"></circle></svg><span class="vb-txt">{{f.d.text}}</span></span></sc-if><sc-if value="{{f.d.kLink}}" hint-placeholder-val="{{false}}"><a class="v-link lift" href="{{f.d.href}}" target="_blank" rel="noopener noreferrer">{{f.d.linkText}}</a></sc-if><sc-if value="{{f.d.kFiles}}" hint-placeholder-val="{{false}}"><span class="v-files"><sc-for list="{{f.d.files}}" as="fl" hint-placeholder-count="1"><span class="file-chip"><svg class="ic ic-xs" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.files}}"></path></svg>{{fl.name}}</span></sc-for></span></sc-if><sc-if value="{{f.d.kButton}}" hint-placeholder-val="{{false}}"><button type="button" class="btn btn-xs lift" onClick="{{f.d.run}}" disabled="{{f.d.btnDis}}"><svg class="ic ic-xs" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.bolt}}"></path></svg>{{f.d.btnLabel}}</button></sc-if><sc-if value="{{f.hasFx}}" hint-placeholder-val="{{false}}"><button type="button" class="fx-tog {{f.fxCls}}" onClick="{{f.fxToggle}}" aria-expanded="{{f.fxOpen}}" aria-label="Ver cómo se calcula" title="Ver cómo se calcula">ƒx</button></sc-if></div><sc-if value="{{f.fxOpen}}" hint-placeholder-val="{{false}}"><div class="fx-detail">{{f.fxText}}</div></sc-if></sc-if>
 <sc-if value="{{f.hasNote}}" hint-placeholder-val="{{false}}"><span class="fnote">{{f.note}}</span></sc-if><sc-if value="{{f.hasRefs}}" hint-placeholder-val="{{false}}"><span class="frefs" title="{{f.refsTip}}"><span class="frefs-t">Se calcula con</span><sc-for list="{{f.refs}}" as="rf" hint-placeholder-count="2"><button type="button" class="fref {{rf.cls}}" onClick="{{rf.go}}" title="{{rf.tip}}">{{rf.label}}</button></sc-for></span></sc-if>
 </div>
 </div>
@@ -2797,7 +2994,8 @@ body.td-active .board{scroll-snap-type:none!important}
             <sc-for list="{{org.links}}" as="ol" hint-placeholder-count="5"><svg class="map-svg" data-key="{{ol.key}}" viewBox="{{org.vb}}" aria-hidden="true"><path class="org-ln {{ol.cls}}" d="{{ol.d}}" style="d: {{ol.cd}}"></path></svg></sc-for>
             <sc-if value="{{org.hasGhost}}" hint-placeholder-val="{{false}}"><div class="org-ghost" data-key="ghost" style="{{org.ghost.style}}" aria-hidden="true"></div></sc-if>
             <sc-for list="{{org.boxes}}" as="ob" hint-placeholder-count="6">
-              <button type="button" class="org-node {{ob.cls}}" data-key="{{ob.key}}" data-hint="{{ob.hint}}" style="{{ob.style}}" onClick="{{ob.pick}}" onPointerDown="{{ob.ptrDown}}" aria-label="{{ob.aria}}">
+              <div class="org-slot {{ob.slotCls}}" data-key="{{ob.key}}" data-cid="{{ob.id}}" style="{{ob.style}}"><div class="org-jel">
+              <button type="button" class="org-node {{ob.cls}}" data-hint="{{ob.hint}}" onClick="{{ob.pick}}" onPointerDown="{{ob.ptrDown}}" aria-label="{{ob.aria}}">
                 <span class="on-top"><span class="on-area"><span class="tico xs"><svg class="ic ic-xs" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ob.icon}}"></path></svg></span><span class="on-areatxt">{{ob.areaName}}</span></span><span class="on-lv">{{ob.lvl}}</span></span>
                 <strong class="on-name">{{ob.name}}</strong>
                 <span class="on-person"><sc-if value="{{ob.hasPerson}}" hint-placeholder-val="{{true}}"><span class="av xs" style="background: {{ob.avatar}}">{{ob.initials}}</span></sc-if><sc-if value="{{ob.vacant}}" hint-placeholder-val="{{false}}"><span class="vac-dot"></span></sc-if><span class="on-pname">{{ob.person}}</span></span>
@@ -2805,6 +3003,7 @@ body.td-active .board{scroll-snap-type:none!important}
                 <sc-if value="{{ob.hasAlerts}}" hint-placeholder-val="{{false}}"><span class="on-al" title="{{ob.alertsAria}}">{{ob.alerts}}</span></sc-if>
                 <sc-if value="{{ob.hasKids}}" hint-placeholder-val="{{false}}"><span class="on-kids" title="Cargos a su cargo">{{ob.kidsTxt}}</span></sc-if>
               </button>
+              </div></div>
             </sc-for>
           </div>
         </div>
@@ -2994,6 +3193,8 @@ body.td-active .board{scroll-snap-type:none!important}
 <div class="flabel" title="{{f.desc}}"><svg class="ic ic-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="{{f.icon}}"></path></svg><span>{{f.label}}</span></div>
 <div class="fval">
 <sc-if value="{{f.eInput}}" hint-placeholder-val="{{true}}"><div class="fin-row"><input class="finput" type="{{f.itype}}" value="{{f.value}}" onChange="{{f.onChange}}" placeholder="{{f.placeholder}}" aria-label="{{f.label}}"><sc-if value="{{f.hasLink}}" hint-placeholder-val="{{false}}"><a class="icon-btn sm" href="{{f.linkHref}}" target="_blank" rel="noopener noreferrer" aria-label="{{f.linkAria}}" title="{{f.linkAria}}"><svg class="ic ic-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.ext}}"></path></svg></a></sc-if></div></sc-if>
+<sc-if value="{{f.eNum}}" hint-placeholder-val="{{false}}"><div class="fin-row fnum {{f.numCls}}"><input class="finput" type="text" inputmode="decimal" value="{{f.value}}" onChange="{{f.onChange}}" placeholder="{{f.placeholder}}" aria-label="{{f.label}}"><span class="fnum-disp" aria-hidden="true">{{f.fmtText}}</span><sc-if value="{{f.hasMeter}}" hint-placeholder-val="{{false}}"><span class="fnum-meter" aria-hidden="true"><span style="width: {{f.meterPct}}%"></span></span></sc-if></div></sc-if>
+<sc-if value="{{f.eDrop}}" hint-placeholder-val="{{false}}"><div class="fdrop" data-opa="{{f.opa}}"><button type="button" class="fdrop-btn" onClick="{{f.openDrop}}" aria-haspopup="listbox" aria-label="{{f.dropAria}}"><sc-for list="{{f.dropPills}}" as="dq" hint-placeholder-count="2"><sc-if value="{{dq.isPerson}}" hint-placeholder-val="{{false}}"><span class="person"><span class="av xs" style="background: {{dq.color}}">{{dq.initials}}</span>{{dq.text}}</span></sc-if><sc-if value="{{dq.isPill}}" hint-placeholder-val="{{true}}"><span class="pill {{dq.cls}}"><sc-if value="{{dq.dot}}" hint-placeholder-val="{{false}}"><span class="sdot"></span></sc-if>{{dq.text}}</span></sc-if></sc-for><sc-if value="{{f.dropEmpty}}" hint-placeholder-val="{{false}}"><span class="fdrop-ph">Vacío</span></sc-if><span class="fdrop-chev"><svg class="ic ic-xs" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.chevdown}}"></path></svg></span></button></div></sc-if>
 <sc-if value="{{f.eSelect}}" hint-placeholder-val="{{false}}"><div class="opts"><sc-for list="{{f.options}}" as="o" hint-placeholder-count="3"><button type="button" class="pill pill-btn {{o.cls}}" onClick="{{o.pick}}" aria-pressed="{{o.on}}"><sc-if value="{{o.dot}}" hint-placeholder-val="{{false}}"><span class="sdot"></span></sc-if>{{o.v}}</button></sc-for></div></sc-if>
 <sc-if value="{{f.ePeople}}" hint-placeholder-val="{{false}}"><div class="opts"><sc-for list="{{f.people}}" as="p" hint-placeholder-count="4"><button type="button" class="person-opt {{p.cls}}" onClick="{{p.pick}}" aria-pressed="{{p.on}}"><span class="av sm" style="background: {{p.color}}">{{p.initials}}</span>{{p.first}}</button></sc-for></div></sc-if>
 <sc-if value="{{f.eCheck}}" hint-placeholder-val="{{false}}"><div><button type="button" class="cbox lg {{f.checkCls}}" onClick="{{f.toggle}}" aria-pressed="{{f.checked}}" aria-label="{{f.label}}"><svg class="ic ic-check" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></button></div></sc-if>
@@ -3011,7 +3212,7 @@ body.td-active .board{scroll-snap-type:none!important}
 </sc-if>
 <sc-if value="{{f.eButton}}" hint-placeholder-val="{{false}}"><div><button type="button" class="btn btn-sm" onClick="{{f.run}}"><svg class="ic ic-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.bolt}}"></path></svg>{{f.btnLabel}}</button></div></sc-if>
 <sc-if value="{{f.eAi}}" hint-placeholder-val="{{false}}"><div class="ai-val"><span class="v-ai">{{f.aiText}}</span><button type="button" class="link-btn" onClick="{{f.aiGen}}"><svg class="ic ic-xs" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.ai}}"></path></svg>{{f.aiBtn}}</button></div></sc-if>
-<sc-if value="{{f.eRead}}" hint-placeholder-val="{{false}}"><div class="fro"><sc-if value="{{f.d.kText}}" hint-placeholder-val="{{true}}"><span class="v-text {{f.d.cls}}">{{f.d.text}}</span></sc-if><sc-if value="{{f.d.kPills}}" hint-placeholder-val="{{false}}"><span class="v-pills"><sc-for list="{{f.d.pills}}" as="pl" hint-placeholder-count="1"><span class="pill {{pl.cls}}"><sc-if value="{{pl.dot}}" hint-placeholder-val="{{false}}"><span class="sdot"></span></sc-if>{{pl.text}}</span></sc-for></span></sc-if><sc-if value="{{f.d.kChips}}" hint-placeholder-val="{{false}}"><span class="chips"><sc-for list="{{f.d.chips}}" as="ch" hint-placeholder-count="1"><sc-if value="{{ch.locked}}" hint-placeholder-val="{{false}}"><span class="chip chip-locked">Restringido</span></sc-if><sc-if value="{{ch.ok}}" hint-placeholder-val="{{true}}"><button type="button" class="chip lift" onClick="{{ch.open}}"><span class="chip-dot" style="background: {{ch.color}}"></span>{{ch.label}}</button></sc-if></sc-for></span></sc-if><sc-if value="{{f.d.kPeople}}" hint-placeholder-val="{{false}}"><span class="v-people"><sc-for list="{{f.d.people}}" as="pp" hint-placeholder-count="1"><span class="person"><span class="av sm" style="background: {{pp.color}}">{{pp.initials}}</span>{{pp.name}}</span></sc-for></span></sc-if><sc-if value="{{f.d.kCheck}}" hint-placeholder-val="{{false}}"><sc-if value="{{f.d.canToggle}}" hint-placeholder-val="{{false}}"><button type="button" class="cbox lift {{f.d.checkCls}}" onClick="{{f.d.toggle}}" aria-pressed="{{f.d.checked}}" aria-label="{{f.d.aria}}"><svg class="ic ic-check" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></button></sc-if><sc-if value="{{f.d.noToggle}}" hint-placeholder-val="{{true}}"><span class="cbox {{f.d.checkCls}}"><svg class="ic ic-check" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg><span class="sr-only">{{f.d.srText}}</span></span></sc-if></sc-if><sc-if value="{{f.d.kBar}}" hint-placeholder-val="{{false}}"><span class="v-bar"><span class="vb-track"><span class="vb-fill" style="width: {{f.d.pct}}%"></span></span><span class="vb-txt">{{f.d.text}}</span></span></sc-if><sc-if value="{{f.d.kRing}}" hint-placeholder-val="{{false}}"><span class="v-bar"><svg class="ring" viewBox="0 0 18 18" aria-hidden="true"><circle class="ring-bg" cx="9" cy="9" r="7"></circle><circle class="ring-fg" cx="9" cy="9" r="7" style="stroke-dasharray: {{f.d.dash}}"></circle></svg><span class="vb-txt">{{f.d.text}}</span></span></sc-if><sc-if value="{{f.d.kLink}}" hint-placeholder-val="{{false}}"><a class="v-link lift" href="{{f.d.href}}" target="_blank" rel="noopener noreferrer">{{f.d.linkText}}</a></sc-if><sc-if value="{{f.d.kFiles}}" hint-placeholder-val="{{false}}"><span class="v-files"><sc-for list="{{f.d.files}}" as="fl" hint-placeholder-count="1"><span class="file-chip"><svg class="ic ic-xs" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.files}}"></path></svg>{{fl.name}}</span></sc-for></span></sc-if><sc-if value="{{f.d.kButton}}" hint-placeholder-val="{{false}}"><button type="button" class="btn btn-xs lift" onClick="{{f.d.run}}" disabled="{{f.d.btnDis}}"><svg class="ic ic-xs" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.bolt}}"></path></svg>{{f.d.btnLabel}}</button></sc-if></div></sc-if>
+<sc-if value="{{f.eRead}}" hint-placeholder-val="{{false}}"><div class="fro"><sc-if value="{{f.d.kText}}" hint-placeholder-val="{{true}}"><span class="v-text {{f.d.cls}}">{{f.d.text}}</span></sc-if><sc-if value="{{f.d.kPills}}" hint-placeholder-val="{{false}}"><span class="v-pills"><sc-for list="{{f.d.pills}}" as="pl" hint-placeholder-count="1"><span class="pill {{pl.cls}}"><sc-if value="{{pl.dot}}" hint-placeholder-val="{{false}}"><span class="sdot"></span></sc-if>{{pl.text}}</span></sc-for></span></sc-if><sc-if value="{{f.d.kChips}}" hint-placeholder-val="{{false}}"><span class="chips"><sc-for list="{{f.d.chips}}" as="ch" hint-placeholder-count="1"><sc-if value="{{ch.locked}}" hint-placeholder-val="{{false}}"><span class="chip chip-locked">Restringido</span></sc-if><sc-if value="{{ch.ok}}" hint-placeholder-val="{{true}}"><button type="button" class="chip lift" onClick="{{ch.open}}"><span class="chip-dot" style="background: {{ch.color}}"></span>{{ch.label}}</button></sc-if></sc-for></span></sc-if><sc-if value="{{f.d.kPeople}}" hint-placeholder-val="{{false}}"><span class="v-people"><sc-for list="{{f.d.people}}" as="pp" hint-placeholder-count="1"><span class="person"><span class="av sm" style="background: {{pp.color}}">{{pp.initials}}</span>{{pp.name}}</span></sc-for></span></sc-if><sc-if value="{{f.d.kCheck}}" hint-placeholder-val="{{false}}"><sc-if value="{{f.d.canToggle}}" hint-placeholder-val="{{false}}"><button type="button" class="cbox lift {{f.d.checkCls}}" onClick="{{f.d.toggle}}" aria-pressed="{{f.d.checked}}" aria-label="{{f.d.aria}}"><svg class="ic ic-check" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></button></sc-if><sc-if value="{{f.d.noToggle}}" hint-placeholder-val="{{true}}"><span class="cbox {{f.d.checkCls}}"><svg class="ic ic-check" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg><span class="sr-only">{{f.d.srText}}</span></span></sc-if></sc-if><sc-if value="{{f.d.kBar}}" hint-placeholder-val="{{false}}"><span class="v-bar"><span class="vb-track"><span class="vb-fill" style="width: {{f.d.pct}}%"></span></span><span class="vb-txt">{{f.d.text}}</span></span></sc-if><sc-if value="{{f.d.kRing}}" hint-placeholder-val="{{false}}"><span class="v-bar"><svg class="ring" viewBox="0 0 18 18" aria-hidden="true"><circle class="ring-bg" cx="9" cy="9" r="7"></circle><circle class="ring-fg" cx="9" cy="9" r="7" style="stroke-dasharray: {{f.d.dash}}"></circle></svg><span class="vb-txt">{{f.d.text}}</span></span></sc-if><sc-if value="{{f.d.kLink}}" hint-placeholder-val="{{false}}"><a class="v-link lift" href="{{f.d.href}}" target="_blank" rel="noopener noreferrer">{{f.d.linkText}}</a></sc-if><sc-if value="{{f.d.kFiles}}" hint-placeholder-val="{{false}}"><span class="v-files"><sc-for list="{{f.d.files}}" as="fl" hint-placeholder-count="1"><span class="file-chip"><svg class="ic ic-xs" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.files}}"></path></svg>{{fl.name}}</span></sc-for></span></sc-if><sc-if value="{{f.d.kButton}}" hint-placeholder-val="{{false}}"><button type="button" class="btn btn-xs lift" onClick="{{f.d.run}}" disabled="{{f.d.btnDis}}"><svg class="ic ic-xs" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.bolt}}"></path></svg>{{f.d.btnLabel}}</button></sc-if><sc-if value="{{f.hasFx}}" hint-placeholder-val="{{false}}"><button type="button" class="fx-tog {{f.fxCls}}" onClick="{{f.fxToggle}}" aria-expanded="{{f.fxOpen}}" aria-label="Ver cómo se calcula" title="Ver cómo se calcula">ƒx</button></sc-if></div><sc-if value="{{f.fxOpen}}" hint-placeholder-val="{{false}}"><div class="fx-detail">{{f.fxText}}</div></sc-if></sc-if>
 <sc-if value="{{f.hasNote}}" hint-placeholder-val="{{false}}"><span class="fnote">{{f.note}}</span></sc-if><sc-if value="{{f.hasRefs}}" hint-placeholder-val="{{false}}"><span class="frefs" title="{{f.refsTip}}"><span class="frefs-t">Se calcula con</span><sc-for list="{{f.refs}}" as="rf" hint-placeholder-count="2"><button type="button" class="fref {{rf.cls}}" onClick="{{rf.go}}" title="{{rf.tip}}">{{rf.label}}</button></sc-for></span></sc-if>
 </div>
 </div>
@@ -3122,6 +3323,8 @@ body.td-active .board{scroll-snap-type:none!important}
 <div class="flabel" title="{{f.desc}}"><svg class="ic ic-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="{{f.icon}}"></path></svg><span>{{f.label}}</span></div>
 <div class="fval">
 <sc-if value="{{f.eInput}}" hint-placeholder-val="{{true}}"><div class="fin-row"><input class="finput" type="{{f.itype}}" value="{{f.value}}" onChange="{{f.onChange}}" placeholder="{{f.placeholder}}" aria-label="{{f.label}}"><sc-if value="{{f.hasLink}}" hint-placeholder-val="{{false}}"><a class="icon-btn sm" href="{{f.linkHref}}" target="_blank" rel="noopener noreferrer" aria-label="{{f.linkAria}}" title="{{f.linkAria}}"><svg class="ic ic-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.ext}}"></path></svg></a></sc-if></div></sc-if>
+<sc-if value="{{f.eNum}}" hint-placeholder-val="{{false}}"><div class="fin-row fnum {{f.numCls}}"><input class="finput" type="text" inputmode="decimal" value="{{f.value}}" onChange="{{f.onChange}}" placeholder="{{f.placeholder}}" aria-label="{{f.label}}"><span class="fnum-disp" aria-hidden="true">{{f.fmtText}}</span><sc-if value="{{f.hasMeter}}" hint-placeholder-val="{{false}}"><span class="fnum-meter" aria-hidden="true"><span style="width: {{f.meterPct}}%"></span></span></sc-if></div></sc-if>
+<sc-if value="{{f.eDrop}}" hint-placeholder-val="{{false}}"><div class="fdrop" data-opa="{{f.opa}}"><button type="button" class="fdrop-btn" onClick="{{f.openDrop}}" aria-haspopup="listbox" aria-label="{{f.dropAria}}"><sc-for list="{{f.dropPills}}" as="dq" hint-placeholder-count="2"><sc-if value="{{dq.isPerson}}" hint-placeholder-val="{{false}}"><span class="person"><span class="av xs" style="background: {{dq.color}}">{{dq.initials}}</span>{{dq.text}}</span></sc-if><sc-if value="{{dq.isPill}}" hint-placeholder-val="{{true}}"><span class="pill {{dq.cls}}"><sc-if value="{{dq.dot}}" hint-placeholder-val="{{false}}"><span class="sdot"></span></sc-if>{{dq.text}}</span></sc-if></sc-for><sc-if value="{{f.dropEmpty}}" hint-placeholder-val="{{false}}"><span class="fdrop-ph">Vacío</span></sc-if><span class="fdrop-chev"><svg class="ic ic-xs" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.chevdown}}"></path></svg></span></button></div></sc-if>
 <sc-if value="{{f.eSelect}}" hint-placeholder-val="{{false}}"><div class="opts"><sc-for list="{{f.options}}" as="o" hint-placeholder-count="3"><button type="button" class="pill pill-btn {{o.cls}}" onClick="{{o.pick}}" aria-pressed="{{o.on}}"><sc-if value="{{o.dot}}" hint-placeholder-val="{{false}}"><span class="sdot"></span></sc-if>{{o.v}}</button></sc-for></div></sc-if>
 <sc-if value="{{f.ePeople}}" hint-placeholder-val="{{false}}"><div class="opts"><sc-for list="{{f.people}}" as="p" hint-placeholder-count="4"><button type="button" class="person-opt {{p.cls}}" onClick="{{p.pick}}" aria-pressed="{{p.on}}"><span class="av sm" style="background: {{p.color}}">{{p.initials}}</span>{{p.first}}</button></sc-for></div></sc-if>
 <sc-if value="{{f.eCheck}}" hint-placeholder-val="{{false}}"><div><button type="button" class="cbox lg {{f.checkCls}}" onClick="{{f.toggle}}" aria-pressed="{{f.checked}}" aria-label="{{f.label}}"><svg class="ic ic-check" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></button></div></sc-if>
@@ -3139,7 +3342,7 @@ body.td-active .board{scroll-snap-type:none!important}
 </sc-if>
 <sc-if value="{{f.eButton}}" hint-placeholder-val="{{false}}"><div><button type="button" class="btn btn-sm" onClick="{{f.run}}"><svg class="ic ic-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.bolt}}"></path></svg>{{f.btnLabel}}</button></div></sc-if>
 <sc-if value="{{f.eAi}}" hint-placeholder-val="{{false}}"><div class="ai-val"><span class="v-ai">{{f.aiText}}</span><button type="button" class="link-btn" onClick="{{f.aiGen}}"><svg class="ic ic-xs" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.ai}}"></path></svg>{{f.aiBtn}}</button></div></sc-if>
-<sc-if value="{{f.eRead}}" hint-placeholder-val="{{false}}"><div class="fro"><sc-if value="{{f.d.kText}}" hint-placeholder-val="{{true}}"><span class="v-text {{f.d.cls}}">{{f.d.text}}</span></sc-if><sc-if value="{{f.d.kPills}}" hint-placeholder-val="{{false}}"><span class="v-pills"><sc-for list="{{f.d.pills}}" as="pl" hint-placeholder-count="1"><span class="pill {{pl.cls}}"><sc-if value="{{pl.dot}}" hint-placeholder-val="{{false}}"><span class="sdot"></span></sc-if>{{pl.text}}</span></sc-for></span></sc-if><sc-if value="{{f.d.kChips}}" hint-placeholder-val="{{false}}"><span class="chips"><sc-for list="{{f.d.chips}}" as="ch" hint-placeholder-count="1"><sc-if value="{{ch.locked}}" hint-placeholder-val="{{false}}"><span class="chip chip-locked">Restringido</span></sc-if><sc-if value="{{ch.ok}}" hint-placeholder-val="{{true}}"><button type="button" class="chip lift" onClick="{{ch.open}}"><span class="chip-dot" style="background: {{ch.color}}"></span>{{ch.label}}</button></sc-if></sc-for></span></sc-if><sc-if value="{{f.d.kPeople}}" hint-placeholder-val="{{false}}"><span class="v-people"><sc-for list="{{f.d.people}}" as="pp" hint-placeholder-count="1"><span class="person"><span class="av sm" style="background: {{pp.color}}">{{pp.initials}}</span>{{pp.name}}</span></sc-for></span></sc-if><sc-if value="{{f.d.kCheck}}" hint-placeholder-val="{{false}}"><sc-if value="{{f.d.canToggle}}" hint-placeholder-val="{{false}}"><button type="button" class="cbox lift {{f.d.checkCls}}" onClick="{{f.d.toggle}}" aria-pressed="{{f.d.checked}}" aria-label="{{f.d.aria}}"><svg class="ic ic-check" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></button></sc-if><sc-if value="{{f.d.noToggle}}" hint-placeholder-val="{{true}}"><span class="cbox {{f.d.checkCls}}"><svg class="ic ic-check" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg><span class="sr-only">{{f.d.srText}}</span></span></sc-if></sc-if><sc-if value="{{f.d.kBar}}" hint-placeholder-val="{{false}}"><span class="v-bar"><span class="vb-track"><span class="vb-fill" style="width: {{f.d.pct}}%"></span></span><span class="vb-txt">{{f.d.text}}</span></span></sc-if><sc-if value="{{f.d.kRing}}" hint-placeholder-val="{{false}}"><span class="v-bar"><svg class="ring" viewBox="0 0 18 18" aria-hidden="true"><circle class="ring-bg" cx="9" cy="9" r="7"></circle><circle class="ring-fg" cx="9" cy="9" r="7" style="stroke-dasharray: {{f.d.dash}}"></circle></svg><span class="vb-txt">{{f.d.text}}</span></span></sc-if><sc-if value="{{f.d.kLink}}" hint-placeholder-val="{{false}}"><a class="v-link lift" href="{{f.d.href}}" target="_blank" rel="noopener noreferrer">{{f.d.linkText}}</a></sc-if><sc-if value="{{f.d.kFiles}}" hint-placeholder-val="{{false}}"><span class="v-files"><sc-for list="{{f.d.files}}" as="fl" hint-placeholder-count="1"><span class="file-chip"><svg class="ic ic-xs" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.files}}"></path></svg>{{fl.name}}</span></sc-for></span></sc-if><sc-if value="{{f.d.kButton}}" hint-placeholder-val="{{false}}"><button type="button" class="btn btn-xs lift" onClick="{{f.d.run}}" disabled="{{f.d.btnDis}}"><svg class="ic ic-xs" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.bolt}}"></path></svg>{{f.d.btnLabel}}</button></sc-if></div></sc-if>
+<sc-if value="{{f.eRead}}" hint-placeholder-val="{{false}}"><div class="fro"><sc-if value="{{f.d.kText}}" hint-placeholder-val="{{true}}"><span class="v-text {{f.d.cls}}">{{f.d.text}}</span></sc-if><sc-if value="{{f.d.kPills}}" hint-placeholder-val="{{false}}"><span class="v-pills"><sc-for list="{{f.d.pills}}" as="pl" hint-placeholder-count="1"><span class="pill {{pl.cls}}"><sc-if value="{{pl.dot}}" hint-placeholder-val="{{false}}"><span class="sdot"></span></sc-if>{{pl.text}}</span></sc-for></span></sc-if><sc-if value="{{f.d.kChips}}" hint-placeholder-val="{{false}}"><span class="chips"><sc-for list="{{f.d.chips}}" as="ch" hint-placeholder-count="1"><sc-if value="{{ch.locked}}" hint-placeholder-val="{{false}}"><span class="chip chip-locked">Restringido</span></sc-if><sc-if value="{{ch.ok}}" hint-placeholder-val="{{true}}"><button type="button" class="chip lift" onClick="{{ch.open}}"><span class="chip-dot" style="background: {{ch.color}}"></span>{{ch.label}}</button></sc-if></sc-for></span></sc-if><sc-if value="{{f.d.kPeople}}" hint-placeholder-val="{{false}}"><span class="v-people"><sc-for list="{{f.d.people}}" as="pp" hint-placeholder-count="1"><span class="person"><span class="av sm" style="background: {{pp.color}}">{{pp.initials}}</span>{{pp.name}}</span></sc-for></span></sc-if><sc-if value="{{f.d.kCheck}}" hint-placeholder-val="{{false}}"><sc-if value="{{f.d.canToggle}}" hint-placeholder-val="{{false}}"><button type="button" class="cbox lift {{f.d.checkCls}}" onClick="{{f.d.toggle}}" aria-pressed="{{f.d.checked}}" aria-label="{{f.d.aria}}"><svg class="ic ic-check" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></button></sc-if><sc-if value="{{f.d.noToggle}}" hint-placeholder-val="{{true}}"><span class="cbox {{f.d.checkCls}}"><svg class="ic ic-check" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg><span class="sr-only">{{f.d.srText}}</span></span></sc-if></sc-if><sc-if value="{{f.d.kBar}}" hint-placeholder-val="{{false}}"><span class="v-bar"><span class="vb-track"><span class="vb-fill" style="width: {{f.d.pct}}%"></span></span><span class="vb-txt">{{f.d.text}}</span></span></sc-if><sc-if value="{{f.d.kRing}}" hint-placeholder-val="{{false}}"><span class="v-bar"><svg class="ring" viewBox="0 0 18 18" aria-hidden="true"><circle class="ring-bg" cx="9" cy="9" r="7"></circle><circle class="ring-fg" cx="9" cy="9" r="7" style="stroke-dasharray: {{f.d.dash}}"></circle></svg><span class="vb-txt">{{f.d.text}}</span></span></sc-if><sc-if value="{{f.d.kLink}}" hint-placeholder-val="{{false}}"><a class="v-link lift" href="{{f.d.href}}" target="_blank" rel="noopener noreferrer">{{f.d.linkText}}</a></sc-if><sc-if value="{{f.d.kFiles}}" hint-placeholder-val="{{false}}"><span class="v-files"><sc-for list="{{f.d.files}}" as="fl" hint-placeholder-count="1"><span class="file-chip"><svg class="ic ic-xs" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.files}}"></path></svg>{{fl.name}}</span></sc-for></span></sc-if><sc-if value="{{f.d.kButton}}" hint-placeholder-val="{{false}}"><button type="button" class="btn btn-xs lift" onClick="{{f.d.run}}" disabled="{{f.d.btnDis}}"><svg class="ic ic-xs" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.bolt}}"></path></svg>{{f.d.btnLabel}}</button></sc-if><sc-if value="{{f.hasFx}}" hint-placeholder-val="{{false}}"><button type="button" class="fx-tog {{f.fxCls}}" onClick="{{f.fxToggle}}" aria-expanded="{{f.fxOpen}}" aria-label="Ver cómo se calcula" title="Ver cómo se calcula">ƒx</button></sc-if></div><sc-if value="{{f.fxOpen}}" hint-placeholder-val="{{false}}"><div class="fx-detail">{{f.fxText}}</div></sc-if></sc-if>
 <sc-if value="{{f.hasNote}}" hint-placeholder-val="{{false}}"><span class="fnote">{{f.note}}</span></sc-if><sc-if value="{{f.hasRefs}}" hint-placeholder-val="{{false}}"><span class="frefs" title="{{f.refsTip}}"><span class="frefs-t">Se calcula con</span><sc-for list="{{f.refs}}" as="rf" hint-placeholder-count="2"><button type="button" class="fref {{rf.cls}}" onClick="{{rf.go}}" title="{{rf.tip}}">{{rf.label}}</button></sc-for></span></sc-if>
 </div>
 </div>
@@ -3747,12 +3950,12 @@ body.td-active .board{scroll-snap-type:none!important}
 
 <sc-if value="{{hasRec}}" hint-placeholder-val="{{false}}">
   <sc-if value="{{recFullB}}" hint-placeholder-val="{{false}}"><button type="button" class="scrim rec-scrim" onClick="{{closeRec}}" aria-label="Cerrar registro"></button></sc-if>
-  <aside class="rec {{recMode}}" aria-label="Detalle del registro">
+  <aside class="rec {{recMode}} {{rec.bgCls}}" aria-label="Detalle del registro">
     <div class="rec-top">
       <span class="crumb-sm"><span class="tico xs" style="--c: {{rec.tcolor}}"><svg class="ic ic-xs" viewBox="0 0 24 24" aria-hidden="true"><path d="{{rec.ticon}}"></path></svg></span>{{rec.tname}}</span>
       <span class="rec-actions">
         <sc-if value="{{rec.notInTable}}" hint-placeholder-val="{{true}}"><button type="button" class="btn btn-xs" onClick="{{rec.openTable}}"><svg class="ic ic-xs" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.db}}"></path></svg>Ver en su tabla</button></sc-if>
-        <button type="button" class="icon-btn" onClick="{{toggleRecFull}}" aria-label="{{recFullAria}}" title="{{recFullAria}}"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.expand}}"></path></svg></button>
+        <div class="seg seg-sm rec-modes" role="group" aria-label="Cómo abrir el registro"><button type="button" class="seg-btn {{recSideCls}}" onClick="{{recAsSide}}" aria-pressed="{{recIsSide}}" title="Panel lateral"><svg class="ic ic-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.sidebar}}"></path></svg><span>Panel</span></button><button type="button" class="seg-btn {{recFullCls}}" onClick="{{recAsFull}}" aria-pressed="{{recFullB}}" title="Ventana centrada amplia"><svg class="ic ic-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.expand}}"></path></svg><span>Ventana</span></button></div><sc-if value="{{rec.canEdit}}" hint-placeholder-val="{{true}}"><span class="pick-wrap"><button type="button" class="icon-btn" onClick="{{rec.togglePal}}" aria-expanded="{{rec.palOpen}}" aria-label="Color de fondo de la tarjeta" title="Color de fondo de la tarjeta"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.palette}}"></path></svg></button><sc-if value="{{rec.palOpen}}" hint-placeholder-val="{{false}}"><div class="tone-pop"><div class="pp-title">Fondo de la tarjeta</div><div class="tone-grid"><sc-for list="{{rec.pal}}" as="rp" hint-placeholder-count="9"><button type="button" class="tone-opt {{rp.cls}}" onClick="{{rp.pick}}" aria-label="{{rp.name}}" aria-pressed="{{rp.on}}" title="{{rp.name}}"></button></sc-for></div><p class="muted sm" style="margin: 0">Se ve en la tabla, el tablero y aquí. Las reglas de color de la vista tienen prioridad.</p></div></sc-if></span></sc-if>
         <sc-if value="{{rec.canTpl}}" hint-placeholder-val="{{true}}"><button type="button" class="icon-btn" onClick="{{rec.saveTpl}}" aria-label="Guardar como plantilla" title="Guardar como plantilla"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.template}}"></path></svg></button></sc-if>
         <sc-if value="{{rec.canEdit}}" hint-placeholder-val="{{true}}"><button type="button" class="icon-btn" onClick="{{rec.del}}" aria-label="Eliminar registro" title="Eliminar registro"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.trash}}"></path></svg></button></sc-if>
         <button type="button" class="icon-btn" onClick="{{closeRec}}" aria-label="Cerrar" title="Cerrar"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.x}}"></path></svg></button>
@@ -3762,12 +3965,16 @@ body.td-active .board{scroll-snap-type:none!important}
       <sc-if value="{{rec.canEdit}}" hint-placeholder-val="{{true}}"><input class="rec-title" value="{{rec.title}}" onChange="{{rec.setTitle}}" placeholder="Sin título" aria-label="Título del registro"></sc-if>
       <sc-if value="{{rec.cannotEdit}}" hint-placeholder-val="{{false}}"><h2 class="rec-title-ro">{{rec.titleText}}</h2></sc-if>
       <div class="rec-meta">{{rec.meta}}</div>
+      <div class="rec-cols">
+      <div class="rec-ca">
       <div class="fields">
         <sc-for list="{{rec.fields}}" as="f" hint-placeholder-count="6">
 <div class="frow {{f.rowCls}}" data-fkey="{{f.fkey}}">
 <div class="flabel" title="{{f.desc}}"><svg class="ic ic-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="{{f.icon}}"></path></svg><span>{{f.label}}</span></div>
 <div class="fval">
 <sc-if value="{{f.eInput}}" hint-placeholder-val="{{true}}"><div class="fin-row"><input class="finput" type="{{f.itype}}" value="{{f.value}}" onChange="{{f.onChange}}" placeholder="{{f.placeholder}}" aria-label="{{f.label}}"><sc-if value="{{f.hasLink}}" hint-placeholder-val="{{false}}"><a class="icon-btn sm" href="{{f.linkHref}}" target="_blank" rel="noopener noreferrer" aria-label="{{f.linkAria}}" title="{{f.linkAria}}"><svg class="ic ic-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.ext}}"></path></svg></a></sc-if></div></sc-if>
+<sc-if value="{{f.eNum}}" hint-placeholder-val="{{false}}"><div class="fin-row fnum {{f.numCls}}"><input class="finput" type="text" inputmode="decimal" value="{{f.value}}" onChange="{{f.onChange}}" placeholder="{{f.placeholder}}" aria-label="{{f.label}}"><span class="fnum-disp" aria-hidden="true">{{f.fmtText}}</span><sc-if value="{{f.hasMeter}}" hint-placeholder-val="{{false}}"><span class="fnum-meter" aria-hidden="true"><span style="width: {{f.meterPct}}%"></span></span></sc-if></div></sc-if>
+<sc-if value="{{f.eDrop}}" hint-placeholder-val="{{false}}"><div class="fdrop" data-opa="{{f.opa}}"><button type="button" class="fdrop-btn" onClick="{{f.openDrop}}" aria-haspopup="listbox" aria-label="{{f.dropAria}}"><sc-for list="{{f.dropPills}}" as="dq" hint-placeholder-count="2"><sc-if value="{{dq.isPerson}}" hint-placeholder-val="{{false}}"><span class="person"><span class="av xs" style="background: {{dq.color}}">{{dq.initials}}</span>{{dq.text}}</span></sc-if><sc-if value="{{dq.isPill}}" hint-placeholder-val="{{true}}"><span class="pill {{dq.cls}}"><sc-if value="{{dq.dot}}" hint-placeholder-val="{{false}}"><span class="sdot"></span></sc-if>{{dq.text}}</span></sc-if></sc-for><sc-if value="{{f.dropEmpty}}" hint-placeholder-val="{{false}}"><span class="fdrop-ph">Vacío</span></sc-if><span class="fdrop-chev"><svg class="ic ic-xs" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.chevdown}}"></path></svg></span></button></div></sc-if>
 <sc-if value="{{f.eSelect}}" hint-placeholder-val="{{false}}"><div class="opts"><sc-for list="{{f.options}}" as="o" hint-placeholder-count="3"><button type="button" class="pill pill-btn {{o.cls}}" onClick="{{o.pick}}" aria-pressed="{{o.on}}"><sc-if value="{{o.dot}}" hint-placeholder-val="{{false}}"><span class="sdot"></span></sc-if>{{o.v}}</button></sc-for></div></sc-if>
 <sc-if value="{{f.ePeople}}" hint-placeholder-val="{{false}}"><div class="opts"><sc-for list="{{f.people}}" as="p" hint-placeholder-count="4"><button type="button" class="person-opt {{p.cls}}" onClick="{{p.pick}}" aria-pressed="{{p.on}}"><span class="av sm" style="background: {{p.color}}">{{p.initials}}</span>{{p.first}}</button></sc-for></div></sc-if>
 <sc-if value="{{f.eCheck}}" hint-placeholder-val="{{false}}"><div><button type="button" class="cbox lg {{f.checkCls}}" onClick="{{f.toggle}}" aria-pressed="{{f.checked}}" aria-label="{{f.label}}"><svg class="ic ic-check" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></button></div></sc-if>
@@ -3785,13 +3992,20 @@ body.td-active .board{scroll-snap-type:none!important}
 </sc-if>
 <sc-if value="{{f.eButton}}" hint-placeholder-val="{{false}}"><div><button type="button" class="btn btn-sm" onClick="{{f.run}}"><svg class="ic ic-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.bolt}}"></path></svg>{{f.btnLabel}}</button></div></sc-if>
 <sc-if value="{{f.eAi}}" hint-placeholder-val="{{false}}"><div class="ai-val"><span class="v-ai">{{f.aiText}}</span><button type="button" class="link-btn" onClick="{{f.aiGen}}"><svg class="ic ic-xs" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.ai}}"></path></svg>{{f.aiBtn}}</button></div></sc-if>
-<sc-if value="{{f.eRead}}" hint-placeholder-val="{{false}}"><div class="fro"><sc-if value="{{f.d.kText}}" hint-placeholder-val="{{true}}"><span class="v-text {{f.d.cls}}">{{f.d.text}}</span></sc-if><sc-if value="{{f.d.kPills}}" hint-placeholder-val="{{false}}"><span class="v-pills"><sc-for list="{{f.d.pills}}" as="pl" hint-placeholder-count="1"><span class="pill {{pl.cls}}"><sc-if value="{{pl.dot}}" hint-placeholder-val="{{false}}"><span class="sdot"></span></sc-if>{{pl.text}}</span></sc-for></span></sc-if><sc-if value="{{f.d.kChips}}" hint-placeholder-val="{{false}}"><span class="chips"><sc-for list="{{f.d.chips}}" as="ch" hint-placeholder-count="1"><sc-if value="{{ch.locked}}" hint-placeholder-val="{{false}}"><span class="chip chip-locked">Restringido</span></sc-if><sc-if value="{{ch.ok}}" hint-placeholder-val="{{true}}"><button type="button" class="chip lift" onClick="{{ch.open}}"><span class="chip-dot" style="background: {{ch.color}}"></span>{{ch.label}}</button></sc-if></sc-for></span></sc-if><sc-if value="{{f.d.kPeople}}" hint-placeholder-val="{{false}}"><span class="v-people"><sc-for list="{{f.d.people}}" as="pp" hint-placeholder-count="1"><span class="person"><span class="av sm" style="background: {{pp.color}}">{{pp.initials}}</span>{{pp.name}}</span></sc-for></span></sc-if><sc-if value="{{f.d.kCheck}}" hint-placeholder-val="{{false}}"><sc-if value="{{f.d.canToggle}}" hint-placeholder-val="{{false}}"><button type="button" class="cbox lift {{f.d.checkCls}}" onClick="{{f.d.toggle}}" aria-pressed="{{f.d.checked}}" aria-label="{{f.d.aria}}"><svg class="ic ic-check" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></button></sc-if><sc-if value="{{f.d.noToggle}}" hint-placeholder-val="{{true}}"><span class="cbox {{f.d.checkCls}}"><svg class="ic ic-check" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg><span class="sr-only">{{f.d.srText}}</span></span></sc-if></sc-if><sc-if value="{{f.d.kBar}}" hint-placeholder-val="{{false}}"><span class="v-bar"><span class="vb-track"><span class="vb-fill" style="width: {{f.d.pct}}%"></span></span><span class="vb-txt">{{f.d.text}}</span></span></sc-if><sc-if value="{{f.d.kRing}}" hint-placeholder-val="{{false}}"><span class="v-bar"><svg class="ring" viewBox="0 0 18 18" aria-hidden="true"><circle class="ring-bg" cx="9" cy="9" r="7"></circle><circle class="ring-fg" cx="9" cy="9" r="7" style="stroke-dasharray: {{f.d.dash}}"></circle></svg><span class="vb-txt">{{f.d.text}}</span></span></sc-if><sc-if value="{{f.d.kLink}}" hint-placeholder-val="{{false}}"><a class="v-link lift" href="{{f.d.href}}" target="_blank" rel="noopener noreferrer">{{f.d.linkText}}</a></sc-if><sc-if value="{{f.d.kFiles}}" hint-placeholder-val="{{false}}"><span class="v-files"><sc-for list="{{f.d.files}}" as="fl" hint-placeholder-count="1"><span class="file-chip"><svg class="ic ic-xs" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.files}}"></path></svg>{{fl.name}}</span></sc-for></span></sc-if><sc-if value="{{f.d.kButton}}" hint-placeholder-val="{{false}}"><button type="button" class="btn btn-xs lift" onClick="{{f.d.run}}" disabled="{{f.d.btnDis}}"><svg class="ic ic-xs" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.bolt}}"></path></svg>{{f.d.btnLabel}}</button></sc-if></div></sc-if>
+<sc-if value="{{f.eRead}}" hint-placeholder-val="{{false}}"><div class="fro"><sc-if value="{{f.d.kText}}" hint-placeholder-val="{{true}}"><span class="v-text {{f.d.cls}}">{{f.d.text}}</span></sc-if><sc-if value="{{f.d.kPills}}" hint-placeholder-val="{{false}}"><span class="v-pills"><sc-for list="{{f.d.pills}}" as="pl" hint-placeholder-count="1"><span class="pill {{pl.cls}}"><sc-if value="{{pl.dot}}" hint-placeholder-val="{{false}}"><span class="sdot"></span></sc-if>{{pl.text}}</span></sc-for></span></sc-if><sc-if value="{{f.d.kChips}}" hint-placeholder-val="{{false}}"><span class="chips"><sc-for list="{{f.d.chips}}" as="ch" hint-placeholder-count="1"><sc-if value="{{ch.locked}}" hint-placeholder-val="{{false}}"><span class="chip chip-locked">Restringido</span></sc-if><sc-if value="{{ch.ok}}" hint-placeholder-val="{{true}}"><button type="button" class="chip lift" onClick="{{ch.open}}"><span class="chip-dot" style="background: {{ch.color}}"></span>{{ch.label}}</button></sc-if></sc-for></span></sc-if><sc-if value="{{f.d.kPeople}}" hint-placeholder-val="{{false}}"><span class="v-people"><sc-for list="{{f.d.people}}" as="pp" hint-placeholder-count="1"><span class="person"><span class="av sm" style="background: {{pp.color}}">{{pp.initials}}</span>{{pp.name}}</span></sc-for></span></sc-if><sc-if value="{{f.d.kCheck}}" hint-placeholder-val="{{false}}"><sc-if value="{{f.d.canToggle}}" hint-placeholder-val="{{false}}"><button type="button" class="cbox lift {{f.d.checkCls}}" onClick="{{f.d.toggle}}" aria-pressed="{{f.d.checked}}" aria-label="{{f.d.aria}}"><svg class="ic ic-check" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></button></sc-if><sc-if value="{{f.d.noToggle}}" hint-placeholder-val="{{true}}"><span class="cbox {{f.d.checkCls}}"><svg class="ic ic-check" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg><span class="sr-only">{{f.d.srText}}</span></span></sc-if></sc-if><sc-if value="{{f.d.kBar}}" hint-placeholder-val="{{false}}"><span class="v-bar"><span class="vb-track"><span class="vb-fill" style="width: {{f.d.pct}}%"></span></span><span class="vb-txt">{{f.d.text}}</span></span></sc-if><sc-if value="{{f.d.kRing}}" hint-placeholder-val="{{false}}"><span class="v-bar"><svg class="ring" viewBox="0 0 18 18" aria-hidden="true"><circle class="ring-bg" cx="9" cy="9" r="7"></circle><circle class="ring-fg" cx="9" cy="9" r="7" style="stroke-dasharray: {{f.d.dash}}"></circle></svg><span class="vb-txt">{{f.d.text}}</span></span></sc-if><sc-if value="{{f.d.kLink}}" hint-placeholder-val="{{false}}"><a class="v-link lift" href="{{f.d.href}}" target="_blank" rel="noopener noreferrer">{{f.d.linkText}}</a></sc-if><sc-if value="{{f.d.kFiles}}" hint-placeholder-val="{{false}}"><span class="v-files"><sc-for list="{{f.d.files}}" as="fl" hint-placeholder-count="1"><span class="file-chip"><svg class="ic ic-xs" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.files}}"></path></svg>{{fl.name}}</span></sc-for></span></sc-if><sc-if value="{{f.d.kButton}}" hint-placeholder-val="{{false}}"><button type="button" class="btn btn-xs lift" onClick="{{f.d.run}}" disabled="{{f.d.btnDis}}"><svg class="ic ic-xs" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.bolt}}"></path></svg>{{f.d.btnLabel}}</button></sc-if><sc-if value="{{f.hasFx}}" hint-placeholder-val="{{false}}"><button type="button" class="fx-tog {{f.fxCls}}" onClick="{{f.fxToggle}}" aria-expanded="{{f.fxOpen}}" aria-label="Ver cómo se calcula" title="Ver cómo se calcula">ƒx</button></sc-if></div><sc-if value="{{f.fxOpen}}" hint-placeholder-val="{{false}}"><div class="fx-detail">{{f.fxText}}</div></sc-if></sc-if>
 <sc-if value="{{f.hasNote}}" hint-placeholder-val="{{false}}"><span class="fnote">{{f.note}}</span></sc-if><sc-if value="{{f.hasRefs}}" hint-placeholder-val="{{false}}"><span class="frefs" title="{{f.refsTip}}"><span class="frefs-t">Se calcula con</span><sc-for list="{{f.refs}}" as="rf" hint-placeholder-count="2"><button type="button" class="fref {{rf.cls}}" onClick="{{rf.go}}" title="{{rf.tip}}">{{rf.label}}</button></sc-for></span></sc-if>
 </div>
 </div>
 </sc-for>
       </div>
       <sc-if value="{{rec.hasOrigin}}" hint-placeholder-val="{{false}}"><div class="rec-origin"><svg class="ic ic-xs" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.mobile}}"></path></svg>{{rec.originTxt}}</div></sc-if>
+      <div class="rec-body">
+        <div class="sec-label">Contenido</div>
+        <sc-if value="{{rec.canEdit}}" hint-placeholder-val="{{true}}"><textarea class="body-ta" value="{{rec.body}}" onChange="{{rec.setBody}}" placeholder="Escribe notas, acuerdos o instrucciones de este registro…" aria-label="Contenido del registro"></textarea></sc-if>
+        <sc-if value="{{rec.cannotEdit}}" hint-placeholder-val="{{false}}"><p class="body-ro">{{rec.bodyText}}</p></sc-if>
+      </div>
+      </div>
+      <div class="rec-cb">
       <sc-if value="{{rec.hasLinked}}" hint-placeholder-val="{{false}}">
         <div class="lk-wrap">
           <div class="sec-label"><svg class="ic ic-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.relation}}"></path></svg>Listas vinculadas</div>
@@ -3803,10 +4017,12 @@ body.td-active .board{scroll-snap-type:none!important}
               </div>
               <sc-if value="{{lk.open}}" hint-placeholder-val="{{true}}">
                 <div class="lk-rows">
+                  <sc-if value="{{lk.hasCols}}" hint-placeholder-val="{{false}}"><div class="lk-row lk-hd"><span class="lk-title">Nombre</span><span class="lk-cells"><sc-for list="{{lk.cols}}" as="lcol" hint-placeholder-count="2"><span class="lk-cell">{{lcol.name}}</span></sc-for></span></div></sc-if>
                   <sc-for list="{{lk.rows}}" as="lr" hint-placeholder-count="3">
                     <div class="lk-row">
                       <sc-if value="{{lr.editing}}" hint-placeholder-val="{{false}}"><input class="finput bordered lk-in" value="{{lr.title}}" onChange="{{lr.setTitle}}" placeholder="Escribe el nombre…" aria-label="Nombre del nuevo registro"><button type="button" class="btn btn-xs" onClick="{{lr.done}}">Listo</button></sc-if>
                       <sc-if value="{{lr.notEditing}}" hint-placeholder-val="{{true}}"><button type="button" class="lk-title" onClick="{{lr.open}}">{{lr.title}}</button></sc-if>
+                      <span class="lk-cells"><sc-for list="{{lr.cells}}" as="lc" hint-placeholder-count="2"><span class="lk-cell" title="{{lc.name}}">{{lc.text}}</span></sc-for></span>
                       <sc-if value="{{lr.hasPill}}" hint-placeholder-val="{{true}}"><span class="pill {{lr.pillCls}}">{{lr.pill}}</span></sc-if>
                       <sc-if value="{{lr.hasAv}}" hint-placeholder-val="{{true}}"><span class="av xs" style="background: {{lr.avColor}}" title="{{lr.avName}}">{{lr.av}}</span></sc-if>
                       <span class="muted sm lk-date">{{lr.date}}</span>
@@ -3866,11 +4082,6 @@ body.td-active .board{scroll-snap-type:none!important}
         </sc-for>
         <sc-if value="{{rec.noTrace}}" hint-placeholder-val="{{false}}"><p class="muted sm" style="margin: 0">Este registro aún no está vinculado con otras tablas.</p></sc-if>
       </div>
-      <div class="rec-body">
-        <div class="sec-label">Contenido</div>
-        <sc-if value="{{rec.canEdit}}" hint-placeholder-val="{{true}}"><textarea class="body-ta" value="{{rec.body}}" onChange="{{rec.setBody}}" placeholder="Escribe notas, acuerdos o instrucciones de este registro…" aria-label="Contenido del registro"></textarea></sc-if>
-        <sc-if value="{{rec.cannotEdit}}" hint-placeholder-val="{{false}}"><p class="body-ro">{{rec.bodyText}}</p></sc-if>
-      </div>
       <div class="comments">
         <div class="sec-label">Comentarios</div>
         <sc-for list="{{rec.comments}}" as="cm" hint-placeholder-count="1">
@@ -3882,8 +4093,35 @@ body.td-active .board{scroll-snap-type:none!important}
         </sc-if>
         <sc-if value="{{rec.cannotComment}}" hint-placeholder-val="{{false}}"><p class="muted sm" style="margin: 0">Con el permiso «Ver» no se puede comentar.</p></sc-if>
       </div>
+      </div>
+      </div>
     </div>
   </aside>
+</sc-if>
+
+<sc-if value="{{op.has}}" hint-placeholder-val="{{false}}">
+  <button type="button" class="op-scrim" onClick="{{op.close}}" aria-label="Cerrar lista"></button>
+  <div class="oppop" role="dialog" aria-label="{{op.title}}">
+    <div class="op-head"><input class="op-q" value="{{op.q}}" onChange="{{op.setQ}}" onKeyDown="{{op.key}}" placeholder="{{op.ph}}" aria-label="Buscar opción"><span class="op-mode">{{op.modeTxt}}</span></div>
+    <div class="op-list" role="listbox" aria-multiselectable="{{op.multi}}">
+      <sc-for list="{{op.opts}}" as="oo" hint-placeholder-count="5">
+        <button type="button" class="op-item {{oo.cls}}" onClick="{{oo.pick}}" role="option" aria-selected="{{oo.on}}">
+          <span class="op-ck"><sc-if value="{{oo.on}}" hint-placeholder-val="{{false}}"><svg class="ic ic-check" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></sc-if></span>
+          <sc-if value="{{oo.isPerson}}" hint-placeholder-val="{{false}}"><span class="person"><span class="av xs" style="background: {{oo.color}}">{{oo.initials}}</span>{{oo.label}}</span></sc-if>
+          <sc-if value="{{oo.isPill}}" hint-placeholder-val="{{true}}"><span class="pill {{oo.pcls}}"><sc-if value="{{oo.dot}}" hint-placeholder-val="{{false}}"><span class="sdot"></span></sc-if>{{oo.label}}</span></sc-if>
+          <sc-if value="{{oo.isRow}}" hint-placeholder-val="{{false}}"><span class="op-row"><span class="chip-dot" style="background: {{oo.color}}"></span>{{oo.label}}</span></sc-if>
+        </button>
+      </sc-for>
+      <sc-if value="{{op.empty}}" hint-placeholder-val="{{false}}"><div class="op-none">Sin coincidencias.</div></sc-if>
+      <sc-if value="{{op.canCreate}}" hint-placeholder-val="{{false}}"><button type="button" class="op-item op-new" onClick="{{op.create}}"><svg class="ic ic-xs" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.plus}}"></path></svg>Crear «{{op.q}}»</button></sc-if>
+    </div>
+    <div class="op-foot">
+      <sc-if value="{{op.hasClear}}" hint-placeholder-val="{{true}}"><button type="button" class="link-btn" onClick="{{op.clear}}">Quitar selección</button></sc-if>
+      <span class="op-sp"></span>
+      <sc-if value="{{op.canOpenRec}}" hint-placeholder-val="{{true}}"><button type="button" class="link-btn" onClick="{{op.openRec}}"><svg class="ic ic-xs" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.expand}}"></path></svg>Abrir registro</button></sc-if>
+      <button type="button" class="btn btn-xs" onClick="{{op.close}}">Listo</button>
+    </div>
+  </div>
 </sc-if>
 
 <sc-if value="{{hasToast}}" hint-placeholder-val="{{false}}">
@@ -4472,7 +4710,22 @@ var ICON = {
 "section": "M4 12h8M4 18V6M12 18V6M21 18h-4c0-4 4-3 4-6 0-1.5-2-2.5-4-1",
 "inbox": "M22 12L16 12L14 15L10 15L8 12L2 12M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z",
 "i-clipcheck": "M9 2h6a1 1 0 0 1 1 1v2a1 1 0 0 1 -1 1h-6a1 1 0 0 1 -1 -1v-2a1 1 0 0 1 1 -1zM16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2M0 0m9 14 2 2 4-4",
-"chevup": "M0 0m18 15-6-6-6 6"
+"chevup": "M0 0m18 15-6-6-6 6",
+"sidebar": "M5 3h14a2 2 0 0 1 2 2v14a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2zM15 3v18",
+"italic": "M19 4L10 4M14 20L5 20M15 4L9 20",
+"underline": "M6 4v6a6 6 0 0 0 12 0V4M4 20L20 20",
+"strike": "M16 4H9a3 3 0 0 0-2.83 4M14 12a4 4 0 0 1 0 8H6M4 12L20 12",
+"code": "M0 0m16 18 6-6-6-6M0 0m8 6-6 6 6 6",
+"quote": "M16 3a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2 1 1 0 0 1 1 1v1a2 2 0 0 1-2 2 1 1 0 0 0-1 1v2a1 1 0 0 0 1 1 6 6 0 0 0 6-6V5a2 2 0 0 0-2-2zM5 3a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2 1 1 0 0 1 1 1v1a2 2 0 0 1-2 2 1 1 0 0 0-1 1v2a1 1 0 0 0 1 1 6 6 0 0 0 6-6V5a2 2 0 0 0-2-2z",
+"tgl": "M10 5h11M10 12h11M10 19h11M0 0m3 10 3-3-3-3M0 0m3 20 3-3-3-3",
+"hilite": "M0 0m9 11-6 6v3h9l3-3M0 0m22 12-4.6 4.6a2 2 0 0 1-2.8 0l-5.2-5.2a2 2 0 0 1 0-2.8L14 4",
+"tcolor": "M4 20h16M0 0m6 16 6-12 6 12M8 12h8",
+"h2": "M4 12h8M4 18V6M12 18V6M21 18h-4c0-4 4-3 4-6 0-1.5-2-2.5-4-1",
+"h3": "M4 12h8M4 18V6M12 18V6M17.5 10.5c1.7-1 3.5 0 3.5 1.5a2 2 0 0 1-2 2M17 17.5c2 1.5 4 .3 4-1.5a2 2 0 0 0-2-2",
+"bullets": "M3 5h.01M3 12h.01M3 19h.01M8 5h13M8 12h13M8 19h13",
+"numbers": "M11 5h10M11 12h10M11 19h10M4 4h1v5M4 9h2M6.5 20H3.4c0-1 2.6-1.925 2.6-3.5a1.5 1.5 0 0 0-2.6-1.02",
+"todo2": "M5 3h14a2 2 0 0 1 2 2v14a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2zM0 0m16 9-5.5 5.5L8 12",
+"eraser": "M21 21H8a2 2 0 0 1-1.42-.587l-3.994-3.999a2 2 0 0 1 0-2.828l10-10a2 2 0 0 1 2.829 0l5.999 6a2 2 0 0 1 0 2.828L12.834 21M0 0m5.082 11.09 8.828 8.828"
 };
 
 /* ================= constantes ================= */
@@ -7123,6 +7376,7 @@ Object.assign(Component.prototype, {
     function rowColor(r) {
       var c = '';
       (vw.colors || []).some(function (rule) { if (rprops.some(function (p) { return p.key === rule.prop; }) && !(rule.value === '' && !NOVAL[rule.op]) && self.ruleMatch(s, t, rule, r, v)) { c = 'rc-' + rule.color; return true; } return false; });
+      if (!c && r._bg) c = 'rc-' + r._bg;
       return c;
     }
     function propsFor(r) { return vprops.filter(function (p) { return p.type !== 'title'; }).map(function (p) { return { name: p.name, hasLbl: ['select', 'status', 'multi_select', 'person', 'relation', 'created_by', 'last_edited_by'].indexOf(p.type) < 0, d: self.dispOf(s, t, p, r, v, canEdit) }; }).filter(function (x) { return !x.d.empty; }); }
@@ -7152,7 +7406,7 @@ Object.assign(Component.prototype, {
           var isSel = sel && sel.row === r.id && sel.prop === p.key;
           var dd = self.dispOf(s, t, p, r, v, canEdit);
           var emp = !(dd.text || (dd.pills || []).length || (dd.chips || []).length || (dd.people || []).length || dd.kCheck || dd.kLink || (dd.files || []).length || dd.kBar || dd.kRing || dd.kButton);
-          return { isTitle: false, notTitle: true, title: '', open: null, align: isNumericProp(p) ? 'num' : '', wrapCls: wc + (emp ? ' td-emp' : ''), selCls: isSel ? 'cell-sel' : '', lbl: p.name, d: dd, aria: 'Editar ' + p.name + ' de ' + self.titleOf(t, r), select: function () { self.setState({ selCell: isSel ? null : { where: where, tid: tid, row: r.id, prop: p.key }, headMenu: null }); } };
+          return { isTitle: false, notTitle: true, title: '', open: null, align: isNumericProp(p) ? 'num' : '', wrapCls: wc + (emp ? ' td-emp' : ''), selCls: isSel ? 'cell-sel' : '', lbl: p.name, d: dd, aria: 'Editar ' + p.name + ' de ' + self.titleOf(t, r), select: function () { var ddp = canEdit && DROP_TYPES[p.type]; self.setState({ selCell: isSel && !ddp ? null : { where: where, tid: tid, row: r.id, prop: p.key }, headMenu: null, opPop: ddp ? { tid: tid, rid: r.id, key: p.key, anchor: '.td.cell-sel' } : null, opQ: '' }); } };
         })
       };
     }
@@ -7206,7 +7460,7 @@ Object.assign(Component.prototype, {
     /* barra de edición de celda (tipo Excel) */
     var cb = { icon: '', prop: '', rowTitle: '', fields: [], isFormula: false, formula: '', editFormula: null, openRec: null, close: null };
     var selRow = sel ? findRow(t, sel.row) : null, selProp = sel ? propOf(t, sel.prop) : null;
-    if (selRow && selProp && baseRows.indexOf(selRow) >= 0) {
+    if (selRow && selProp && baseRows.indexOf(selRow) >= 0 && !(canEdit && DROP_TYPES[selProp.type])) {
       var fv = this.fieldView(s, t, selProp, selRow, v, canEdit, this.recCtx(tid, selRow.id));
       cb = { icon: ICON[selProp.type], prop: selProp.name, rowTitle: this.titleOf(t, selRow), fields: [fv], isFormula: selProp.type === 'formula', formula: selProp.expr || '', canEditFormula: canStructure && !locked,
         editFormula: function () { self.openDrawer('propEdit', { dCtx: ctxD, dProp: selProp.key }); }, openRec: function () { self.openRec(tid, selRow.id); }, close: function () { self.setState({ selCell: null }); } };
@@ -8080,7 +8334,7 @@ Object.assign(Component.prototype, {
       var titleP = this.titleProp(recT);
       var rprops = this.rprops(s, recT, v.role);
       var openFullDefault = screen === 'db' && recT.id === tidCur ? !!this.screenView(s, recT).openFull : false;
-      recFull = s.recFull != null ? s.recFull : openFullDefault;
+      recFull = s.recFull != null ? s.recFull : (s.recPref ? s.recPref === 'full' : openFullDefault);
       var rid = recRow.id, rtid = recT.id;
       var cm = this.memberById(s, recRow._cBy), em = this.memberById(s, recRow._eBy);
       var trace = this.traceData(s, recT, recRow, v);
@@ -8572,7 +8826,7 @@ Object.assign(Component.prototype, {
       var isT = !!(dr && dr.target === c.id && !dr.commit);
       var cls = (s.orgSel === c.id ? 'on ' : '') + (hiArea && hiArea !== c.area ? 'dim ' : '') + (mineC && mineC.id === c.id ? 'me ' : '') + (m ? '' : 'vacant ')
         + (held ? 'dragging ' : '') + (isT ? (dr.bad ? 'tgt-bad ' : 'tgt tz-' + dr.zone + ' ') : '') + (s.orgLanded === c.id ? 'landed ' : '') + (v.role === 'admin' ? 'can-drag' : '');
-      return { id: c.id, key: 'n-' + c.id, x: p.x, y: p.d * (H + GY), w: W, h: H, raw: c, name: c.name, areaName: a.name, color: lc, areaColor: a.color, icon: ICON[a.icon] || ICON.db,
+      return { id: c.id, key: 'n-' + c.id, slotCls: (held ? 'is-held' : '') + (isT ? ' is-tgt' : ''), x: p.x, y: p.d * (H + GY), w: W, h: H, raw: c, name: c.name, areaName: a.name, color: lc, areaColor: a.color, icon: ICON[a.icon] || ICON.db,
         lvl: 'N' + (p.d + 1), hint: isT ? (dr.bad ? 'No se puede: depende del cargo que mueves' : HINT[dr.zone]) : '',
         style: 'left: ' + bx + 'px; top: ' + by + 'px; width: ' + W + 'px; height: ' + H + 'px; --c: ' + lc + '; --a: ' + a.color + (dr && dr.cid === c.id && dr.commit ? '; transition: none' : ''),
         cls: cls.trim(), hasPerson: !!m, vacant: !m, person: m ? m.name : 'Vacante', initials: m ? initialsOf(m.name) : '', avatar: m ? m.color : '#8C8C86',
@@ -9175,14 +9429,17 @@ Object.assign(Component.prototype, {
     this.updOrg(function (org) { org.cargos = self.orgSimMove(org.cargos, cid, target, zone); }, 'reorganizó el organigrama: ' + txt);
     this.toastMsg(txt);
   },
-  /* puntero: pulsar, mover más de 6 px = arrastrar */
+  /* puntero: pulsar, mover más de 6 px = arrastrar.
+     La tarjeta se mueve con un contenedor interno (.org-jel) que la plantilla nunca reescribe,
+     así los repintados no la hacen parpadear. La física usa el tiempo real entre cuadros. */
   orgPtrDown(cid, e) {
     if (this._od) return;
     if (e.button != null && e.button !== 0) return;
     var el = e.currentTarget, chart = el && el.closest ? el.closest('.org-chart') : null;
-    if (!chart) return;
+    var jel = el ? el.parentNode : null;
+    if (!chart || !jel || !jel.classList || !jel.classList.contains('org-jel')) return;
     var self = this;
-    this._od = { cid: cid, el: el, chart: chart, sx: e.clientX, sy: e.clientY, px: e.clientX, py: e.clientY, started: false, cx: 0, cy: 0, rot: 0, rv: 0, kx: 1, ky: 1, kxv: 0, kyv: 0 };
+    this._od = { cid: cid, el: el, jel: jel, chart: chart, sx: e.clientX, sy: e.clientY, px: e.clientX, py: e.clientY, started: false, cx: 0, cy: 0, rot: 0, rv: 0, kx: 1, ky: 1, kxv: 0, kyv: 0, t: 0, pend: null, pendAt: 0 };
     this._omv = function (ev) { self.orgPtrMove(ev); };
     this._oup = function (ev) { self.orgPtrUp(ev, false); };
     this._okd = function (ev) { if (ev.key === 'Escape') self.orgPtrUp(ev, true); };
@@ -9197,87 +9454,113 @@ Object.assign(Component.prototype, {
     var d = this._od; if (!d || d.landing) return;
     d.px = ev.clientX; d.py = ev.clientY;
     if (!d.started) { if (Math.hypot(d.px - d.sx, d.py - d.sy) < 6) return; this.orgDragBegin(); }
-    this.orgHitUpdate();
   },
+  orgScale(d) { var r = d.chart.getBoundingClientRect(), w = d.chart.offsetWidth; return w ? r.width / w : 1; },
   orgDragBegin() {
     var d = this._od, s = this.st(), lay = this._orgLay || this.orgLayout(s, s.org.cargos), p = lay.pos[d.cid];
     if (!p) { this.orgPtrUnbind(); this._od = null; return; }
-    d.ox = p.x; d.oy = p.d * (lay.H + lay.GY); d.r0 = d.chart.getBoundingClientRect(); d.started = true;
-    document.body.classList.add('org-dragging');
+    d.ox = p.x; d.oy = p.d * (lay.H + lay.GY); d.r0 = d.chart.getBoundingClientRect(); d.k = this.orgScale(d) || 1; d.started = true;
+    try { document.body.classList.add('org-dragging'); } catch (e) { }
+    d.jel.style.transition = 'none'; d.jel.style.willChange = 'transform';
     this.setState({ orgDrag: { cid: d.cid, ox: d.ox, oy: d.oy, target: null, zone: null, bad: false, area: null }, orgLanded: null });
-    this.orgLoop();
+    this.orgLoop(0);
   },
-  orgLoop() {
+  orgLoop(ts) {
     var self = this, d = this._od; if (!d || !d.started || d.landing) return;
+    var dt = d.t && ts ? Math.min(64, Math.max(1, ts - d.t)) : 16.7; d.t = ts || 0;
+    var f = dt / 16.7, ease = function (k) { return 1 - Math.pow(1 - k, f); };
     var rn = d.chart.getBoundingClientRect();
-    var tx = (d.px - d.sx) + (d.r0.left - rn.left), ty = (d.py - d.sy) + (d.r0.top - rn.top);
-    d.cx += (tx - d.cx) * 0.3; d.cy += (ty - d.cy) * 0.3;
+    var tx = ((d.px - d.sx) + (d.r0.left - rn.left)) / d.k, ty = ((d.py - d.sy) + (d.r0.top - rn.top)) / d.k;
+    d.cx += (tx - d.cx) * ease(0.32); d.cy += (ty - d.cy) * ease(0.32);
     var lx = tx - d.cx, ly = ty - d.cy;
     var cl = function (v, a, b) { return Math.max(a, Math.min(b, v)); };
-    var rt = cl(lx * 0.14, -10, 10);
-    d.rv = (d.rv + (rt - d.rot) * 0.2) * 0.76; d.rot += d.rv;
-    var kxT = 1.05 + cl(Math.abs(lx) * 0.004, 0, 0.09) - cl(Math.abs(ly) * 0.002, 0, 0.05);
-    var kyT = 1.05 + cl(Math.abs(ly) * 0.004, 0, 0.09) - cl(Math.abs(lx) * 0.002, 0, 0.05);
-    d.kxv = (d.kxv + (kxT - d.kx) * 0.22) * 0.74; d.kx += d.kxv;
-    d.kyv = (d.kyv + (kyT - d.ky) * 0.22) * 0.74; d.ky += d.kyv;
-    d.el.style.transform = 'translate3d(' + d.cx.toFixed(1) + 'px,' + d.cy.toFixed(1) + 'px,0) rotate(' + d.rot.toFixed(2) + 'deg) scale(' + d.kx.toFixed(3) + ',' + d.ky.toFixed(3) + ')';
+    var rt = cl(lx * 0.12, -8, 8);
+    d.rv = (d.rv + (rt - d.rot) * 0.18 * f) * Math.pow(0.78, f); d.rot += d.rv * f;
+    var kxT = 1.04 + cl(Math.abs(lx) * 0.003, 0, 0.07) - cl(Math.abs(ly) * 0.0015, 0, 0.04);
+    var kyT = 1.04 + cl(Math.abs(ly) * 0.003, 0, 0.07) - cl(Math.abs(lx) * 0.0015, 0, 0.04);
+    d.kxv = (d.kxv + (kxT - d.kx) * 0.2 * f) * Math.pow(0.76, f); d.kx += d.kxv * f;
+    d.kyv = (d.kyv + (kyT - d.ky) * 0.2 * f) * Math.pow(0.76, f); d.ky += d.kyv * f;
+    d.jel.style.transform = 'translate3d(' + d.cx.toFixed(2) + 'px,' + d.cy.toFixed(2) + 'px,0) rotate(' + d.rot.toFixed(2) + 'deg) scale(' + d.kx.toFixed(4) + ',' + d.ky.toFixed(4) + ')';
     try {
       var sc = d.chart.parentNode, rr = sc.getBoundingClientRect();
-      if (d.px < rr.left + 50) sc.scrollLeft -= 12; else if (d.px > rr.right - 50) sc.scrollLeft += 12;
-      if (d.py < 70) window.scrollBy(0, -14); else if (d.py > window.innerHeight - 70) window.scrollBy(0, 14);
+      if (d.px < rr.left + 50) sc.scrollLeft -= 10 * f; else if (d.px > rr.right - 50) sc.scrollLeft += 10 * f;
+      if (d.py < 70) window.scrollBy(0, -12 * f); else if (d.py > window.innerHeight - 70) window.scrollBy(0, 12 * f);
     } catch (err) { }
-    d.raf = requestAnimationFrame(function () { self.orgLoop(); });
+    this.orgHitUpdate(Date.now());
+    d.raf = requestAnimationFrame(function (t2) { self.orgLoop(t2); });
   },
-  orgHitUpdate() {
-    var d = this._od, s = this.st(), lay = this._orgLay; if (!d || !d.started || !lay) return;
-    var dr = s.orgDrag || {}, self = this;
-    var setDr = function (patch) { self.setState({ orgDrag: Object.assign({}, dr, patch) }); };
+  /* calcula sobre qué cargo y en qué zona está el puntero; solo repinta si la zona se mantiene 70 ms */
+  orgHitCalc() {
+    var d = this._od, s = this.st(), lay = this._orgLay;
     var aid = null;
     try { var els = document.elementsFromPoint(d.px, d.py); for (var i = 0; i < els.length; i++) { var a = els[i].getAttribute && els[i].getAttribute('data-aid'); if (a) { aid = a; break; } } } catch (err) { }
-    if (aid) { if (dr.area !== aid || dr.target) setDr({ area: aid, target: null, zone: null, bad: false }); return; }
-    var r = d.chart.getBoundingClientRect(), px = d.px - r.left, py = d.py - r.top, step = lay.H + lay.GY, W = lay.W, H = lay.H;
+    if (aid) return { area: aid, target: null, zone: null, bad: false };
+    var r = d.chart.getBoundingClientRect(), px = (d.px - r.left) / d.k, py = (d.py - r.top) / d.k, step = lay.H + lay.GY, W = lay.W, H = lay.H;
     var gp = lay.pos[d.cid];
-    if (gp && px >= gp.x && px <= gp.x + W && py >= gp.d * step && py <= gp.d * step + H) { if (dr.area) setDr({ area: null }); return; }
-    var hit = null;
+    var dr = s.orgDrag || {};
+    if (gp && px >= gp.x && px <= gp.x + W && py >= gp.d * step && py <= gp.d * step + H) return { area: null, target: dr.target || null, zone: dr.zone || null, bad: !!dr.bad };
     for (var id in lay.pos) {
       if (id === d.cid) continue;
       var p = lay.pos[id], x = p.x, y = p.d * step;
-      if (px >= x && px <= x + W && py >= y && py <= y + H) { hit = { id: id, x: x, y: y }; break; }
+      if (px >= x && px <= x + W && py >= y && py <= y + H) {
+        var fx = (px - x) / W, fy = (py - y) / H;
+        var zone = fy < 0.24 ? 'above' : fx < 0.24 ? 'before' : fx > 0.76 ? 'after' : 'child';
+        return { area: null, target: id, zone: zone, bad: !this.orgMoveOK(s, d.cid, id, zone) };
+      }
     }
-    if (!hit) { if (dr.area) setDr({ area: null }); return; }
-    var fx = (px - hit.x) / W, fy = (py - hit.y) / H;
-    var zone = fy < 0.24 ? 'above' : fx < 0.24 ? 'before' : fx > 0.76 ? 'after' : 'child';
-    if (dr.target === hit.id && dr.zone === zone && !dr.area) return;
-    setDr({ target: hit.id, zone: zone, bad: !this.orgMoveOK(s, d.cid, hit.id, zone), area: null });
+    /* sobre un hueco dentro del organigrama: se mantiene la vista previa (evita que salte); fuera de él se cancela */
+    var cw = d.chart.offsetWidth || (r.width / d.k), ch = d.chart.offsetHeight || (r.height / d.k);
+    if (px > -40 && py > -40 && px < cw + 40 && py < ch + 40) return { area: null, target: dr.target || null, zone: dr.zone || null, bad: !!dr.bad };
+    return { area: null, target: null, zone: null, bad: false };
+  },
+  orgHitUpdate(now) {
+    var d = this._od, s = this.st(); if (!d || !d.started || !this._orgLay) return;
+    if (d.freeze && now < d.freeze) return;
+    var h = this.orgHitCalc(), dr = s.orgDrag || {};
+    var same = function (a, b) { return a && b && a.target === b.target && a.zone === b.zone && a.area === b.area && !!a.bad === !!b.bad; };
+    if (same(h, { target: dr.target || null, zone: dr.zone || null, area: dr.area || null, bad: dr.bad })) { d.pend = null; return; }
+    if (!same(h, d.pend)) { d.pend = h; d.pendAt = now; return; }
+    if (now - d.pendAt < 70) return;
+    d.pend = null;
+    /* mientras los demás cargos se acomodan no se vuelve a medir: así la vista previa no oscila */
+    if (h.target !== dr.target) d.freeze = now + 380;
+    this.setState({ orgDrag: Object.assign({}, dr, h) });
   },
   orgPtrUp(ev, cancel) {
     var d = this._od; this.orgPtrUnbind();
     if (!d) return;
     if (!d.started) { this._od = null; return; }
     if (d.landing) return;
+    if (!cancel && !(d.freeze && Date.now() < d.freeze)) { var h = this.orgHitCalc(); var dr0 = this.st().orgDrag || {}; if (h.target !== dr0.target || h.zone !== dr0.zone || h.area !== dr0.area) this.setState({ orgDrag: Object.assign({}, dr0, h) }); }
     d.landing = true; cancelAnimationFrame(d.raf);
     this._noClick = Date.now();
-    var self = this, s = this.st(), dr = s.orgDrag || {}, lay = this._orgLay;
-    var okMove = !cancel && dr.target && !dr.bad, okArea = !cancel && dr.area, el = d.el;
-    var tx = 0, ty = 0;
-    if (okMove && lay && lay.pos[d.cid]) { var p = lay.pos[d.cid]; tx = p.x - d.ox; ty = p.d * (lay.H + lay.GY) - d.oy; }
-    el.style.transition = 'transform .5s cubic-bezier(.3,1.6,.5,1)';
-    el.style.transform = 'translate3d(' + tx + 'px,' + ty + 'px,0) rotate(0deg) scale(1,1)';
+    var self = this, s = this.st(), dr = s.orgDrag || {};
+    var okMove = !cancel && dr.target && !dr.bad, okArea = !cancel && !!dr.area, jel = d.jel;
+    var tx = 0, ty = 0, fin = null;
+    if (okMove) {
+      var sim = this.orgLayout(s, this.orgSimMove(s.org.cargos, d.cid, dr.target, dr.zone)), p = sim.pos[d.cid];
+      if (p) { fin = { x: p.x, y: p.d * (sim.H + sim.GY) }; tx = fin.x - d.ox; ty = fin.y - d.oy; }
+    }
+    jel.style.transition = 'transform .42s cubic-bezier(.3,1.5,.5,1)';
+    jel.style.transform = 'translate3d(' + tx + 'px,' + ty + 'px,0) rotate(0deg) scale(1,1)';
     if (!okMove) this.setState({ orgDrag: { cid: d.cid, ox: d.ox, oy: d.oy, target: null, zone: null, bad: false, area: null } });
     setTimeout(function () {
-      document.body.classList.remove('org-dragging');
+      try { document.body.classList.remove('org-dragging'); } catch (e) { }
+      var slot = jel.parentNode;
+      jel.style.transition = 'none'; jel.style.transform = ''; jel.style.willChange = '';
+      if (okMove && fin && slot && slot.style) { slot.style.transition = 'none'; slot.style.left = fin.x + 'px'; slot.style.top = fin.y + 'px'; }
       if (okMove) {
         self.orgMoveCommit(d.cid, dr.target, dr.zone);
         self.setState({ orgDrag: { cid: d.cid, commit: true }, orgLanded: d.cid });
-        setTimeout(function () { self.setState({ orgDrag: null }); }, 90);
+        setTimeout(function () { self.setState({ orgDrag: null }); if (slot && slot.style) slot.style.transition = ''; jel.style.transition = ''; }, 90);
         setTimeout(function () { if (self.st().orgLanded === d.cid) self.setState({ orgLanded: null }); }, 900);
       } else {
-        el.style.transition = ''; el.style.transform = '';
+        jel.style.transition = '';
         if (okArea) { var ar = self.orgArea(self.st(), dr.area); self.updOrg(function (org) { org.cargos.forEach(function (x) { if (x.id === d.cid) x.area = dr.area; }); }, 'cambió de área un cargo'); self.toastMsg('Cargo movido al área ' + (ar ? ar.name : '')); self.setState({ orgDrag: null, orgLanded: d.cid }); setTimeout(function () { if (self.st().orgLanded === d.cid) self.setState({ orgLanded: null }); }, 900); }
         else self.setState({ orgDrag: null });
       }
       self._od = null;
-    }, 460);
+    }, 430);
   },
 
   /* ---------- solicitudes y aprobaciones ---------- */
@@ -10208,12 +10491,13 @@ Object.assign(Component.prototype, {
       var dtP = T2.props.filter(function (x) { return x.type === 'date'; })[0];
       var tp = T2.props.filter(function (x) { return x.type === 'title'; })[0];
       var lvl2 = self.lvl(s, p.target, v.role);
+      var exP = T2.props.filter(function (x) { return ['title', 'status', 'person', 'date', 'relation', 'files', 'button', 'created_by', 'last_edited_by', 'created_time', 'last_edited_time'].indexOf(x.type) < 0 && self.lvl(s, p.target, v.role) !== 'none'; }).slice(0, 3);
       var k = rid + ':' + p.key, open = (s.lkOpen || {})[k] !== undefined ? !!s.lkOpen[k] : rows.length > 0 && rows.length <= 8;
       return {
         name: p.name, tname: T2.name, icon: ICON[T2.icon] || ICON.db, color: T2.color, count: String(rows.length), open: open, chevCls: open ? 'open' : '',
         toggle: function () { var o3 = Object.assign({}, self.st().lkOpen || {}); o3[k] = !open; self.setState({ lkOpen: o3 }); },
         canAdd: (lvl2 === 'edit' || lvl2 === 'full') && !!p.pair, add: function () { self.linkNew(tid, rid, p.key); }, addAria: 'Nuevo registro en ' + T2.name + ' vinculado',
-        empty: rows.length === 0,
+        empty: rows.length === 0, cols: exP.map(function (x) { return { name: x.name }; }), hasCols: exP.length > 0 && rows.length > 0,
         rows: rows.slice(0, 12).map(function (r) {
           var op = stP ? optOf(stP, r[stP.key]) : null, m = peP ? self.memberById(s, (r[peP.key] || [])[0]) : null;
           var editing = s.lkNew === r.id && (lvl2 === 'edit' || lvl2 === 'full');
@@ -10224,7 +10508,8 @@ Object.assign(Component.prototype, {
             open: function () { self.setState({ lkNew: null }); self.openRec(T2.id, r.id); },
             hasPill: !!op, pill: op ? op.v : '', pillCls: op ? 'p-' + op.c : '',
             hasAv: !!m, av: m ? initialsOf(m.name) : '', avColor: m ? m.color : '', avName: m ? m.name : '',
-            date: dtP && r[dtP.key] ? fmtDate(r[dtP.key], 'short') : ''
+            date: dtP && r[dtP.key] ? fmtDate(r[dtP.key], 'short') : '',
+            cells: exP.map(function (x) { var tx = ''; try { tx = dispText(self.dispOf(s, T2, x, r, v, false)); } catch (e) { tx = ''; } return { name: x.name, text: tx || '—' }; })
           };
         }),
         more: rows.length > 12, moreTxt: 'Ver los ' + rows.length + ' en ' + T2.name, openTable: function () { self.go(T2.id, null); }
@@ -12257,6 +12542,422 @@ Object.assign(Component.prototype, {
     out.scrCos = screen === 'costos' && cosOk; out.cos = out.scrCos ? this.cosData(s, v) : null;
     out.scrCosNo = screen === 'costos' && !cosOk;
     out.icCalc = ICON['i-calc'];
+    return out;
+  };
+})();
+
+/* ================= v6: campos compactos, listas desplegables, ventana centrada y formato de texto ================= */
+var DROP_TYPES = { select: 1, status: 1, multi_select: 1, person: 1, relation: 1 };
+var TONES = [{ k: '', n: 'Sin color' }].concat(COLORS.map(function (c) { return { k: c, n: COLOR_NAME[c] }; }));
+var TONE_ES = { gris: 'gray', azul: 'blue', verde: 'green', ambar: 'amber', violeta: 'violet', turquesa: 'teal', rojo: 'red', rosa: 'pink' };
+var TONE_KEY_ES = {}; Object.keys(TONE_ES).forEach(function (k) { TONE_KEY_ES[TONE_ES[k]] = k; });
+DOC_TYPES.push('toggle', 'code');
+SLASH.splice(2, 0,
+  { spec: 'doc:h2', n: 'Subtítulo', d: 'Encabezado mediano', icon: 'h2', k: 'subtitulo encabezado h2' },
+  { spec: 'doc:h3', n: 'Encabezado pequeño', d: 'Encabezado de apartado', icon: 'h3', k: 'encabezado pequeno h3 apartado' },
+  { spec: 'doc:bullet', n: 'Lista con viñetas', d: 'Puntos sueltos', icon: 'bullets', k: 'lista vinetas puntos bullet' },
+  { spec: 'doc:number', n: 'Lista numerada', d: '1, 2, 3…', icon: 'numbers', k: 'lista numerada numeros' },
+  { spec: 'doc:check', n: 'Casilla', d: 'Pendiente para marcar', icon: 'todo2', k: 'casilla check pendiente marcar' },
+  { spec: 'doc:quote', n: 'Cita', d: 'Destaca una frase', icon: 'quote', k: 'cita frase quote' },
+  { spec: 'doc:toggle', n: 'Lista desplegable', d: 'Texto que se abre y se cierra', icon: 'tgl', k: 'desplegable toggle plegable ocultar acordeon' },
+  { spec: 'doc:code', n: 'Código', d: 'Texto en formato de código', icon: 'code', k: 'codigo code monoespaciado' }
+);
+
+/* ---------- texto con formato ----------
+   **negrita**  *cursiva*  __subrayado__  ~~tachado~~  `código`  ==resaltado==
+   {rojo|texto en color}  {fondo rojo|texto con fondo} */
+var RT_RULES = [
+  { re: /\*\*([\s\S]+?)\*\*/, c: 'rt-b' },
+  { re: /__([\s\S]+?)__/, c: 'rt-u' },
+  { re: /~~([\s\S]+?)~~/, c: 'rt-s' },
+  { re: /`([^`]+?)`/, c: 'rt-code', flat: true },
+  { re: /==([\s\S]+?)==/, c: 'rt-hl' },
+  { re: /\{(fondo )?(gris|azul|verde|ambar|violeta|turquesa|rojo|rosa)\|([\s\S]+?)\}/, color: true },
+  { re: /\*([^*\s][^*]*?)\*/, c: 'rt-i' }
+];
+function rtHasMarks(str) { return RT_RULES.some(function (r) { return r.re.test(str || ''); }); }
+function rtParse(str, cls, out) {
+  out = out || []; cls = cls || '';
+  var guard = 0;
+  while (str && guard++ < 400) {
+    var best = null;
+    RT_RULES.forEach(function (r) { var m = r.re.exec(str); if (m && (!best || m.index < best.m.index)) best = { r: r, m: m }; });
+    if (!best) { out.push({ t: str, cls: cls }); break; }
+    if (best.m.index) out.push({ t: str.slice(0, best.m.index), cls: cls });
+    var inner, c;
+    if (best.r.color) { inner = best.m[3]; c = (best.m[1] ? 'rt-bg-' : 'rt-fg-') + TONE_ES[best.m[2]]; }
+    else { inner = best.m[1]; c = best.r.c; }
+    var nc = (cls ? cls + ' ' : '') + c;
+    if (best.r.flat) out.push({ t: inner, cls: nc }); else rtParse(inner, nc, out);
+    str = str.slice(best.m.index + best.m[0].length);
+  }
+  return out;
+}
+/* convierte lo que escribe la persona en número: acepta 60000, 60,000.50, 60.000,50 o S/ 1 200 */
+function parseNumInput(val) {
+  var t = String(val == null ? '' : val).replace(/[^0-9.,\-]/g, '');
+  if (!t) return '';
+  var hasC = t.indexOf(',') >= 0, hasD = t.indexOf('.') >= 0;
+  if (hasC && hasD) {
+    if (t.lastIndexOf(',') > t.lastIndexOf('.')) t = t.replace(/\./g, '').replace(',', '.');
+    else t = t.replace(/,/g, '');
+  } else if (hasC) {
+    var parts = t.split(',');
+    var thousands = parts.length > 1 && parts.slice(1).every(function (p) { return p.length === 3; }) && parts.length > 2;
+    t = thousands ? parts.join('') : parts.slice(0, -1).join('') + '.' + parts[parts.length - 1];
+  } else if (hasD && (t.match(/\./g) || []).length > 1) {
+    t = t.replace(/\./g, '');
+  }
+  return t;
+}
+
+var _fvBase6 = Component.prototype.fieldView;
+var _bvBase6 = Component.prototype.blockView;
+var _docKeyBase6 = Component.prototype.docKey;
+var _docChangeBase6 = Component.prototype.docChange;
+var _slashPickBase6 = Component.prototype.slashPick;
+
+Object.assign(Component.prototype, {
+  /* ---------- campos del detalle: una sola fila ---------- */
+  fieldView(s, t, p, row, v, canEdit, ctx) {
+    var self = this, f = _fvBase6.call(this, s, t, p, row, v, canEdit, ctx);
+    f._pk = p.key; f._tp = p.type;
+    f.eNum = false; f.fmtText = ''; f.numCls = ''; f.hasMeter = false; f.meterPct = 0;
+    f.eDrop = false; f.dropPills = []; f.dropEmpty = false; f.openDrop = null; f.opa = ''; f.dropAria = '';
+    f.hasFx = false; f.fxOpen = false; f.fxText = ''; f.fxCls = ''; f.fxToggle = null;
+    if (f.eInput && p.type === 'number') {
+      var raw = row[p.key], has = raw !== '' && raw != null && !isNaN(Number(raw));
+      f.eInput = false; f.eNum = true;
+      f.fmtText = has ? fmtNumber(raw, p.fmt || 'number', p.dec, p.sep) : '';
+      f.numCls = has ? 'has-v' : '';
+      if (has && (p.showAs === 'bar' || p.showAs === 'ring')) { f.hasMeter = true; f.meterPct = Math.round(Math.max(0, Math.min(100, Number(raw) / (Number(p.max) || 100) * 100))); }
+      f.onChange = function (e) { ctx.set(p.key, parseNumInput(e.target.value), false); };
+      f.hasNote = false; f.note = '';
+    }
+    if (f.hasNote) {
+      if (p.type === 'formula' || p.type === 'rollup' || COMPUTED[p.type]) {
+        var fk = t.id + ':' + p.key, open = s.fxOpen === fk;
+        f.hasFx = true; f.fxText = f.note; f.fxOpen = open; f.fxCls = open ? 'on' : '';
+        f.fxToggle = function () { self.setState({ fxOpen: self.st().fxOpen === fk ? null : fk }); };
+      } else {
+        f.desc = (f.desc ? f.desc + ' · ' : '') + f.note;
+      }
+      f.hasNote = false; f.note = '';
+    }
+    /* «Se calcula con …»: solo al abrir el detalle de la fórmula */
+    if (f.hasRefs) {
+      if (!f.hasFx) {
+        var fk2 = t.id + ':' + p.key, open2 = s.fxOpen === fk2;
+        f.hasFx = true; f.fxOpen = open2; f.fxCls = open2 ? 'on' : ''; f.fxText = p.expr ? 'Fórmula: ' + p.expr : '';
+        f.fxToggle = function () { self.setState({ fxOpen: self.st().fxOpen === fk2 ? null : fk2 }); };
+      }
+      f.hasRefs = !!f.fxOpen;
+    }
+    return f;
+  },
+
+  /* ---------- lista desplegable de opciones (celda o campo) ---------- */
+  opClose() { this.setState({ opPop: null, opQ: '', selCell: null }); },
+  opData(s, v) {
+    var self = this, o = s.opPop, none = { has: false };
+    if (!o) return none;
+    var t = s.tables.byId[o.tid]; if (!t) return none;
+    var row = findRow(t, o.rid), p = propOf(t, o.key);
+    if (!row || !p || !DROP_TYPES[p.type]) return none;
+    var lvl = this.lvl(s, t.id, v.role); if (lvl !== 'edit' && lvl !== 'full') return none;
+    var ctx = this.recCtx(t.id, row.id), q = s.opQ || '', nq = normTxt(q).trim();
+    var match = function (txt) { return !nq || normTxt(txt).indexOf(nq) >= 0; };
+    var close = function () { self.opClose(); };
+    var multi = false, opts = [], raw = row[p.key], hasVal = false, ph = 'Buscar o elegir…';
+    if (p.type === 'select' || p.type === 'status' || p.type === 'multi_select') {
+      multi = p.type === 'multi_select';
+      var arr = multi ? (raw || []) : null;
+      hasVal = multi ? arr.length > 0 : !!raw;
+      opts = p.options.filter(function (x) { return match(x.v); }).map(function (x) {
+        var on = multi ? arr.indexOf(x.v) >= 0 : raw === x.v;
+        return { label: x.v, on: on, cls: on ? 'on' : '', pcls: 'p-' + x.c, dot: p.type === 'status', isPill: true, isPerson: false, isRow: false, initials: '', color: '',
+          pick: function () {
+            if (multi) { var cur = (findRow(self.st().tables.byId[t.id], row.id) || {})[p.key] || []; ctx.set(p.key, cur.indexOf(x.v) >= 0 ? cur.filter(function (y) { return y !== x.v; }) : cur.concat([x.v]), true); }
+            else { ctx.set(p.key, on && p.type === 'select' ? '' : x.v, true); close(); }
+          } };
+      });
+      ph = multi ? 'Busca o crea etiquetas…' : 'Busca o crea una opción…';
+    } else if (p.type === 'person') {
+      multi = !p.single;
+      var ids = raw || []; hasVal = ids.length > 0; ph = 'Buscar persona…';
+      opts = s.members.filter(function (m) { return !m.pending && match(m.name); }).map(function (m) {
+        var on = ids.indexOf(m.id) >= 0;
+        return { label: m.name, on: on, cls: on ? 'on' : '', pcls: '', dot: false, isPill: false, isPerson: true, isRow: false, initials: initialsOf(m.name), color: m.color,
+          pick: function () {
+            var cur = (findRow(self.st().tables.byId[t.id], row.id) || {})[p.key] || [];
+            if (multi) ctx.set(p.key, cur.indexOf(m.id) >= 0 ? cur.filter(function (y) { return y !== m.id; }) : cur.concat([m.id]), true);
+            else { ctx.set(p.key, on ? [] : [m.id], true); close(); }
+          } };
+      });
+    } else if (p.type === 'relation') {
+      var T2 = s.tables.byId[p.target];
+      if (!T2 || this.lvl(s, p.target, v.role) === 'none') return none;
+      multi = !p.single;
+      var vals = raw || []; hasVal = vals.length > 0; ph = 'Buscar en ' + T2.name + '…';
+      opts = this.rowsFor(s, p.target, v).filter(function (x) { return match(self.titleOf(T2, x)); }).slice(0, 60).map(function (x) {
+        var on = vals.indexOf(x.id) >= 0;
+        return { label: self.titleOf(T2, x), on: on, cls: on ? 'on' : '', pcls: '', dot: false, isPill: false, isPerson: false, isRow: true, initials: '', color: T2.color,
+          pick: function () { ctx.toggleRel(p.key, x.id, !!p.single); if (p.single) close(); } };
+      });
+    }
+    var canStruct = v.role === 'admin' || lvl === 'full';
+    var exact = (p.options || []).some(function (x) { return normTxt(x.v) === nq; });
+    var canCreate = !!nq && (p.type === 'select' || p.type === 'multi_select' || p.type === 'status') && canStruct && !exact;
+    return {
+      has: true, title: 'Elegir ' + p.name, q: q, ph: ph, multi: multi, modeTxt: multi ? 'Varias' : 'Una',
+      setQ: function (e) { self.setState({ opQ: e.target.value }); },
+      key: function (e) {
+        if (!e) return;
+        if (e.key === 'Escape') { try { e.preventDefault(); } catch (er) { } close(); }
+        else if (e.key === 'Enter') { try { e.preventDefault(); } catch (er) { } if (opts[0]) opts[0].pick(); else if (canCreate) this_create(); }
+      },
+      opts: opts, empty: opts.length === 0 && !canCreate, canCreate: canCreate, create: function () { this_create(); },
+      hasClear: hasVal, clear: function () { ctx.set(p.key, (p.type === 'select' || p.type === 'status') ? '' : [], true); if (!multi) close(); },
+      canOpenRec: o.anchor === '.td.cell-sel', openRec: function () { self.setState({ opPop: null, opQ: '', selCell: null }); self.openRec(t.id, row.id); },
+      close: close
+    };
+    function this_create() {
+      var txt = String(q).trim(); if (!txt) return;
+      self.addOption(t.id, p.key, txt);
+      var cur = (findRow(self.st().tables.byId[t.id], row.id) || {})[p.key];
+      if (p.type === 'multi_select') ctx.set(p.key, (cur || []).concat([txt]), true);
+      else { ctx.set(p.key, txt, true); close(); }
+      self.setState({ opQ: '' });
+    }
+  },
+  /* coloca la lista junto a su celda o campo; funciona aunque la página esté escalada */
+  opPlace() {
+    var o = this.st().opPop; if (!o) return;
+    var pop = document.querySelector('.oppop'); if (!pop) return;
+    var an = null; try { an = document.querySelector(o.anchor); } catch (e) { an = null; }
+    if (!an) { pop.style.visibility = 'visible'; return; }
+    pop.style.left = '0px'; pop.style.top = '0px';
+    var r0 = pop.getBoundingClientRect(), k = pop.offsetWidth ? r0.width / pop.offsetWidth : 1;
+    var a = an.getBoundingClientRect(), W = r0.width, H = r0.height, vw = window.innerWidth || 1200, vh = window.innerHeight || 800;
+    var x = a.left, y = a.bottom + 4;
+    if (y + H > vh - 8 && a.top - H - 4 > 8) y = a.top - H - 4;
+    x = Math.max(8, Math.min(x, vw - W - 8)); y = Math.max(8, y);
+    pop.style.left = ((x - r0.left) / k) + 'px'; pop.style.top = ((y - r0.top) / k) + 'px';
+    pop.style.visibility = 'visible';
+    if (this._opFocusKey !== o.tid + o.rid + o.key) {
+      this._opFocusKey = o.tid + o.rid + o.key;
+      try { var qi = pop.querySelector('.op-q'); if (qi && window.matchMedia && window.matchMedia('(pointer: fine)').matches) qi.focus(); } catch (e) { }
+    }
+  },
+  opPlaceSoon() {
+    var self = this;
+    if (this._opRaf) return;
+    if (!this._opListen) {
+      this._opListen = true;
+      try {
+        window.addEventListener('scroll', function () { if (self.st().opPop) self.opPlace(); }, true);
+        window.addEventListener('resize', function () { if (self.st().opPop) self.opPlace(); });
+      } catch (e) { }
+    }
+    try { this._opRaf = requestAnimationFrame(function () { self._opRaf = null; self.opPlace(); }); } catch (e) { this._opRaf = null; }
+  },
+
+  /* ---------- formato del texto en las páginas ---------- */
+  fmtEl(bid) { try { return document.querySelector('[data-bid="' + bid + '"] textarea.doc-in'); } catch (e) { return null; } },
+  fmtWrap(bid, open, close) {
+    var el = this.fmtEl(bid); if (!el) return;
+    var val = String(el.value || ''), a = el.selectionStart || 0, b = el.selectionEnd || 0;
+    var nv, na, nb, sel = val.slice(a, b);
+    if (val.slice(a - open.length, a) === open && val.slice(b, b + close.length) === close) {
+      nv = val.slice(0, a - open.length) + sel + val.slice(b + close.length); na = a - open.length; nb = b - open.length;
+    } else if (sel.indexOf(open) === 0 && sel.slice(-close.length) === close && sel.length >= open.length + close.length) {
+      var inner = sel.slice(open.length, sel.length - close.length);
+      nv = val.slice(0, a) + inner + val.slice(b); na = a; nb = a + inner.length;
+    } else {
+      nv = val.slice(0, a) + open + sel + close + val.slice(b); na = a + open.length; nb = na + sel.length;
+    }
+    this.updBlock(bid, function (x) { x.text = nv; });
+    var self = this;
+    setTimeout(function () { var e2 = self.fmtEl(bid); if (e2) { try { e2.focus(); e2.setSelectionRange(na, nb); } catch (er) { } } }, 30);
+  },
+  fmtSetType(pid, bid, type, lvl) {
+    this.docEdit(pid, function (p) { p.blocks.forEach(function (x) { if (x.id !== bid) return; x.type = type; if (type === 'heading') x.lvl = lvl || 1; else delete x.lvl; if (type === 'check' && x.done == null) x.done = false; }); });
+    this.focusBlock(bid, true);
+  },
+  docKey(pid, bid, e) {
+    if (e && (e.ctrlKey || e.metaKey) && !e.altKey) {
+      var k = String(e.key || '').toLowerCase();
+      var m = { b: ['**', '**'], i: ['*', '*'], u: ['__', '__'] }[k];
+      if (m) { try { e.preventDefault(); } catch (er) { } this.fmtWrap(bid, m[0], m[1]); return; }
+      if (k === 'e') { try { e.preventDefault(); } catch (er) { } this.fmtWrap(bid, '`', '`'); return; }
+    }
+    var s = this.st(), pg = s.pages.byId[pid], b = pg ? pg.blocks.filter(function (x) { return x.id === bid; })[0] : null;
+    if (b && b.type === 'code' && e && e.key === 'Enter' && !e.shiftKey) return;
+    if (b && b.type === 'toggle' && e && e.key === 'Enter' && !e.shiftKey && !b.open) {
+      var el = e.target || {}, val = String(el.value || '');
+      if (!/^\//.test(val) && !(s.mention && s.mention.bid === bid)) {
+        try { e.preventDefault(); } catch (er) { }
+        this.updBlock(bid, function (x) { x.open = true; });
+        var self = this; setTimeout(function () { try { var t = document.querySelector('[data-bid="' + bid + '"] .doc-tg-in'); if (t) t.focus(); } catch (er2) { } }, 50);
+        return;
+      }
+    }
+    return _docKeyBase6.call(this, pid, bid, e);
+  },
+  docChange(pid, bid, val) {
+    var s = this.st(), pg = s.pages.byId[pid];
+    var b = pg ? pg.blocks.filter(function (x) { return x.id === bid; })[0] : null;
+    if (b && b.type === 'text') {
+      var conv = null, m;
+      if ((m = val.match(/^>>\s/))) conv = { type: 'toggle', text: val.slice(m[0].length), open: false };
+      else if ((m = val.match(/^```\s?/))) conv = { type: 'code', text: val.slice(m[0].length) };
+      else if ((m = val.match(/^"\s/))) conv = { type: 'quote', text: val.slice(m[0].length) };
+      if (conv) {
+        this.docEdit(pid, function (p) { p.blocks.forEach(function (x) { if (x.id === bid) for (var k in conv) x[k] = conv[k]; }); });
+        this.focusBlock(bid, true);
+        return;
+      }
+    }
+    return _docChangeBase6.call(this, pid, bid, val);
+  },
+  slashPick(pid, spec, opt) {
+    if (String(spec).indexOf('doc:') !== 0) return _slashPickBase6.call(this, pid, spec, opt);
+    opt = opt || {};
+    var kind = spec.slice(4), type = kind, lvl = null;
+    if (kind === 'h2' || kind === 'h3') { type = 'heading'; lvl = kind === 'h2' ? 2 : 3; }
+    var target = opt.replace || null;
+    var nid = this.docEdit(pid, function (p, seq) {
+      var extra = { text: '' };
+      if (type === 'check') extra.done = false;
+      if (type === 'toggle') { extra.open = true; extra.body = ''; }
+      if (lvl) extra.lvl = lvl;
+      if (target) {
+        var hit = null;
+        p.blocks.forEach(function (x) { if (x.id === target) { hit = x; x.type = type; for (var k in extra) x[k] = extra[k]; if (!lvl) delete x.lvl; } });
+        if (hit) return hit.id;
+      }
+      var id = 'b' + (seq + 1);
+      p.blocks.push(blk(id, type, 12, extra));
+      return id;
+    });
+    this.setState({ slashQ: '', addBlockOpen: false });
+    if (nid) this.focusBlock(nid, true);
+  },
+  blockView(s, v, pg, b, ctx) {
+    var self = this, bv = _bvBase6.call(this, s, v, pg, b, ctx);
+    var isDoc = DOC_TYPES.indexOf(b.type) >= 0;
+    /* color de fondo y de texto de cualquier bloque */
+    var palOpen = s.bkPal === b.id && ctx.canEditPage;
+    bv.palOpen = palOpen; bv.palCls = palOpen || b.bg || b.fg ? 'on' : '';
+    bv.togglePal = function () { self.setState({ bkPal: self.st().bkPal === b.id ? null : b.id }); };
+    bv.hasFg = isDoc || b.type === 'callout' || b.type === 'heading' || b.type === 'text';
+    bv.bgOpts = TONES.map(function (tn) { var on = (b.bg || '') === tn.k; return { name: tn.n, on: on, cls: 'tone-' + (tn.k || 'none') + (on ? ' on' : ''), pick: function () { self.updBlock(b.id, function (x) { if (tn.k) x.bg = tn.k; else delete x.bg; }); } }; });
+    bv.fgOpts = TONES.map(function (tn) { var on = (b.fg || '') === tn.k; return { name: tn.n, on: on, cls: 'tone-' + (tn.k || 'none') + (on ? ' on' : ''), pick: function () { self.updBlock(b.id, function (x) { if (tn.k) x.fg = tn.k; else delete x.fg; }); } }; });
+    if (b.bg) bv.cls += ' has-bg rc-' + b.bg;
+    if (b.fg) bv.cls += ' fg-' + b.fg;
+    if (palOpen) bv.cls += ' pal-open';
+    /* valores por defecto para la plantilla */
+    bv.isToggle = false; bv.tgCls = ''; bv.tgOpen = false; bv.tgToggle = null; bv.tgShow = false; bv.tgBody = ''; bv.setTgBody = null;
+    bv.editRaw = false; bv.showRich = false; bv.editRich = null; bv.onFocus = null; bv.onBlur = null; bv.rt = { segs: [] };
+    bv.fmtOpen = false; bv.fmtBtns = []; bv.fmtTypes = []; bv.fmtFg = []; bv.fmtBg = []; bv.fmtColOpen = false; bv.fmtColCls = ''; bv.fmtColDown = null;
+    if (!isDoc) return bv;
+    var text = b.text || '';
+    var marks = rtHasMarks(text), focused = s.docFocus === b.id;
+    bv.rt = { segs: rtParse(text) };
+    bv.editRaw = ctx.canEditPage && (!marks || focused);
+    bv.showRich = ctx.canEditPage && marks && !focused;
+    bv.editRich = function () { if (self.st().docFocus !== b.id) self.setState({ docFocus: b.id, fmtCol: false }); self.focusBlock(b.id, true); };
+    bv.onFocus = function () { if (self.st().docFocus !== b.id) self.setState({ docFocus: b.id, fmtCol: false }); };
+    bv.onBlur = function () {
+      setTimeout(function () {
+        var ae = null; try { ae = document.activeElement; } catch (e) { ae = null; }
+        if (ae && ae.closest && ae.closest('[data-bid="' + b.id + '"]')) return;
+        if (self.st().docFocus === b.id) self.setState({ docFocus: null, fmtCol: false });
+      }, 160);
+    };
+    bv.typeName = { text: 'Texto', heading: 'Encabezado', bullet: 'Viñeta', number: 'Lista numerada', check: 'Casilla', quote: 'Cita', toggle: 'Lista desplegable', code: 'Código' }[b.type] || bv.typeName;
+    bv.docCls = 'doc-' + (b.type === 'heading' ? 'h' + (b.lvl || 1) : b.type) + (b.done ? ' done' : '');
+    if (b.type === 'toggle') {
+      bv.isToggle = true; bv.tgOpen = !!b.open; bv.tgCls = b.open ? 'open' : ''; bv.tgShow = !!b.open; bv.tgBody = b.body || '';
+      bv.tgToggle = function () { self.updBlock(b.id, function (x) { x.open = !x.open; }); };
+      bv.setTgBody = function (e) { var val = e.target.value; self.updBlock(b.id, function (x) { x.body = val; }); };
+      bv.docPh = 'Título del desplegable';
+    }
+    if (b.type === 'code') bv.docPh = 'Escribe código; Intro hace salto de línea';
+    /* barra de formato del bloque que se está editando */
+    if (focused && ctx.canEditPage) {
+      bv.fmtOpen = true;
+      var down = function (fn) { return function (e) { try { e.preventDefault(); } catch (er) { } self._fmtMD = Date.now(); fn(); }; };
+      var click = function (fn) { return function () { if (self._fmtMD && Date.now() - self._fmtMD < 500) return; fn(); }; };
+      bv.fmtBtns = [
+        { label: 'B', cls: 'fb-b', aria: 'Negrita (Ctrl+B)', o: '**', c: '**' },
+        { label: 'I', cls: 'fb-i', aria: 'Cursiva (Ctrl+I)', o: '*', c: '*' },
+        { label: 'U', cls: 'fb-u', aria: 'Subrayado (Ctrl+U)', o: '__', c: '__' },
+        { label: 'S', cls: 'fb-s', aria: 'Tachado', o: '~~', c: '~~' },
+        { label: '‹›', cls: 'fb-c', aria: 'Código (Ctrl+E)', o: '`', c: '`' }
+      ].map(function (x) { var fn = function () { self.fmtWrap(b.id, x.o, x.c); }; return { label: x.label, cls: x.cls, aria: x.aria, down: down(fn), click: click(fn) }; });
+      var colOpen = !!s.fmtCol;
+      bv.fmtColOpen = colOpen; bv.fmtColCls = colOpen ? 'on' : '';
+      bv.fmtColDown = down(function () { self.setState({ fmtCol: !self.st().fmtCol }); });
+      var tones = TONES.filter(function (tn) { return tn.k; });
+      bv.fmtFg = tones.map(function (tn) { return { name: tn.n, cls: 'tone-' + tn.k, down: down(function () { self.setState({ fmtCol: false }); self.fmtWrap(b.id, '{' + TONE_KEY_ES[tn.k] + '|', '}'); }) }; });
+      bv.fmtBg = tones.map(function (tn) { return { name: tn.n, cls: 'tone-' + tn.k, down: down(function () { self.setState({ fmtCol: false }); self.fmtWrap(b.id, '{fondo ' + TONE_KEY_ES[tn.k] + '|', '}'); }) }; });
+      var cur = b.type === 'heading' ? 'h' + (b.lvl || 1) : b.type;
+      bv.fmtTypes = [
+        ['text', 'para', 'Texto'], ['h1', 'heading', 'Título'], ['h2', 'h2', 'Subtítulo'], ['h3', 'h3', 'Encabezado pequeño'],
+        ['bullet', 'bullets', 'Viñetas'], ['number', 'numbers', 'Lista numerada'], ['check', 'todo2', 'Casilla'],
+        ['quote', 'quote', 'Cita'], ['toggle', 'tgl', 'Lista desplegable'], ['code', 'code', 'Código']
+      ].map(function (x) {
+        var on = cur === x[0];
+        return { icon: ICON[x[1]] || ICON.para, aria: 'Convertir en ' + x[2].toLowerCase(), cls: on ? 'on' : '',
+          down: down(function () { var h = /^h[123]$/.test(x[0]); self.fmtSetType(pg.id, b.id, h ? 'heading' : x[0], h ? Number(x[0].slice(1)) : null); }) };
+      });
+    }
+    return bv;
+  }
+});
+
+(function () {
+  var baseRv = Component.prototype.renderVals;
+  Component.prototype.renderVals = function () {
+    var self = this, out = baseRv.call(this);
+    var s = this.st(), v = this.viewer(s);
+    /* lista desplegable */
+    out.op = this.opData(s, v);
+    if (out.op.has) this.opPlaceSoon(); else this._opFocusKey = null;
+    /* modo del registro: panel o ventana */
+    var full = !!out.recFullB;
+    out.recIsSide = !full; out.recSideCls = full ? '' : 'on'; out.recFullCls = full ? 'on' : '';
+    out.recAsSide = function () { self.setState({ recFull: false, recPref: 'side' }); };
+    out.recAsFull = function () { self.setState({ recFull: true, recPref: 'full' }); };
+    var rec = out.rec || {};
+    rec.bgCls = ''; rec.palOpen = false; rec.pal = []; rec.togglePal = null;
+    if (out.hasRec && s.rec) {
+      var t = s.tables.byId[s.rec.tid], row = t ? findRow(t, s.rec.id) : null;
+      if (t && row) {
+        var tid = t.id, rid = row.id;
+        rec.bgCls = row._bg ? 'rc-' + row._bg : '';
+        rec.palOpen = s.recPal === rid;
+        rec.togglePal = function () { self.setState({ recPal: self.st().recPal === rid ? null : rid }); };
+        rec.pal = TONES.map(function (tn) { var on = (row._bg || '') === tn.k; return { name: tn.n, on: on, cls: 'tone-' + (tn.k || 'none') + (on ? ' on' : ''), pick: function () { self.setField(tid, rid, '_bg', tn.k || null, null); self.setState({ recPal: null }); } }; });
+        /* selección, etiquetas y personas como lista desplegable */
+        if (rec.canEdit) (rec.fields || []).forEach(function (f) {
+          if (!(f.eSelect || f.ePeople)) return;
+          var p = propOf(t, f._pk); if (!p) return;
+          var raw = row[p.key], pills = [];
+          if (p.type === 'person') {
+            pills = (raw || []).map(function (id) { var m = self.memberById(s, id); return m ? { text: m.name, isPerson: true, isPill: false, initials: initialsOf(m.name), color: m.color, cls: '', dot: false } : null; }).filter(function (x) { return x; });
+          } else {
+            var vals = p.type === 'multi_select' ? (raw || []) : (raw ? [raw] : []);
+            pills = vals.map(function (val) { var op = optOf(p, val); return { text: val, isPerson: false, isPill: true, initials: '', color: '', cls: op ? 'p-' + op.c : 'p-gray', dot: p.type === 'status' }; });
+          }
+          f.eSelect = false; f.ePeople = false; f.eDrop = true;
+          f.dropPills = pills; f.dropEmpty = pills.length === 0; f.opa = 'rf-' + p.key; f.dropAria = 'Elegir ' + p.name;
+          f.openDrop = function () { self.setState({ opPop: { tid: tid, rid: rid, key: p.key, anchor: '[data-opa="rf-' + p.key + '"]' }, opQ: '' }); };
+        });
+      }
+    }
+    out.rec = rec;
     return out;
   };
 })();

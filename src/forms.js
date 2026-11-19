@@ -634,12 +634,13 @@ Object.assign(Component.prototype, {
       var dtP = T2.props.filter(function (x) { return x.type === 'date'; })[0];
       var tp = T2.props.filter(function (x) { return x.type === 'title'; })[0];
       var lvl2 = self.lvl(s, p.target, v.role);
+      var exP = T2.props.filter(function (x) { return ['title', 'status', 'person', 'date', 'relation', 'files', 'button', 'created_by', 'last_edited_by', 'created_time', 'last_edited_time'].indexOf(x.type) < 0 && self.lvl(s, p.target, v.role) !== 'none'; }).slice(0, 3);
       var k = rid + ':' + p.key, open = (s.lkOpen || {})[k] !== undefined ? !!s.lkOpen[k] : rows.length > 0 && rows.length <= 8;
       return {
         name: p.name, tname: T2.name, icon: ICON[T2.icon] || ICON.db, color: T2.color, count: String(rows.length), open: open, chevCls: open ? 'open' : '',
         toggle: function () { var o3 = Object.assign({}, self.st().lkOpen || {}); o3[k] = !open; self.setState({ lkOpen: o3 }); },
         canAdd: (lvl2 === 'edit' || lvl2 === 'full') && !!p.pair, add: function () { self.linkNew(tid, rid, p.key); }, addAria: 'Nuevo registro en ' + T2.name + ' vinculado',
-        empty: rows.length === 0,
+        empty: rows.length === 0, cols: exP.map(function (x) { return { name: x.name }; }), hasCols: exP.length > 0 && rows.length > 0,
         rows: rows.slice(0, 12).map(function (r) {
           var op = stP ? optOf(stP, r[stP.key]) : null, m = peP ? self.memberById(s, (r[peP.key] || [])[0]) : null;
           var editing = s.lkNew === r.id && (lvl2 === 'edit' || lvl2 === 'full');
@@ -650,7 +651,8 @@ Object.assign(Component.prototype, {
             open: function () { self.setState({ lkNew: null }); self.openRec(T2.id, r.id); },
             hasPill: !!op, pill: op ? op.v : '', pillCls: op ? 'p-' + op.c : '',
             hasAv: !!m, av: m ? initialsOf(m.name) : '', avColor: m ? m.color : '', avName: m ? m.name : '',
-            date: dtP && r[dtP.key] ? fmtDate(r[dtP.key], 'short') : ''
+            date: dtP && r[dtP.key] ? fmtDate(r[dtP.key], 'short') : '',
+            cells: exP.map(function (x) { var tx = ''; try { tx = dispText(self.dispOf(s, T2, x, r, v, false)); } catch (e) { tx = ''; } return { name: x.name, text: tx || '—' }; })
           };
         }),
         more: rows.length > 12, moreTxt: 'Ver los ' + rows.length + ' en ' + T2.name, openTable: function () { self.go(T2.id, null); }

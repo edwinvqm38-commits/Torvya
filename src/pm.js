@@ -332,7 +332,7 @@ Object.assign(Component.prototype, {
       var isT = !!(dr && dr.target === c.id && !dr.commit);
       var cls = (s.orgSel === c.id ? 'on ' : '') + (hiArea && hiArea !== c.area ? 'dim ' : '') + (mineC && mineC.id === c.id ? 'me ' : '') + (m ? '' : 'vacant ')
         + (held ? 'dragging ' : '') + (isT ? (dr.bad ? 'tgt-bad ' : 'tgt tz-' + dr.zone + ' ') : '') + (s.orgLanded === c.id ? 'landed ' : '') + (v.role === 'admin' ? 'can-drag' : '');
-      return { id: c.id, key: 'n-' + c.id, x: p.x, y: p.d * (H + GY), w: W, h: H, raw: c, name: c.name, areaName: a.name, color: lc, areaColor: a.color, icon: ICON[a.icon] || ICON.db,
+      return { id: c.id, key: 'n-' + c.id, slotCls: (held ? 'is-held' : '') + (isT ? ' is-tgt' : ''), x: p.x, y: p.d * (H + GY), w: W, h: H, raw: c, name: c.name, areaName: a.name, color: lc, areaColor: a.color, icon: ICON[a.icon] || ICON.db,
         lvl: 'N' + (p.d + 1), hint: isT ? (dr.bad ? 'No se puede: depende del cargo que mueves' : HINT[dr.zone]) : '',
         style: 'left: ' + bx + 'px; top: ' + by + 'px; width: ' + W + 'px; height: ' + H + 'px; --c: ' + lc + '; --a: ' + a.color + (dr && dr.cid === c.id && dr.commit ? '; transition: none' : ''),
         cls: cls.trim(), hasPerson: !!m, vacant: !m, person: m ? m.name : 'Vacante', initials: m ? initialsOf(m.name) : '', avatar: m ? m.color : '#8C8C86',

@@ -327,14 +327,17 @@ Object.assign(Component.prototype, {
     this.updOrg(function (org) { org.cargos = self.orgSimMove(org.cargos, cid, target, zone); }, 'reorganizó el organigrama: ' + txt);
     this.toastMsg(txt);
   },
-  /* puntero: pulsar, mover más de 6 px = arrastrar */
+  /* puntero: pulsar, mover más de 6 px = arrastrar.
+     La tarjeta se mueve con un contenedor interno (.org-jel) que la plantilla nunca reescribe,
+     así los repintados no la hacen parpadear. La física usa el tiempo real entre cuadros. */
   orgPtrDown(cid, e) {
     if (this._od) return;
     if (e.button != null && e.button !== 0) return;
     var el = e.currentTarget, chart = el && el.closest ? el.closest('.org-chart') : null;
-    if (!chart) return;
+    var jel = el ? el.parentNode : null;
+    if (!chart || !jel || !jel.classList || !jel.classList.contains('org-jel')) return;
     var self = this;
-    this._od = { cid: cid, el: el, chart: chart, sx: e.clientX, sy: e.clientY, px: e.clientX, py: e.clientY, started: false, cx: 0, cy: 0, rot: 0, rv: 0, kx: 1, ky: 1, kxv: 0, kyv: 0 };
+    this._od = { cid: cid, el: el, jel: jel, chart: chart, sx: e.clientX, sy: e.clientY, px: e.clientX, py: e.clientY, started: false, cx: 0, cy: 0, rot: 0, rv: 0, kx: 1, ky: 1, kxv: 0, kyv: 0, t: 0, pend: null, pendAt: 0 };
     this._omv = function (ev) { self.orgPtrMove(ev); };
     this._oup = function (ev) { self.orgPtrUp(ev, false); };
     this._okd = function (ev) { if (ev.key === 'Escape') self.orgPtrUp(ev, true); };
@@ -349,87 +352,113 @@ Object.assign(Component.prototype, {
     var d = this._od; if (!d || d.landing) return;
     d.px = ev.clientX; d.py = ev.clientY;
     if (!d.started) { if (Math.hypot(d.px - d.sx, d.py - d.sy) < 6) return; this.orgDragBegin(); }
-    this.orgHitUpdate();
   },
+  orgScale(d) { var r = d.chart.getBoundingClientRect(), w = d.chart.offsetWidth; return w ? r.width / w : 1; },
   orgDragBegin() {
     var d = this._od, s = this.st(), lay = this._orgLay || this.orgLayout(s, s.org.cargos), p = lay.pos[d.cid];
     if (!p) { this.orgPtrUnbind(); this._od = null; return; }
-    d.ox = p.x; d.oy = p.d * (lay.H + lay.GY); d.r0 = d.chart.getBoundingClientRect(); d.started = true;
-    document.body.classList.add('org-dragging');
+    d.ox = p.x; d.oy = p.d * (lay.H + lay.GY); d.r0 = d.chart.getBoundingClientRect(); d.k = this.orgScale(d) || 1; d.started = true;
+    try { document.body.classList.add('org-dragging'); } catch (e) { }
+    d.jel.style.transition = 'none'; d.jel.style.willChange = 'transform';
     this.setState({ orgDrag: { cid: d.cid, ox: d.ox, oy: d.oy, target: null, zone: null, bad: false, area: null }, orgLanded: null });
-    this.orgLoop();
+    this.orgLoop(0);
   },
-  orgLoop() {
+  orgLoop(ts) {
     var self = this, d = this._od; if (!d || !d.started || d.landing) return;
+    var dt = d.t && ts ? Math.min(64, Math.max(1, ts - d.t)) : 16.7; d.t = ts || 0;
+    var f = dt / 16.7, ease = function (k) { return 1 - Math.pow(1 - k, f); };
     var rn = d.chart.getBoundingClientRect();
-    var tx = (d.px - d.sx) + (d.r0.left - rn.left), ty = (d.py - d.sy) + (d.r0.top - rn.top);
-    d.cx += (tx - d.cx) * 0.3; d.cy += (ty - d.cy) * 0.3;
+    var tx = ((d.px - d.sx) + (d.r0.left - rn.left)) / d.k, ty = ((d.py - d.sy) + (d.r0.top - rn.top)) / d.k;
+    d.cx += (tx - d.cx) * ease(0.32); d.cy += (ty - d.cy) * ease(0.32);
     var lx = tx - d.cx, ly = ty - d.cy;
     var cl = function (v, a, b) { return Math.max(a, Math.min(b, v)); };
-    var rt = cl(lx * 0.14, -10, 10);
-    d.rv = (d.rv + (rt - d.rot) * 0.2) * 0.76; d.rot += d.rv;
-    var kxT = 1.05 + cl(Math.abs(lx) * 0.004, 0, 0.09) - cl(Math.abs(ly) * 0.002, 0, 0.05);
-    var kyT = 1.05 + cl(Math.abs(ly) * 0.004, 0, 0.09) - cl(Math.abs(lx) * 0.002, 0, 0.05);
-    d.kxv = (d.kxv + (kxT - d.kx) * 0.22) * 0.74; d.kx += d.kxv;
-    d.kyv = (d.kyv + (kyT - d.ky) * 0.22) * 0.74; d.ky += d.kyv;
-    d.el.style.transform = 'translate3d(' + d.cx.toFixed(1) + 'px,' + d.cy.toFixed(1) + 'px,0) rotate(' + d.rot.toFixed(2) + 'deg) scale(' + d.kx.toFixed(3) + ',' + d.ky.toFixed(3) + ')';
+    var rt = cl(lx * 0.12, -8, 8);
+    d.rv = (d.rv + (rt - d.rot) * 0.18 * f) * Math.pow(0.78, f); d.rot += d.rv * f;
+    var kxT = 1.04 + cl(Math.abs(lx) * 0.003, 0, 0.07) - cl(Math.abs(ly) * 0.0015, 0, 0.04);
+    var kyT = 1.04 + cl(Math.abs(ly) * 0.003, 0, 0.07) - cl(Math.abs(lx) * 0.0015, 0, 0.04);
+    d.kxv = (d.kxv + (kxT - d.kx) * 0.2 * f) * Math.pow(0.76, f); d.kx += d.kxv * f;
+    d.kyv = (d.kyv + (kyT - d.ky) * 0.2 * f) * Math.pow(0.76, f); d.ky += d.kyv * f;
+    d.jel.style.transform = 'translate3d(' + d.cx.toFixed(2) + 'px,' + d.cy.toFixed(2) + 'px,0) rotate(' + d.rot.toFixed(2) + 'deg) scale(' + d.kx.toFixed(4) + ',' + d.ky.toFixed(4) + ')';
     try {
       var sc = d.chart.parentNode, rr = sc.getBoundingClientRect();
-      if (d.px < rr.left + 50) sc.scrollLeft -= 12; else if (d.px > rr.right - 50) sc.scrollLeft += 12;
-      if (d.py < 70) window.scrollBy(0, -14); else if (d.py > window.innerHeight - 70) window.scrollBy(0, 14);
+      if (d.px < rr.left + 50) sc.scrollLeft -= 10 * f; else if (d.px > rr.right - 50) sc.scrollLeft += 10 * f;
+      if (d.py < 70) window.scrollBy(0, -12 * f); else if (d.py > window.innerHeight - 70) window.scrollBy(0, 12 * f);
     } catch (err) { }
-    d.raf = requestAnimationFrame(function () { self.orgLoop(); });
+    this.orgHitUpdate(Date.now());
+    d.raf = requestAnimationFrame(function (t2) { self.orgLoop(t2); });
   },
-  orgHitUpdate() {
-    var d = this._od, s = this.st(), lay = this._orgLay; if (!d || !d.started || !lay) return;
-    var dr = s.orgDrag || {}, self = this;
-    var setDr = function (patch) { self.setState({ orgDrag: Object.assign({}, dr, patch) }); };
+  /* calcula sobre qué cargo y en qué zona está el puntero; solo repinta si la zona se mantiene 70 ms */
+  orgHitCalc() {
+    var d = this._od, s = this.st(), lay = this._orgLay;
     var aid = null;
     try { var els = document.elementsFromPoint(d.px, d.py); for (var i = 0; i < els.length; i++) { var a = els[i].getAttribute && els[i].getAttribute('data-aid'); if (a) { aid = a; break; } } } catch (err) { }
-    if (aid) { if (dr.area !== aid || dr.target) setDr({ area: aid, target: null, zone: null, bad: false }); return; }
-    var r = d.chart.getBoundingClientRect(), px = d.px - r.left, py = d.py - r.top, step = lay.H + lay.GY, W = lay.W, H = lay.H;
+    if (aid) return { area: aid, target: null, zone: null, bad: false };
+    var r = d.chart.getBoundingClientRect(), px = (d.px - r.left) / d.k, py = (d.py - r.top) / d.k, step = lay.H + lay.GY, W = lay.W, H = lay.H;
     var gp = lay.pos[d.cid];
-    if (gp && px >= gp.x && px <= gp.x + W && py >= gp.d * step && py <= gp.d * step + H) { if (dr.area) setDr({ area: null }); return; }
-    var hit = null;
+    var dr = s.orgDrag || {};
+    if (gp && px >= gp.x && px <= gp.x + W && py >= gp.d * step && py <= gp.d * step + H) return { area: null, target: dr.target || null, zone: dr.zone || null, bad: !!dr.bad };
     for (var id in lay.pos) {
       if (id === d.cid) continue;
       var p = lay.pos[id], x = p.x, y = p.d * step;
-      if (px >= x && px <= x + W && py >= y && py <= y + H) { hit = { id: id, x: x, y: y }; break; }
+      if (px >= x && px <= x + W && py >= y && py <= y + H) {
+        var fx = (px - x) / W, fy = (py - y) / H;
+        var zone = fy < 0.24 ? 'above' : fx < 0.24 ? 'before' : fx > 0.76 ? 'after' : 'child';
+        return { area: null, target: id, zone: zone, bad: !this.orgMoveOK(s, d.cid, id, zone) };
+      }
     }
-    if (!hit) { if (dr.area) setDr({ area: null }); return; }
-    var fx = (px - hit.x) / W, fy = (py - hit.y) / H;
-    var zone = fy < 0.24 ? 'above' : fx < 0.24 ? 'before' : fx > 0.76 ? 'after' : 'child';
-    if (dr.target === hit.id && dr.zone === zone && !dr.area) return;
-    setDr({ target: hit.id, zone: zone, bad: !this.orgMoveOK(s, d.cid, hit.id, zone), area: null });
+    /* sobre un hueco dentro del organigrama: se mantiene la vista previa (evita que salte); fuera de él se cancela */
+    var cw = d.chart.offsetWidth || (r.width / d.k), ch = d.chart.offsetHeight || (r.height / d.k);
+    if (px > -40 && py > -40 && px < cw + 40 && py < ch + 40) return { area: null, target: dr.target || null, zone: dr.zone || null, bad: !!dr.bad };
+    return { area: null, target: null, zone: null, bad: false };
+  },
+  orgHitUpdate(now) {
+    var d = this._od, s = this.st(); if (!d || !d.started || !this._orgLay) return;
+    if (d.freeze && now < d.freeze) return;
+    var h = this.orgHitCalc(), dr = s.orgDrag || {};
+    var same = function (a, b) { return a && b && a.target === b.target && a.zone === b.zone && a.area === b.area && !!a.bad === !!b.bad; };
+    if (same(h, { target: dr.target || null, zone: dr.zone || null, area: dr.area || null, bad: dr.bad })) { d.pend = null; return; }
+    if (!same(h, d.pend)) { d.pend = h; d.pendAt = now; return; }
+    if (now - d.pendAt < 70) return;
+    d.pend = null;
+    /* mientras los demás cargos se acomodan no se vuelve a medir: así la vista previa no oscila */
+    if (h.target !== dr.target) d.freeze = now + 380;
+    this.setState({ orgDrag: Object.assign({}, dr, h) });
   },
   orgPtrUp(ev, cancel) {
     var d = this._od; this.orgPtrUnbind();
     if (!d) return;
     if (!d.started) { this._od = null; return; }
     if (d.landing) return;
+    if (!cancel && !(d.freeze && Date.now() < d.freeze)) { var h = this.orgHitCalc(); var dr0 = this.st().orgDrag || {}; if (h.target !== dr0.target || h.zone !== dr0.zone || h.area !== dr0.area) this.setState({ orgDrag: Object.assign({}, dr0, h) }); }
     d.landing = true; cancelAnimationFrame(d.raf);
     this._noClick = Date.now();
-    var self = this, s = this.st(), dr = s.orgDrag || {}, lay = this._orgLay;
-    var okMove = !cancel && dr.target && !dr.bad, okArea = !cancel && dr.area, el = d.el;
-    var tx = 0, ty = 0;
-    if (okMove && lay && lay.pos[d.cid]) { var p = lay.pos[d.cid]; tx = p.x - d.ox; ty = p.d * (lay.H + lay.GY) - d.oy; }
-    el.style.transition = 'transform .5s cubic-bezier(.3,1.6,.5,1)';
-    el.style.transform = 'translate3d(' + tx + 'px,' + ty + 'px,0) rotate(0deg) scale(1,1)';
+    var self = this, s = this.st(), dr = s.orgDrag || {};
+    var okMove = !cancel && dr.target && !dr.bad, okArea = !cancel && !!dr.area, jel = d.jel;
+    var tx = 0, ty = 0, fin = null;
+    if (okMove) {
+      var sim = this.orgLayout(s, this.orgSimMove(s.org.cargos, d.cid, dr.target, dr.zone)), p = sim.pos[d.cid];
+      if (p) { fin = { x: p.x, y: p.d * (sim.H + sim.GY) }; tx = fin.x - d.ox; ty = fin.y - d.oy; }
+    }
+    jel.style.transition = 'transform .42s cubic-bezier(.3,1.5,.5,1)';
+    jel.style.transform = 'translate3d(' + tx + 'px,' + ty + 'px,0) rotate(0deg) scale(1,1)';
     if (!okMove) this.setState({ orgDrag: { cid: d.cid, ox: d.ox, oy: d.oy, target: null, zone: null, bad: false, area: null } });
     setTimeout(function () {
-      document.body.classList.remove('org-dragging');
+      try { document.body.classList.remove('org-dragging'); } catch (e) { }
+      var slot = jel.parentNode;
+      jel.style.transition = 'none'; jel.style.transform = ''; jel.style.willChange = '';
+      if (okMove && fin && slot && slot.style) { slot.style.transition = 'none'; slot.style.left = fin.x + 'px'; slot.style.top = fin.y + 'px'; }
       if (okMove) {
         self.orgMoveCommit(d.cid, dr.target, dr.zone);
         self.setState({ orgDrag: { cid: d.cid, commit: true }, orgLanded: d.cid });
-        setTimeout(function () { self.setState({ orgDrag: null }); }, 90);
+        setTimeout(function () { self.setState({ orgDrag: null }); if (slot && slot.style) slot.style.transition = ''; jel.style.transition = ''; }, 90);
         setTimeout(function () { if (self.st().orgLanded === d.cid) self.setState({ orgLanded: null }); }, 900);
       } else {
-        el.style.transition = ''; el.style.transform = '';
+        jel.style.transition = '';
         if (okArea) { var ar = self.orgArea(self.st(), dr.area); self.updOrg(function (org) { org.cargos.forEach(function (x) { if (x.id === d.cid) x.area = dr.area; }); }, 'cambió de área un cargo'); self.toastMsg('Cargo movido al área ' + (ar ? ar.name : '')); self.setState({ orgDrag: null, orgLanded: d.cid }); setTimeout(function () { if (self.st().orgLanded === d.cid) self.setState({ orgLanded: null }); }, 900); }
         else self.setState({ orgDrag: null });
       }
       self._od = null;
-    }, 460);
+    }, 430);
   },
 
   /* ---------- solicitudes y aprobaciones ---------- */

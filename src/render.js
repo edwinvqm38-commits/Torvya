@@ -311,7 +311,7 @@ Object.assign(Component.prototype, {
       var titleP = this.titleProp(recT);
       var rprops = this.rprops(s, recT, v.role);
       var openFullDefault = screen === 'db' && recT.id === tidCur ? !!this.screenView(s, recT).openFull : false;
-      recFull = s.recFull != null ? s.recFull : openFullDefault;
+      recFull = s.recFull != null ? s.recFull : (s.recPref ? s.recPref === 'full' : openFullDefault);
       var rid = recRow.id, rtid = recT.id;
       var cm = this.memberById(s, recRow._cBy), em = this.memberById(s, recRow._eBy);
       var trace = this.traceData(s, recT, recRow, v);

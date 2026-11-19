@@ -69,6 +69,7 @@ WANT = {
  'mobile': ['smartphone'], 'camera': ['camera'], 'pin': ['map-pin'], 'wifioff': ['wifi-off'], 'wifi': ['wifi'], 'sync': ['refresh-cw'], 'send': ['send'],
  'template': ['layout-template'], 'formb': ['clipboard-pen-line', 'clipboard-pen', 'file-pen-line'], 'cond': ['split'], 'section': ['heading-2', 'type'], 'inbox': ['inbox'],
  'i-clipcheck': ['clipboard-check'], 'chevup': ['chevron-up'],
+ 'sidebar': ['panel-right', 'panel-left'], 'italic': ['italic'], 'underline': ['underline'], 'strike': ['strikethrough'], 'code': ['code'], 'quote': ['quote', 'text-quote'], 'tgl': ['list-collapse', 'chevrons-down-up', 'chevron-right'], 'hilite': ['highlighter'], 'tcolor': ['baseline', 'type'], 'h2': ['heading-2'], 'h3': ['heading-3'], 'bullets': ['list'], 'numbers': ['list-ordered'], 'todo2': ['square-check'], 'eraser': ['eraser', 'remove-formatting']
 }
 out = {}; miss = []
 for k, cands in WANT.items():
