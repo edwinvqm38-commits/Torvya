@@ -399,9 +399,11 @@ Object.assign(Component.prototype, {
         gc: gridCols, sel: isOpenRec(r) ? 'is-sel' : '', rc: rowColor(r),
         cells: vprops.map(function (p) {
           var wc = wraps[p.key] ? 'wrap' : '';
-          if (p.type === 'title') return { isTitle: true, notTitle: false, title: r[p.key] || 'Sin título', open: openFn(r), align: '', wrapCls: wc, selCls: '', d: null, select: null, aria: '' };
+          if (p.type === 'title') return { isTitle: true, notTitle: false, title: r[p.key] || 'Sin título', open: openFn(r), align: '', wrapCls: wc, selCls: '', d: null, select: null, aria: '', lbl: '' };
           var isSel = sel && sel.row === r.id && sel.prop === p.key;
-          return { isTitle: false, notTitle: true, title: '', open: null, align: isNumericProp(p) ? 'num' : '', wrapCls: wc, selCls: isSel ? 'cell-sel' : '', d: self.dispOf(s, t, p, r, v, canEdit), aria: 'Editar ' + p.name + ' de ' + self.titleOf(t, r), select: function () { self.setState({ selCell: isSel ? null : { where: where, tid: tid, row: r.id, prop: p.key }, headMenu: null }); } };
+          var dd = self.dispOf(s, t, p, r, v, canEdit);
+          var emp = !(dd.text || (dd.pills || []).length || (dd.chips || []).length || (dd.people || []).length || dd.kCheck || dd.kLink || (dd.files || []).length || dd.kBar || dd.kRing || dd.kButton);
+          return { isTitle: false, notTitle: true, title: '', open: null, align: isNumericProp(p) ? 'num' : '', wrapCls: wc + (emp ? ' td-emp' : ''), selCls: isSel ? 'cell-sel' : '', lbl: p.name, d: dd, aria: 'Editar ' + p.name + ' de ' + self.titleOf(t, r), select: function () { self.setState({ selCell: isSel ? null : { where: where, tid: tid, row: r.id, prop: p.key }, headMenu: null }); } };
         })
       };
     }
@@ -469,8 +471,8 @@ Object.assign(Component.prototype, {
         var preset = self.groupPatch(bprop, g.key);
         return { label: g.label, cls: g.cls, dot: g.dot, isPill: g.isPill, isPerson: g.isPerson, avatar: g.avatar, initials: g.initials, count: String(g.rows.length), empty: g.rows.length === 0,
           canAdd: canEdit && !!preset, add: function () { self.newRow(tid, Object.assign(self.viewPreset(s, t, vw, v), preset || {})); },
-          drop: function (e) { try { e.preventDefault(); } catch (err) { } var id = self._drag; if (!id) { try { id = e.dataTransfer.getData('text/plain'); } catch (err2) { id = null; } } self._drag = null; if (id) self.moveToGroup(tid, id, bprop.key, g.key); },
-          cards: g.rows.map(function (r) { return { title: self.titleOf(t, r), open: openFn(r), sel: isOpenRec(r) ? 'is-sel' : '', rc: rowColor(r), drag: canEdit && !!preset, props: propsFor(r), dragStart: function (e) { self._drag = r.id; try { e.dataTransfer.setData('text/plain', r.id); e.dataTransfer.effectAllowed = 'move'; } catch (err) { } }, dragEnd: function () { } }; }) };
+          drop: function (e) { try { e.preventDefault(); } catch (err) { } var id = self._drag; if (!id) { try { id = e.dataTransfer.getData('text/plain'); } catch (err2) { id = null; } } self._drag = null; if (id) { self.moveToGroup(tid, id, bprop.key, g.key); self.jellyOn(id); } },
+          cards: g.rows.map(function (r) { return { title: self.titleOf(t, r), open: openFn(r), sel: isOpenRec(r) ? 'is-sel' : '', rc: rowColor(r) + (s.jellyKey === r.id ? ' jelly' : ''), drag: canEdit && !!preset, props: propsFor(r), dragStart: function (e) { self._drag = r.id; var cd = null; try { e.dataTransfer.setData('text/plain', r.id); e.dataTransfer.effectAllowed = 'move'; cd = e.currentTarget; } catch (err) { } if (cd) setTimeout(function () { cd.classList.add('jk-src'); }, 0); }, dragEnd: function (e) { try { e.currentTarget.classList.remove('jk-src'); document.querySelectorAll('.kcol.jk-over').forEach(function (n) { n.classList.remove('jk-over'); }); } catch (err) { } } }; }) };
       });
     }
     var listItems = layout === 'list' ? sorted.map(function (r) { return { title: self.titleOf(t, r), open: openFn(r), sel: isOpenRec(r) ? 'is-sel' : '', rc: rowColor(r), props: propsFor(r) }; }) : [];

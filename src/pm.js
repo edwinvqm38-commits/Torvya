@@ -557,8 +557,8 @@ Object.assign(Component.prototype, {
     if (cv.kind === 'color') return 'background: ' + cv.v;
     return 'background: ' + (COVERS[cv.v] || COVERS[0]);
   },
-  blkDragStart(bid, e) { this._dragBlk = bid; try { e.dataTransfer.setData('text/plain', 'blk:' + bid); e.dataTransfer.effectAllowed = 'move'; var el = e.target.closest('.blk'); if (el && e.dataTransfer.setDragImage) e.dataTransfer.setDragImage(el, 24, 20); } catch (err) { } },
-  blkDragEnd(e) { this._dragBlk = null; try { document.querySelectorAll('.blk.drop-before, .blk.drop-after').forEach(function (n) { n.classList.remove('drop-before', 'drop-after'); }); } catch (err) { } },
+  blkDragStart(bid, e) { this._dragBlk = bid; try { e.dataTransfer.setData('text/plain', 'blk:' + bid); e.dataTransfer.effectAllowed = 'move'; var el = e.target.closest('.blk'); if (el && e.dataTransfer.setDragImage) e.dataTransfer.setDragImage(el, 24, 20); if (el) setTimeout(function () { el.classList.add('jk-src'); }, 0); } catch (err) { } },
+  blkDragEnd(e) { this._dragBlk = null; try { document.querySelectorAll('.blk.drop-before, .blk.drop-after, .blk.jk-src').forEach(function (n) { n.classList.remove('drop-before', 'drop-after', 'jk-src'); }); } catch (err) { } },
   dropSide(e) {
     try {
       var el = e.currentTarget, r = el.getBoundingClientRect();
@@ -585,6 +585,7 @@ Object.assign(Component.prototype, {
       if (to < 0) { pg.blocks.splice(from, 0, b); return false; }
       pg.blocks.splice(side === 'after' ? to + 1 : to, 0, b);
     });
+    this.jellyOn(bid);
   },
   rzStart(bid, e) { this._rz = { bid: bid, x: 0 }; try { e.dataTransfer.setData('text/plain', 'rz'); e.dataTransfer.effectAllowed = 'move'; var img = document.createElement('canvas'); img.width = img.height = 1; e.dataTransfer.setDragImage(img, 0, 0); } catch (err) { } },
   rzMove(e) { if (this._rz && e.clientX) this._rz.x = e.clientX; },
@@ -598,7 +599,7 @@ Object.assign(Component.prototype, {
       var gap = 16, colW = (gr.width + gap) / 12;
       var w = Math.round((x - br.left + gap) / colW);
       w = Math.max(2, Math.min(12, w));
-      this.updBlock(bid, function (b) { if (b.w === w) return false; b.w = w; });
+      this.updBlock(bid, function (b) { if (b.w === w) return false; b.w = w; }); this.jellyOn(bid);
     } catch (err) { }
   },
   todoUpd(bid, fn) { this.updBlock(bid, function (b) { if (!b.items) b.items = []; return fn(b); }); },

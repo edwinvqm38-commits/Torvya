@@ -10,7 +10,12 @@
   </div>
   <div class="side-body">
     <sc-for list="{{sideHome}}" as="sp" hint-placeholder-count="1">
-      <button type="button" class="nav-item {{sp.on}}" onClick="{{sp.go}}"><span class="tico sm" style="--c: {{sp.color}}">[[ics:sp.icon]]</span><span class="nav-txt">{{sp.name}}</span></button>
+      <div class="nav-row {{sp.on}} {{sp.jl}}" style="--d: {{sp.depth}}" draggable="{{sp.canDrag}}" onDragStart="{{sp.dragStart}}" onDragOver="{{sp.dragOver}}" onDragLeave="{{sp.dragLeave}}" onDrop="{{sp.drop}}" onDragEnd="{{sp.dragEnd}}">
+          <sc-if value="{{sp.hasKids}}" hint-placeholder-val="{{false}}"><button type="button" class="nav-fold {{sp.foldCls}}" onClick="{{sp.toggle}}" aria-label="{{sp.foldAria}}" aria-expanded="{{sp.open}}">[[icx:ICON.right]]</button></sc-if>
+          <sc-if value="{{sp.noKids}}" hint-placeholder-val="{{true}}"><span class="nav-fold-sp"></span></sc-if>
+          <button type="button" class="nav-item {{sp.on}}" onClick="{{sp.go}}"><span class="tico sm" style="--c: {{sp.color}}">[[ics:sp.icon]]</span><span class="nav-txt">{{sp.name}}</span><sc-if value="{{sp.hasKids}}" hint-placeholder-val="{{false}}"><span class="nav-count">{{sp.kidCount}}</span></sc-if></button>
+          <sc-if value="{{sp.canSub}}" hint-placeholder-val="{{true}}"><button type="button" class="nav-add" onClick="{{sp.addSub}}" aria-label="Nueva subpágina" title="Nueva subpágina">[[icx:ICON.plus]]</button></sc-if>
+        </div>
     </sc-for>
     <button type="button" class="nav-item {{navOrg}}" onClick="{{goOrg}}"><span class="nav-ic">[[ic:ICON.org]]</span><span class="nav-txt">Organigrama</span></button>
     <button type="button" class="nav-item {{navForms}}" onClick="{{goForms}}"><span class="nav-ic">[[ic:ICON.formb]]</span><span class="nav-txt">Formularios</span></button>
@@ -19,17 +24,27 @@
     <button type="button" class="nav-item {{navAi}}" onClick="{{goAi}}"><span class="nav-ic">[[ic:ICON.ai]]</span><span class="nav-txt">Asistente IA</span></button>
     <button type="button" class="nav-item {{navInbox}}" onClick="{{goInbox}}"><span class="nav-ic">[[ic:ICON.bell]]</span><span class="nav-txt">Avisos</span><sc-if value="{{hasUnread}}" hint-placeholder-val="{{false}}"><span class="nav-badge">{{unreadCount}}</span></sc-if></button>
 
-    <div class="nav-label"><span>Páginas</span><sc-if value="{{canNewPage}}" hint-placeholder-val="{{true}}"><button type="button" class="icon-btn xs" onClick="{{newPage}}" aria-label="Nueva página" title="Nueva página">[[ics:ICON.plus]]</button></sc-if></div>
+    <div class="nav-label" onDragOver="{{pgRootOver}}" onDragLeave="{{pgRootLeave}}" onDrop="{{pgRootDrop}}" title="Suelta aquí una página para subirla al nivel principal"><span>Páginas</span><sc-if value="{{canNewPage}}" hint-placeholder-val="{{true}}"><button type="button" class="icon-btn xs" onClick="{{newPage}}" aria-label="Nueva página" title="Nueva página">[[ics:ICON.plus]]</button></sc-if></div>
     <sc-if value="{{hasGeneral}}" hint-placeholder-val="{{true}}">
       <div class="nav-sub">General</div>
       <sc-for list="{{sideGeneral}}" as="sp" hint-placeholder-count="1">
-        <button type="button" class="nav-item {{sp.on}}" onClick="{{sp.go}}"><span class="tico sm" style="--c: {{sp.color}}">[[ics:sp.icon]]</span><span class="nav-txt">{{sp.name}}</span></button>
+        <div class="nav-row {{sp.on}} {{sp.jl}}" style="--d: {{sp.depth}}" draggable="{{sp.canDrag}}" onDragStart="{{sp.dragStart}}" onDragOver="{{sp.dragOver}}" onDragLeave="{{sp.dragLeave}}" onDrop="{{sp.drop}}" onDragEnd="{{sp.dragEnd}}">
+          <sc-if value="{{sp.hasKids}}" hint-placeholder-val="{{false}}"><button type="button" class="nav-fold {{sp.foldCls}}" onClick="{{sp.toggle}}" aria-label="{{sp.foldAria}}" aria-expanded="{{sp.open}}">[[icx:ICON.right]]</button></sc-if>
+          <sc-if value="{{sp.noKids}}" hint-placeholder-val="{{true}}"><span class="nav-fold-sp"></span></sc-if>
+          <button type="button" class="nav-item {{sp.on}}" onClick="{{sp.go}}"><span class="tico sm" style="--c: {{sp.color}}">[[ics:sp.icon]]</span><span class="nav-txt">{{sp.name}}</span><sc-if value="{{sp.hasKids}}" hint-placeholder-val="{{false}}"><span class="nav-count">{{sp.kidCount}}</span></sc-if></button>
+          <sc-if value="{{sp.canSub}}" hint-placeholder-val="{{true}}"><button type="button" class="nav-add" onClick="{{sp.addSub}}" aria-label="Nueva subpágina" title="Nueva subpágina">[[icx:ICON.plus]]</button></sc-if>
+        </div>
       </sc-for>
     </sc-if>
     <sc-for list="{{sideAreas}}" as="sa" hint-placeholder-count="3">
       <div class="nav-sub"><span class="na-dot" style="background: {{sa.color}}"></span>{{sa.name}}</div>
       <sc-for list="{{sa.pages}}" as="sp" hint-placeholder-count="2">
-        <button type="button" class="nav-item {{sp.on}}" onClick="{{sp.go}}"><span class="tico sm" style="--c: {{sp.color}}">[[ics:sp.icon]]</span><span class="nav-txt">{{sp.name}}</span></button>
+        <div class="nav-row {{sp.on}} {{sp.jl}}" style="--d: {{sp.depth}}" draggable="{{sp.canDrag}}" onDragStart="{{sp.dragStart}}" onDragOver="{{sp.dragOver}}" onDragLeave="{{sp.dragLeave}}" onDrop="{{sp.drop}}" onDragEnd="{{sp.dragEnd}}">
+          <sc-if value="{{sp.hasKids}}" hint-placeholder-val="{{false}}"><button type="button" class="nav-fold {{sp.foldCls}}" onClick="{{sp.toggle}}" aria-label="{{sp.foldAria}}" aria-expanded="{{sp.open}}">[[icx:ICON.right]]</button></sc-if>
+          <sc-if value="{{sp.noKids}}" hint-placeholder-val="{{true}}"><span class="nav-fold-sp"></span></sc-if>
+          <button type="button" class="nav-item {{sp.on}}" onClick="{{sp.go}}"><span class="tico sm" style="--c: {{sp.color}}">[[ics:sp.icon]]</span><span class="nav-txt">{{sp.name}}</span><sc-if value="{{sp.hasKids}}" hint-placeholder-val="{{false}}"><span class="nav-count">{{sp.kidCount}}</span></sc-if></button>
+          <sc-if value="{{sp.canSub}}" hint-placeholder-val="{{true}}"><button type="button" class="nav-add" onClick="{{sp.addSub}}" aria-label="Nueva subpágina" title="Nueva subpágina">[[icx:ICON.plus]]</button></sc-if>
+        </div>
       </sc-for>
     </sc-for>
 
@@ -115,9 +130,12 @@
         <div class="pg-titles">
           <div class="pg-meta">
             <button type="button" class="area-chip" onClick="{{pg.toggleArea}}" disabled="{{pg.cannotArea}}" aria-expanded="{{pg.areaOpen}}" title="Quién ve esta página"><span class="na-dot" style="background: {{pg.areaColor}}"></span>{{pg.areaName}}<sc-if value="{{pg.canArea}}" hint-placeholder-val="{{true}}">[[icx:ICON.chevdown]]</sc-if></button>
+            <button type="button" class="area-chip" onClick="{{pg.toggleParent}}" disabled="{{pg.cannotParent}}" aria-expanded="{{pg.parentOpen}}" title="Dentro de qué página está">[[icx:ICON.page]]{{pg.parentName}}[[icx:ICON.chevdown]]</button>
             <sc-if value="{{pg.canAddCover}}" hint-placeholder-val="{{false}}"><button type="button" class="link-btn" onClick="{{pg.addCover}}">[[icx:ICON.image]]Añadir portada</button></sc-if>
+            <sc-if value="{{pg.parentOpen}}" hint-placeholder-val="{{false}}"><div class="menu area-menu parent-menu"><div class="menu-title">Dentro de…</div><sc-for list="{{pg.parentOpts}}" as="po" hint-placeholder-count="4"><button type="button" class="menu-item {{po.cls}}" style="{{po.pad}}" onClick="{{po.pick}}" aria-pressed="{{po.on}}"><span class="va-name">{{po.label}}</span></button></sc-for></div></sc-if>
             <sc-if value="{{pg.areaOpen}}" hint-placeholder-val="{{false}}"><div class="menu area-menu"><div class="menu-title">¿Quién ve esta página?</div><sc-for list="{{pg.areaOpts}}" as="ao" hint-placeholder-count="4"><button type="button" class="menu-item {{ao.cls}}" onClick="{{ao.pick}}" aria-pressed="{{ao.on}}"><span class="na-dot" style="background: {{ao.color}}"></span><span class="va-name">{{ao.label}}</span></button></sc-for></div></sc-if>
           </div>
+          <sc-if value="{{pg.hasCrumbs}}" hint-placeholder-val="{{false}}"><nav class="crumbs" aria-label="Ruta de la página"><sc-for list="{{pg.crumbs}}" as="cr" hint-placeholder-count="2"><button type="button" class="crumb" onClick="{{cr.go}}">{{cr.name}}</button><span class="crumb-sep" aria-hidden="true">/</span></sc-for></nav></sc-if>
           <sc-if value="{{pg.isMine}}" hint-placeholder-val="{{false}}"><div class="greet">{{pg.greet}}</div><div class="greet-sub">{{pg.greetSub}}</div></sc-if>
           <sc-if value="{{pg.canEdit}}" hint-placeholder-val="{{true}}">
             <input class="h1-input" value="{{pg.title}}" onChange="{{pg.setTitle}}" placeholder="Sin título" aria-label="Título de la página">
@@ -125,6 +143,7 @@
           </sc-if>
           <sc-if value="{{pg.readOnly}}" hint-placeholder-val="{{false}}"><h1 class="h1">{{pg.titleText}}</h1><p class="sub">{{pg.desc}}</p></sc-if>
           <div class="pg-stats">{{pg.stats}}</div>
+          <sc-if value="{{pg.hasSubs}}" hint-placeholder-val="{{false}}"><div class="subpg" role="list" aria-label="Subpáginas"><span class="subpg-t">Subpáginas</span><sc-for list="{{pg.subs}}" as="sb" hint-placeholder-count="3"><button type="button" role="listitem" class="subpg-chip" style="--c: {{sb.color}}" onClick="{{sb.go}}"><span class="tico xs" style="--c: {{sb.color}}">[[icx:sb.icon]]</span>{{sb.name}}<sc-if value="{{sb.hasN}}" hint-placeholder-val="{{false}}"><span class="subpg-n">{{sb.n}}</span></sc-if></button></sc-for></div></sc-if>
         </div>
         <div class="head-actions">
           <sc-if value="{{pg.canEdit}}" hint-placeholder-val="{{true}}"><button type="button" class="btn btn-primary btn-sm" onClick="{{pg.toggleAdd}}" aria-expanded="{{pg.addAny}}">[[ics:ICON.plus]]Añadir bloque</button></sc-if>

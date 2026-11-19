@@ -103,7 +103,7 @@ assert '[[' not in markup, markup[markup.index('[['):markup.index('[[') + 60]
 assert '$.' not in markup
 
 css = open(BASE + 'style.css', encoding='utf-8').read()
-js = '\n'.join(open(BASE + f, encoding='utf-8').read() for f in ['icons.js', 'lib.js', 'core.js', 'actions.js', 'views.js', 'drawer.js', 'render.js', 'pm.js', 'org2.js', 'doc.js', 'forms.js', 'costos.js', 'tecsur_data.js', 'tecsur.js', 'negocio.js'])
+js = '\n'.join(open(BASE + f, encoding='utf-8').read() for f in ['icons.js', 'lib.js', 'core.js', 'actions.js', 'views.js', 'drawer.js', 'render.js', 'pm.js', 'org2.js', 'doc.js', 'forms.js', 'costos.js', 'tecsur_data.js', 'tecsur.js', 'portafolio.js', 'negocio.js'])
 assert '</' not in js
 
 props = {
@@ -114,7 +114,7 @@ props = {
 dp = json.dumps(props, ensure_ascii=False, separators=(',', ':'))
 assert "'" not in dp and '&' not in dp
 
-html = ('<!doctype html>\n<html lang="es">\n<head>\n<meta charset="utf-8">\n<title>Trama — App</title>\n'
+html = ('<!doctype html>\n<html lang="es">\n<head>\n<meta charset="utf-8">\n<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">\n<meta name="theme-color" content="#00468C">\n<title>Trama — App</title>\n'
         '<script src="./support.js"></script>\n</head>\n<body>\n<x-dc>\n<helmet>\n'
         '<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Space+Grotesk:wght@500;600;700&amp;family=IBM+Plex+Sans:wght@400;500;600&amp;family=IBM+Plex+Mono:wght@500;600&amp;display=swap">\n'
         '<style>\n' + css + '</style>\n</helmet>\n' + markup + '\n</x-dc>\n'

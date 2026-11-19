@@ -97,7 +97,7 @@
                 <sc-for list="{{r.cells}}" as="cell" hint-placeholder-count="7">
                   <div class="td {{cell.align}} {{cell.wrapCls}} {{cell.selCls}}">
                     <sc-if value="{{cell.isTitle}}" hint-placeholder-val="{{false}}"><button type="button" class="title-btn" onClick="{{cell.open}}"><span class="title-txt">{{cell.title}}</span><span class="open-hint">[[icx:ICON.expand]]Abrir</span></button></sc-if>
-                    <sc-if value="{{cell.notTitle}}" hint-placeholder-val="{{true}}"><button type="button" class="cell-hit" onClick="{{cell.select}}" aria-label="{{cell.aria}}"></button>[[disp:cell.d]]</sc-if>
+                    <sc-if value="{{cell.notTitle}}" hint-placeholder-val="{{true}}"><span class="td-lbl">{{cell.lbl}}</span><button type="button" class="cell-hit" onClick="{{cell.select}}" aria-label="{{cell.aria}}"></button>[[disp:cell.d]]</sc-if>
                   </div>
                 </sc-for>
                 <div class="td"></div>

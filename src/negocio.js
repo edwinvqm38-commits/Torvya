@@ -9,14 +9,15 @@ var BIZ_MODULES = [
   { id: 'acu', name: 'Ingeniería de costos: ACU', code: 'M02', icon: 'i-calc', color: '#B45309', desc: 'ACU por matrícula y versión, comparador que explica variaciones e impacto de un cambio de precio', tables: ['acu', 'acud'], needs: ['maestros'] },
   { id: 'ops', name: 'Contratos, servicios y OT/SST', code: 'M03', icon: 'i-wrench', color: '#0F766E', desc: 'Contratos con modalidad económica, servicios y órdenes de trabajo sin crear proyectos; HH, km y cantidades programada → reconocida', tables: ['ctr', 'srv', 'ot'], needs: ['acu'] },
   { id: 'tecsur', name: 'Objetivos y procedimientos 2026', code: 'M09', icon: 'i-target', color: '#00468C', desc: 'Objetivos, procedimientos de costos, procedimientos operativos, anexos técnicos sin precios, brechas y decisiones, con vista para Gerencia', tables: ['tobj', 'tpro', 'tpo', 'tli', 'tbr', 'tde'] },
+  { id: 'portafolio', name: 'Portafolio de proyectos (demo con fórmulas)', code: 'M10', icon: 'i-folder', color: '#00468C', desc: 'Datos de ejemplo para entender y configurar: hitos, valor ganado, semáforo con umbrales y páginas con subniveles.', tables: ['ppr', 'phi', 'pum'] },
   { id: 'presu', name: 'Presupuestos y control de costos', code: 'M04', icon: 'i-wallet', color: '#475569', desc: 'Presupuesto inicial y vigente, costo real, compromisos, desviaciones y estimado al cierre', soon: true },
   { id: 'epp', name: 'EPP, equipos y transporte', code: 'M05', icon: 'i-hardhat', color: '#475569', desc: 'Kits por cuadrilla, vida útil, reposición y costo de uso', soon: true },
   { id: 'valor', name: 'Valorizaciones', code: 'M06', icon: 'i-receipt', color: '#475569', desc: 'Elaborada, enviada, observada, aprobada, facturada y cobrada', soon: true },
   { id: 'bi', name: 'Reportes gerenciales', code: 'M08', icon: 'i-chart', color: '#475569', desc: 'Tableros por contrato y jefatura con fórmula, fuente y responsable de cada indicador', soon: true }
 ];
 var BIZ_RUBROS = [
-  { id: 'general', name: 'Proyectos y servicios', desc: 'Para empresas que gestionan proyectos, personal y aprobaciones.', modules: ['proyectos', 'personal', 'aprob', 'campo'] },
-  { id: 'electrico', name: 'Servicios eléctricos y mantenimiento de redes', badge: 'Propuesta basada en TECSUR', desc: 'Contratos con distribuidoras, OT/SST, emergencias, mantenimiento BT/MT, cortes de tarifas y ACU.', modules: ['proyectos', 'personal', 'aprob', 'campo', 'maestros', 'acu', 'ops', 'tecsur'],
+  { id: 'general', name: 'Proyectos y servicios', desc: 'Para empresas que gestionan proyectos, personal y aprobaciones.', modules: ['proyectos', 'personal', 'aprob', 'campo', 'portafolio'] },
+  { id: 'electrico', name: 'Servicios eléctricos y mantenimiento de redes', badge: 'Propuesta basada en TECSUR', desc: 'Contratos con distribuidoras, OT/SST, emergencias, mantenimiento BT/MT, cortes de tarifas y ACU.', modules: ['proyectos', 'personal', 'aprob', 'campo', 'maestros', 'acu', 'ops', 'tecsur', 'portafolio'],
     areas: [{ id: 'a-cos', name: 'Ingeniería de Costos', color: '#7C3AED', icon: 'i-calc', parent: 'a-ger' }],
     cargos: [{ name: 'Jefe de Ingeniería de Costos', area: 'a-cos', parentName: 'Gerente general' }, { name: 'Analista de costos', area: 'a-cos', parentName: 'Jefe de Ingeniería de Costos' }, { name: 'Supervisor de cuadrillas', area: 'a-ope', parentName: 'Jefe de Operaciones y Proyectos' }],
     notes: ['Modalidades, gastos generales y utilidad quedan marcados «por validar»: el sistema no asume reglas contractuales.', 'Las OT se registran por servicio, sin obligarlas a ser proyectos.', 'Lo importado nunca queda validado solo; los ACU aprobados no se recalculan.'] },
@@ -104,6 +105,56 @@ Object.assign(Component.prototype, {
       ] });
       made.push(m.name);
     }
+    if (id === 'portafolio') {
+      var pp = seedPortafolio();
+      ['ppr', 'phi', 'pum'].forEach(function (k) { addTable(pp[k]); });
+      var accP = { admin: 'full', finanzas: 'view', ventas: 'none', almacen: 'none', invitado: 'none' };
+      ['ppr', 'phi', 'pum'].forEach(function (k) { addAccess(k, clone(accP)); });
+      ensureArea({ id: 'a-cos', name: 'Ingeniería de Costos', color: '#7C3AED', icon: 'i-calc', parent: 'a-ger' });
+      var FP = function (k, v) { return [{ prop: k, op: 'is', value: v }]; };
+      var FC = function (v) { return [{ prop: 'cod', op: 'contains', value: v }]; };
+      addPage({ id: 'pgpf', area: 'a-cos', cover: { kind: 'grad', v: 3 }, title: 'Portafolio de proyectos · demo', icon: 'i-folder', color: '#00468C', desc: 'Nivel 1 del portafolio. Las páginas de abajo son subniveles: Resumen, Proyectos (con una página por proyecto), Hitos y costos, Umbrales y Archivos.', blocks: [
+        blk('p0', 'callout', 12, { icon: 'i-bulb', text: 'DATOS DEMO: nombres, montos y avances son ficticios. Sirven para ver cómo se encadenan las fórmulas (hito → valor ganado → proyecto → semáforo) antes de cargar datos reales.' }),
+        blk('p1', 'kpi', 3, { title: 'Proyectos', table: 'ppr', val: 'count', filters: [] }),
+        blk('p2', 'kpi', 3, { title: 'En ejecución', table: 'ppr', val: 'count', filters: FP('estado', 'En ejecución') }),
+        blk('p3', 'kpi', 3, { title: 'Plan total (S/ demo)', table: 'phi', val: 'sum:plan', filters: [] }),
+        blk('p4', 'kpi', 3, { title: 'Costo real (S/ demo)', table: 'phi', val: 'sum:real', filters: [] }),
+        blk('p5', 'db', 12, { table: 'ppr', view: 'xr1' })
+      ] });
+      addPage({ id: 'pgpf1', parent: 'pgpf', area: 'a-cos', cover: null, title: 'Resumen ejecutivo', icon: 'i-chart', color: '#00705A', desc: 'Lo que vería la Gerencia: cuántos proyectos hay en cada semáforo y dónde está el costo.', blocks: [
+        blk('q1', 'chart', 6, { title: 'Proyectos por semáforo', table: 'ppr', kind: 'donut', by: 'sema', val: 'count', sort: 'label', limit: 0, filters: [] }),
+        blk('q2', 'chart', 6, { title: 'Plan por proyecto (S/ demo)', table: 'phi', kind: 'bar', by: 'proy', val: 'sum:plan', sort: 'desc', limit: 0, filters: [] }),
+        blk('q3', 'chart', 6, { title: 'Costo real por fase (S/ demo)', table: 'phi', kind: 'bar', by: 'fase', val: 'sum:real', sort: 'label', limit: 0, filters: [] }),
+        blk('q4', 'chart', 6, { title: 'Hitos por estado', table: 'phi', kind: 'donut', by: 'est', val: 'count', sort: 'label', limit: 0, filters: [] })
+      ] });
+      addPage({ id: 'pgpf2', parent: 'pgpf', area: 'a-cos', cover: null, title: 'Proyectos', icon: 'i-briefcase', color: '#B45309', desc: 'Tabla y tablero del portafolio. Cada proyecto de abajo tiene su propia página (subnivel 3).', blocks: [
+        blk('r1', 'db', 12, { table: 'ppr', view: 'xr3' }),
+        blk('r2', 'db', 12, { table: 'ppr', view: 'xr2' })
+      ] });
+      [['pgpf2a', 'D1', 'PRY-D1 · Renovación de redes BT', 'xh3'], ['pgpf2b', 'D2', 'PRY-D2 · Mantenimiento preventivo MT', 'xh4'], ['pgpf2c', 'D5', 'PRY-D5 · Propuesta de EPP (ejemplo)', 'xh5']].forEach(function (x, i) {
+        addPage({ id: x[0], parent: 'pgpf2', area: 'a-cos', cover: null, title: x[2], icon: 'i-flag', color: ['#00468C', '#0F766E', '#B45309'][i], desc: 'Subnivel 3: ficha del proyecto con sus hitos.', blocks: [
+          blk(x[0] + 'a', 'kpi', 4, { title: 'Hitos', table: 'phi', val: 'count', filters: FC(x[1] + '-') }),
+          blk(x[0] + 'b', 'kpi', 4, { title: 'Plan (S/ demo)', table: 'phi', val: 'sum:plan', filters: FC(x[1] + '-') }),
+          blk(x[0] + 'c', 'kpi', 4, { title: 'Costo real (S/ demo)', table: 'phi', val: 'sum:real', filters: FC(x[1] + '-') }),
+          blk(x[0] + 'd', 'db', 12, { table: 'phi', view: x[3] })
+        ] });
+      });
+      addPage({ id: 'pgpf3', parent: 'pgpf', area: 'a-cos', cover: null, title: 'Hitos y costos', icon: 'i-checks', color: '#0F766E', desc: 'Todos los hitos: plan, real, avance y valor ganado.', blocks: [
+        blk('s1', 'callout', 12, { icon: 'info', text: 'Valor ganado = Plan × Avance. Si un hito cuesta más de lo que avanzó, la Diferencia es positiva. El avance debe respaldarse con evidencia física antes de usar el índice de costo para decidir.' }),
+        blk('s2', 'db', 12, { table: 'phi', view: 'xh1' }),
+        blk('s3', 'db', 12, { table: 'phi', view: 'xh2' })
+      ] });
+      addPage({ id: 'pgpf4', parent: 'pgpf', area: 'a-cos', cover: null, title: 'Umbrales y semáforo', icon: 'i-scale', color: '#5A6675', desc: 'Parámetros que usan las fórmulas. Cámbialos aquí, no dentro de las fórmulas.', blocks: [
+        blk('t1', 'callout', 12, { icon: 'info', text: 'El Semáforo de Proyectos compara el Desvío con estos umbrales. Para cambiar los límites edita el valor de la tabla; no hace falta tocar la fórmula.' }),
+        blk('t2', 'db', 12, { table: 'pum', view: 'xu1' })
+      ] });
+      addPage({ id: 'pgpf5', parent: 'pgpf', area: 'a-cos', cover: null, title: 'Archivos en OneDrive o Drive', icon: 'i-file', color: '#475569', desc: 'Cómo enlazar la carpeta de cada proyecto.', blocks: [
+        blk('u1', 'callout', 12, { icon: 'info', text: 'Hoy: en la tabla Proyectos, la columna «Carpeta (OneDrive / Drive)» guarda el enlace compartido de la carpeta; al abrirlo se muestra «OneDrive» o «Google Drive». Más adelante: conexión con inicio de sesión para listar y subir archivos desde la propia tabla (requiere definir con TI la cuenta y los permisos).' }),
+        blk('u2', 'db', 12, { table: 'ppr', view: 'xr3' })
+      ] });
+      if (st.pages.byId['pgtec2'] && !st.pages.byId['pgtec2'].parent) st.pages.byId['pgtec2'].parent = 'pgtec';
+      made.push(m.name);
+    }
     if (id === 'tecsur') {
       var tt = seedTecsur();
       ['tobj', 'tpro', 'tpo', 'tli', 'tbr', 'tde'].forEach(function (k) { addTable(tt[k]); });
@@ -128,7 +179,7 @@ Object.assign(Component.prototype, {
         blk('td', 'db', 12, { table: 'tobj', view: 'xo1' }),
         blk('te', 'db', 12, { table: 'tde', view: 'xd1' })
       ] });
-      addPage({ id: 'pgtec2', area: 'a-cos', cover: { kind: 'grad', v: 2 }, title: 'Procedimientos y anexos técnicos', icon: 'i-clipboard', color: '#00705A', desc: 'Índice maestro, PO recibidos, líneas de anexo y brechas', blocks: [
+      addPage({ id: 'pgtec2', parent: 'pgtec', area: 'a-cos', cover: { kind: 'grad', v: 2 }, title: 'Procedimientos y anexos técnicos', icon: 'i-clipboard', color: '#00705A', desc: 'Índice maestro, PO recibidos, líneas de anexo y brechas', blocks: [
         blk('u0', 'callout', 12, { icon: 'info', text: 'Los PO no se modifican. Una cantidad vacía significa que el PO no la indica, no que sea cero. Si cambia la revisión de un PO, sus líneas deben volver a revisarse antes de usarlas en un ACU.' }),
         blk('u1', 'db', 12, { table: 'tpro', view: 'xp1' }),
         blk('u2', 'db', 12, { table: 'tpo', view: 'xq1' }),

@@ -2,6 +2,8 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#00468C">
 <title>Trazya</title>
 <script src="./dc-runtime.js"></script>
 </head>
@@ -544,7 +546,7 @@ button.chip:hover{border-color:var(--acc)}
 .prev-tr:last-child{border-bottom:0}
 .prev-th{font-size:12px;color:var(--muted);background:var(--side)}
 
-@media (max-width:760px){
+@media (max-width:812px){
   .side{position:sticky;top:0;z-index:30;max-height:100vh;overflow-y:auto;border-right:0;border-bottom:1px solid var(--line);padding:8px 10px}
   .ws{padding:4px 4px}
   .nav-toggle{display:inline-grid}
@@ -1429,6 +1431,90 @@ body.org-dragging,body.org-dragging *{cursor:grabbing!important;user-select:none
 .cos-ver.isA{box-shadow:none;border-color:#94A3B8;background:color-mix(in srgb,#94A3B8 10%,var(--panel))}
 .cos-ver.isB{box-shadow:none;border-color:var(--acc);background:color-mix(in srgb,var(--acc) 8%,var(--panel))}
 .frow.f-cond{border-left:0;margin-left:-10px;padding:8px 10px;border-radius:var(--r-sm);background:color-mix(in srgb,var(--acc) 6%,transparent)}
+
+/* ---------- subpáginas en la barra lateral y efecto gelatina suave ---------- */
+.nav-row{position:relative;display:flex;align-items:center;gap:0;padding-left:calc(var(--d,0) * 14px);border-radius:var(--r-sm);transition:background .18s ease,box-shadow .18s ease}
+.nav-row .nav-item{flex:1;min-width:0;width:auto}
+.nav-fold,.nav-fold-sp{flex:none;width:18px;height:28px;display:grid;place-items:center;border:0;background:transparent;color:var(--muted);border-radius:6px;padding:0}
+.nav-fold:hover{background:var(--hover);color:var(--ink)}
+.nav-fold svg{width:11px;height:11px;transition:transform .22s cubic-bezier(.3,.9,.4,1.2)}
+.nav-fold.open svg{transform:rotate(90deg)}
+.nav-add{flex:none;width:24px;height:24px;display:grid;place-items:center;border:0;border-radius:7px;background:transparent;color:var(--muted);opacity:0;transition:opacity .15s ease,background .15s ease;padding:0;margin-right:2px}
+.nav-add svg{width:12px;height:12px}
+.nav-row:hover .nav-add,.nav-add:focus-visible{opacity:1}
+.nav-add:hover{background:var(--hover);color:var(--ink)}
+.nav-row.nav-drop,.nav-label.nav-drop{background:color-mix(in srgb,var(--acc) 12%,transparent);box-shadow:0 0 0 2px color-mix(in srgb,var(--acc) 45%,transparent)}
+.nav-row[draggable="true"]{cursor:grab}
+.nav-row[draggable="true"]:active{cursor:grabbing}
+.crumbs{display:flex;flex-wrap:wrap;align-items:center;gap:2px;margin:0 0 6px;font-size:12px;color:var(--muted)}
+.crumb{border:0;background:transparent;padding:2px 6px;border-radius:6px;color:var(--muted);max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.crumb:hover{background:var(--hover);color:var(--ink)}
+.crumb-sep{opacity:.5}
+.subpg{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin-top:10px}
+.subpg-t{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-right:2px}
+.subpg-chip{display:inline-flex;align-items:center;gap:7px;min-height:30px;padding:3px 11px 3px 7px;border-radius:999px;border:1px solid color-mix(in srgb,var(--c) 28%,var(--line));background:color-mix(in srgb,var(--c) 7%,var(--panel));color:var(--text);font-size:12.5px;transition:transform .2s cubic-bezier(.3,.9,.4,1.3),box-shadow .2s ease}
+.subpg-chip:hover{transform:translateY(-1px);box-shadow:0 4px 12px color-mix(in srgb,var(--c) 22%,transparent)}
+.subpg-n{font-size:11px;color:var(--muted);font-variant-numeric:tabular-nums}
+.parent-menu{max-height:min(60vh,340px);overflow-y:auto}
+/* gelatina: apenas perceptible, una sola vez al soltar */
+.jelly{animation:jellyLand .62s cubic-bezier(.2,.7,.3,1) both;transform-origin:50% 50%}
+@keyframes jellyLand{0%{transform:scale(1.022,.978)}24%{transform:scale(.988,1.014)}48%{transform:scale(1.007,.994)}74%{transform:scale(.998,1.002)}100%{transform:scale(1)}}
+.nav-row.jelly{transform-origin:0 50%}
+.blk.jk-src,.kcard.jk-src,.fb-item.dragging{opacity:.55;transform:scale(.985);transition:transform .18s ease,opacity .18s ease}
+.blk.drop-before,.blk.drop-after,.kcol.jk-over,.fb-item.drop-before,.fb-item.drop-after{transition:box-shadow .2s ease,background .2s ease}
+.kcol.jk-over{background:color-mix(in srgb,var(--acc) 7%,transparent);border-radius:var(--r-sm)}
+@media (hover:none){.nav-add{opacity:1}}
+@media (prefers-reduced-motion:reduce){.jelly{animation:none}.nav-fold svg,.subpg-chip,.nav-row,.nav-add{transition:none}}
+
+/* ---------- celular: campos legibles, tablas como tarjetas ---------- */
+.td-lbl{display:none}
+@media (max-width:812px){
+  .side{padding-top:calc(8px + env(safe-area-inset-top,0px))}
+  .page,.db-main{padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+  .h1-input{font-size:24px;text-overflow:ellipsis}
+  .pg-grid .blk.blk-kpi{grid-column:span 6}
+  .pg-head{gap:10px}
+  .head-actions{width:100%}
+  .pg-meta{gap:6px}
+  .menu{max-width:calc(100vw - 24px)}
+  .subpg-chip{min-height:36px}
+  .nav-add{opacity:1}
+  .nav-fold,.nav-fold-sp{height:36px}
+  .crumb{padding:6px 8px}
+}
+@media (max-width:700px){
+  .tbl{min-width:0!important}
+  .tbl-wrap{overflow:visible;border:0;background:transparent}
+  .th-row,.calc-row{display:none}
+  .tr.row{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:10px 14px;align-items:start;padding:13px 14px;margin-bottom:10px;border:1px solid var(--line);border-radius:var(--r);background:var(--panel);box-shadow:0 1px 2px rgba(20,20,16,.04)}
+  .tr.row .td{padding:0;overflow:visible;position:relative;min-width:0}
+  .tr.row .td:empty{display:none}
+  .tr.row .td:has(.title-btn){grid-column:1/-1;padding-bottom:4px;border-bottom:1px solid var(--line2)}
+  .tr.row .td.td-emp{display:none}
+  .tr.row .td.wrap{grid-column:1/-1}
+  .tr.row .td.num{text-align:left}
+  .tr.row .td.num .v-text{text-align:left}
+  .td-lbl{display:block;font-size:11px;font-weight:600;letter-spacing:.03em;color:var(--muted);margin-bottom:3px;text-transform:uppercase}
+  .tr.row .title-btn{font-size:15px;font-weight:600;min-height:30px}
+  .tr.row .open-hint{display:none}
+  .tr.row .td.wrap,.tr.row .td .v-text{white-space:normal;overflow-wrap:anywhere}
+  .grp-head{margin-top:6px}
+  .add-row{width:100%;min-height:44px;justify-content:center}
+  .board{scroll-snap-type:x mandatory;gap:12px;padding-bottom:8px}
+  .kcol{min-width:min(82vw,320px);scroll-snap-align:start}
+  .kcard{padding:12px}
+  .pg-grid .blk.blk-kpi{grid-column:span 6}
+}
+@media (max-width:812px){.blk-kpi .blk-tools{flex-wrap:wrap;justify-content:flex-end}.blk-kpi .blk-tools .bt{width:30px;height:30px}.kpi-val{font-size:22px;white-space:nowrap}}
+@media (max-width:340px){
+  .tr.row{grid-template-columns:1fr!important}
+}
+@media (pointer:coarse){
+  .nav-item{min-height:44px}
+  .icon-btn{min-width:40px;min-height:40px}
+  .menu-item,.drow{min-height:44px}
+  *{-webkit-tap-highlight-color:transparent}
+}
 </style>
 </helmet>
 <div class="app theme-{{mode}} acc-{{accent}} dens-{{density}} rad-{{corners}} font-{{font}}">
@@ -1443,7 +1529,12 @@ body.org-dragging,body.org-dragging *{cursor:grabbing!important;user-select:none
   </div>
   <div class="side-body">
     <sc-for list="{{sideHome}}" as="sp" hint-placeholder-count="1">
-      <button type="button" class="nav-item {{sp.on}}" onClick="{{sp.go}}"><span class="tico sm" style="--c: {{sp.color}}"><svg class="ic ic-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="{{sp.icon}}"></path></svg></span><span class="nav-txt">{{sp.name}}</span></button>
+      <div class="nav-row {{sp.on}} {{sp.jl}}" style="--d: {{sp.depth}}" draggable="{{sp.canDrag}}" onDragStart="{{sp.dragStart}}" onDragOver="{{sp.dragOver}}" onDragLeave="{{sp.dragLeave}}" onDrop="{{sp.drop}}" onDragEnd="{{sp.dragEnd}}">
+          <sc-if value="{{sp.hasKids}}" hint-placeholder-val="{{false}}"><button type="button" class="nav-fold {{sp.foldCls}}" onClick="{{sp.toggle}}" aria-label="{{sp.foldAria}}" aria-expanded="{{sp.open}}"><svg class="ic ic-xs" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.right}}"></path></svg></button></sc-if>
+          <sc-if value="{{sp.noKids}}" hint-placeholder-val="{{true}}"><span class="nav-fold-sp"></span></sc-if>
+          <button type="button" class="nav-item {{sp.on}}" onClick="{{sp.go}}"><span class="tico sm" style="--c: {{sp.color}}"><svg class="ic ic-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="{{sp.icon}}"></path></svg></span><span class="nav-txt">{{sp.name}}</span><sc-if value="{{sp.hasKids}}" hint-placeholder-val="{{false}}"><span class="nav-count">{{sp.kidCount}}</span></sc-if></button>
+          <sc-if value="{{sp.canSub}}" hint-placeholder-val="{{true}}"><button type="button" class="nav-add" onClick="{{sp.addSub}}" aria-label="Nueva subpágina" title="Nueva subpágina"><svg class="ic ic-xs" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.plus}}"></path></svg></button></sc-if>
+        </div>
     </sc-for>
     <button type="button" class="nav-item {{navOrg}}" onClick="{{goOrg}}"><span class="nav-ic"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.org}}"></path></svg></span><span class="nav-txt">Organigrama</span></button>
     <button type="button" class="nav-item {{navForms}}" onClick="{{goForms}}"><span class="nav-ic"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.formb}}"></path></svg></span><span class="nav-txt">Formularios</span></button>
@@ -1452,17 +1543,27 @@ body.org-dragging,body.org-dragging *{cursor:grabbing!important;user-select:none
     <button type="button" class="nav-item {{navAi}}" onClick="{{goAi}}"><span class="nav-ic"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.ai}}"></path></svg></span><span class="nav-txt">Asistente IA</span></button>
     <button type="button" class="nav-item {{navInbox}}" onClick="{{goInbox}}"><span class="nav-ic"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.bell}}"></path></svg></span><span class="nav-txt">Avisos</span><sc-if value="{{hasUnread}}" hint-placeholder-val="{{false}}"><span class="nav-badge">{{unreadCount}}</span></sc-if></button>
 
-    <div class="nav-label"><span>Páginas</span><sc-if value="{{canNewPage}}" hint-placeholder-val="{{true}}"><button type="button" class="icon-btn xs" onClick="{{newPage}}" aria-label="Nueva página" title="Nueva página"><svg class="ic ic-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.plus}}"></path></svg></button></sc-if></div>
+    <div class="nav-label" onDragOver="{{pgRootOver}}" onDragLeave="{{pgRootLeave}}" onDrop="{{pgRootDrop}}" title="Suelta aquí una página para subirla al nivel principal"><span>Páginas</span><sc-if value="{{canNewPage}}" hint-placeholder-val="{{true}}"><button type="button" class="icon-btn xs" onClick="{{newPage}}" aria-label="Nueva página" title="Nueva página"><svg class="ic ic-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.plus}}"></path></svg></button></sc-if></div>
     <sc-if value="{{hasGeneral}}" hint-placeholder-val="{{true}}">
       <div class="nav-sub">General</div>
       <sc-for list="{{sideGeneral}}" as="sp" hint-placeholder-count="1">
-        <button type="button" class="nav-item {{sp.on}}" onClick="{{sp.go}}"><span class="tico sm" style="--c: {{sp.color}}"><svg class="ic ic-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="{{sp.icon}}"></path></svg></span><span class="nav-txt">{{sp.name}}</span></button>
+        <div class="nav-row {{sp.on}} {{sp.jl}}" style="--d: {{sp.depth}}" draggable="{{sp.canDrag}}" onDragStart="{{sp.dragStart}}" onDragOver="{{sp.dragOver}}" onDragLeave="{{sp.dragLeave}}" onDrop="{{sp.drop}}" onDragEnd="{{sp.dragEnd}}">
+          <sc-if value="{{sp.hasKids}}" hint-placeholder-val="{{false}}"><button type="button" class="nav-fold {{sp.foldCls}}" onClick="{{sp.toggle}}" aria-label="{{sp.foldAria}}" aria-expanded="{{sp.open}}"><svg class="ic ic-xs" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.right}}"></path></svg></button></sc-if>
+          <sc-if value="{{sp.noKids}}" hint-placeholder-val="{{true}}"><span class="nav-fold-sp"></span></sc-if>
+          <button type="button" class="nav-item {{sp.on}}" onClick="{{sp.go}}"><span class="tico sm" style="--c: {{sp.color}}"><svg class="ic ic-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="{{sp.icon}}"></path></svg></span><span class="nav-txt">{{sp.name}}</span><sc-if value="{{sp.hasKids}}" hint-placeholder-val="{{false}}"><span class="nav-count">{{sp.kidCount}}</span></sc-if></button>
+          <sc-if value="{{sp.canSub}}" hint-placeholder-val="{{true}}"><button type="button" class="nav-add" onClick="{{sp.addSub}}" aria-label="Nueva subpágina" title="Nueva subpágina"><svg class="ic ic-xs" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.plus}}"></path></svg></button></sc-if>
+        </div>
       </sc-for>
     </sc-if>
     <sc-for list="{{sideAreas}}" as="sa" hint-placeholder-count="3">
       <div class="nav-sub"><span class="na-dot" style="background: {{sa.color}}"></span>{{sa.name}}</div>
       <sc-for list="{{sa.pages}}" as="sp" hint-placeholder-count="2">
-        <button type="button" class="nav-item {{sp.on}}" onClick="{{sp.go}}"><span class="tico sm" style="--c: {{sp.color}}"><svg class="ic ic-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="{{sp.icon}}"></path></svg></span><span class="nav-txt">{{sp.name}}</span></button>
+        <div class="nav-row {{sp.on}} {{sp.jl}}" style="--d: {{sp.depth}}" draggable="{{sp.canDrag}}" onDragStart="{{sp.dragStart}}" onDragOver="{{sp.dragOver}}" onDragLeave="{{sp.dragLeave}}" onDrop="{{sp.drop}}" onDragEnd="{{sp.dragEnd}}">
+          <sc-if value="{{sp.hasKids}}" hint-placeholder-val="{{false}}"><button type="button" class="nav-fold {{sp.foldCls}}" onClick="{{sp.toggle}}" aria-label="{{sp.foldAria}}" aria-expanded="{{sp.open}}"><svg class="ic ic-xs" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.right}}"></path></svg></button></sc-if>
+          <sc-if value="{{sp.noKids}}" hint-placeholder-val="{{true}}"><span class="nav-fold-sp"></span></sc-if>
+          <button type="button" class="nav-item {{sp.on}}" onClick="{{sp.go}}"><span class="tico sm" style="--c: {{sp.color}}"><svg class="ic ic-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="{{sp.icon}}"></path></svg></span><span class="nav-txt">{{sp.name}}</span><sc-if value="{{sp.hasKids}}" hint-placeholder-val="{{false}}"><span class="nav-count">{{sp.kidCount}}</span></sc-if></button>
+          <sc-if value="{{sp.canSub}}" hint-placeholder-val="{{true}}"><button type="button" class="nav-add" onClick="{{sp.addSub}}" aria-label="Nueva subpágina" title="Nueva subpágina"><svg class="ic ic-xs" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.plus}}"></path></svg></button></sc-if>
+        </div>
       </sc-for>
     </sc-for>
 
@@ -1548,9 +1649,12 @@ body.org-dragging,body.org-dragging *{cursor:grabbing!important;user-select:none
         <div class="pg-titles">
           <div class="pg-meta">
             <button type="button" class="area-chip" onClick="{{pg.toggleArea}}" disabled="{{pg.cannotArea}}" aria-expanded="{{pg.areaOpen}}" title="Quién ve esta página"><span class="na-dot" style="background: {{pg.areaColor}}"></span>{{pg.areaName}}<sc-if value="{{pg.canArea}}" hint-placeholder-val="{{true}}"><svg class="ic ic-xs" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.chevdown}}"></path></svg></sc-if></button>
+            <button type="button" class="area-chip" onClick="{{pg.toggleParent}}" disabled="{{pg.cannotParent}}" aria-expanded="{{pg.parentOpen}}" title="Dentro de qué página está"><svg class="ic ic-xs" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.page}}"></path></svg>{{pg.parentName}}<svg class="ic ic-xs" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.chevdown}}"></path></svg></button>
             <sc-if value="{{pg.canAddCover}}" hint-placeholder-val="{{false}}"><button type="button" class="link-btn" onClick="{{pg.addCover}}"><svg class="ic ic-xs" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.image}}"></path></svg>Añadir portada</button></sc-if>
+            <sc-if value="{{pg.parentOpen}}" hint-placeholder-val="{{false}}"><div class="menu area-menu parent-menu"><div class="menu-title">Dentro de…</div><sc-for list="{{pg.parentOpts}}" as="po" hint-placeholder-count="4"><button type="button" class="menu-item {{po.cls}}" style="{{po.pad}}" onClick="{{po.pick}}" aria-pressed="{{po.on}}"><span class="va-name">{{po.label}}</span></button></sc-for></div></sc-if>
             <sc-if value="{{pg.areaOpen}}" hint-placeholder-val="{{false}}"><div class="menu area-menu"><div class="menu-title">¿Quién ve esta página?</div><sc-for list="{{pg.areaOpts}}" as="ao" hint-placeholder-count="4"><button type="button" class="menu-item {{ao.cls}}" onClick="{{ao.pick}}" aria-pressed="{{ao.on}}"><span class="na-dot" style="background: {{ao.color}}"></span><span class="va-name">{{ao.label}}</span></button></sc-for></div></sc-if>
           </div>
+          <sc-if value="{{pg.hasCrumbs}}" hint-placeholder-val="{{false}}"><nav class="crumbs" aria-label="Ruta de la página"><sc-for list="{{pg.crumbs}}" as="cr" hint-placeholder-count="2"><button type="button" class="crumb" onClick="{{cr.go}}">{{cr.name}}</button><span class="crumb-sep" aria-hidden="true">/</span></sc-for></nav></sc-if>
           <sc-if value="{{pg.isMine}}" hint-placeholder-val="{{false}}"><div class="greet">{{pg.greet}}</div><div class="greet-sub">{{pg.greetSub}}</div></sc-if>
           <sc-if value="{{pg.canEdit}}" hint-placeholder-val="{{true}}">
             <input class="h1-input" value="{{pg.title}}" onChange="{{pg.setTitle}}" placeholder="Sin título" aria-label="Título de la página">
@@ -1558,6 +1662,7 @@ body.org-dragging,body.org-dragging *{cursor:grabbing!important;user-select:none
           </sc-if>
           <sc-if value="{{pg.readOnly}}" hint-placeholder-val="{{false}}"><h1 class="h1">{{pg.titleText}}</h1><p class="sub">{{pg.desc}}</p></sc-if>
           <div class="pg-stats">{{pg.stats}}</div>
+          <sc-if value="{{pg.hasSubs}}" hint-placeholder-val="{{false}}"><div class="subpg" role="list" aria-label="Subpáginas"><span class="subpg-t">Subpáginas</span><sc-for list="{{pg.subs}}" as="sb" hint-placeholder-count="3"><button type="button" role="listitem" class="subpg-chip" style="--c: {{sb.color}}" onClick="{{sb.go}}"><span class="tico xs" style="--c: {{sb.color}}"><svg class="ic ic-xs" viewBox="0 0 24 24" aria-hidden="true"><path d="{{sb.icon}}"></path></svg></span>{{sb.name}}<sc-if value="{{sb.hasN}}" hint-placeholder-val="{{false}}"><span class="subpg-n">{{sb.n}}</span></sc-if></button></sc-for></div></sc-if>
         </div>
         <div class="head-actions">
           <sc-if value="{{pg.canEdit}}" hint-placeholder-val="{{true}}"><button type="button" class="btn btn-primary btn-sm" onClick="{{pg.toggleAdd}}" aria-expanded="{{pg.addAny}}"><svg class="ic ic-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.plus}}"></path></svg>Añadir bloque</button></sc-if>
@@ -1916,7 +2021,7 @@ body.org-dragging,body.org-dragging *{cursor:grabbing!important;user-select:none
                 <sc-for list="{{r.cells}}" as="cell" hint-placeholder-count="7">
                   <div class="td {{cell.align}} {{cell.wrapCls}} {{cell.selCls}}">
                     <sc-if value="{{cell.isTitle}}" hint-placeholder-val="{{false}}"><button type="button" class="title-btn" onClick="{{cell.open}}"><span class="title-txt">{{cell.title}}</span><span class="open-hint"><svg class="ic ic-xs" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.expand}}"></path></svg>Abrir</span></button></sc-if>
-                    <sc-if value="{{cell.notTitle}}" hint-placeholder-val="{{true}}"><button type="button" class="cell-hit" onClick="{{cell.select}}" aria-label="{{cell.aria}}"></button><sc-if value="{{cell.d.kText}}" hint-placeholder-val="{{true}}"><span class="v-text {{cell.d.cls}}">{{cell.d.text}}</span></sc-if><sc-if value="{{cell.d.kPills}}" hint-placeholder-val="{{false}}"><span class="v-pills"><sc-for list="{{cell.d.pills}}" as="pl" hint-placeholder-count="1"><span class="pill {{pl.cls}}"><sc-if value="{{pl.dot}}" hint-placeholder-val="{{false}}"><span class="sdot"></span></sc-if>{{pl.text}}</span></sc-for></span></sc-if><sc-if value="{{cell.d.kChips}}" hint-placeholder-val="{{false}}"><span class="chips"><sc-for list="{{cell.d.chips}}" as="ch" hint-placeholder-count="1"><sc-if value="{{ch.locked}}" hint-placeholder-val="{{false}}"><span class="chip chip-locked">Restringido</span></sc-if><sc-if value="{{ch.ok}}" hint-placeholder-val="{{true}}"><button type="button" class="chip lift" onClick="{{ch.open}}"><span class="chip-dot" style="background: {{ch.color}}"></span>{{ch.label}}</button></sc-if></sc-for></span></sc-if><sc-if value="{{cell.d.kPeople}}" hint-placeholder-val="{{false}}"><span class="v-people"><sc-for list="{{cell.d.people}}" as="pp" hint-placeholder-count="1"><span class="person"><span class="av sm" style="background: {{pp.color}}">{{pp.initials}}</span>{{pp.name}}</span></sc-for></span></sc-if><sc-if value="{{cell.d.kCheck}}" hint-placeholder-val="{{false}}"><sc-if value="{{cell.d.canToggle}}" hint-placeholder-val="{{false}}"><button type="button" class="cbox lift {{cell.d.checkCls}}" onClick="{{cell.d.toggle}}" aria-pressed="{{cell.d.checked}}" aria-label="{{cell.d.aria}}"><svg class="ic ic-check" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></button></sc-if><sc-if value="{{cell.d.noToggle}}" hint-placeholder-val="{{true}}"><span class="cbox {{cell.d.checkCls}}"><svg class="ic ic-check" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg><span class="sr-only">{{cell.d.srText}}</span></span></sc-if></sc-if><sc-if value="{{cell.d.kBar}}" hint-placeholder-val="{{false}}"><span class="v-bar"><span class="vb-track"><span class="vb-fill" style="width: {{cell.d.pct}}%"></span></span><span class="vb-txt">{{cell.d.text}}</span></span></sc-if><sc-if value="{{cell.d.kRing}}" hint-placeholder-val="{{false}}"><span class="v-bar"><svg class="ring" viewBox="0 0 18 18" aria-hidden="true"><circle class="ring-bg" cx="9" cy="9" r="7"></circle><circle class="ring-fg" cx="9" cy="9" r="7" style="stroke-dasharray: {{cell.d.dash}}"></circle></svg><span class="vb-txt">{{cell.d.text}}</span></span></sc-if><sc-if value="{{cell.d.kLink}}" hint-placeholder-val="{{false}}"><a class="v-link lift" href="{{cell.d.href}}" target="_blank" rel="noopener noreferrer">{{cell.d.linkText}}</a></sc-if><sc-if value="{{cell.d.kFiles}}" hint-placeholder-val="{{false}}"><span class="v-files"><sc-for list="{{cell.d.files}}" as="fl" hint-placeholder-count="1"><span class="file-chip"><svg class="ic ic-xs" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.files}}"></path></svg>{{fl.name}}</span></sc-for></span></sc-if><sc-if value="{{cell.d.kButton}}" hint-placeholder-val="{{false}}"><button type="button" class="btn btn-xs lift" onClick="{{cell.d.run}}" disabled="{{cell.d.btnDis}}"><svg class="ic ic-xs" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.bolt}}"></path></svg>{{cell.d.btnLabel}}</button></sc-if></sc-if>
+                    <sc-if value="{{cell.notTitle}}" hint-placeholder-val="{{true}}"><span class="td-lbl">{{cell.lbl}}</span><button type="button" class="cell-hit" onClick="{{cell.select}}" aria-label="{{cell.aria}}"></button><sc-if value="{{cell.d.kText}}" hint-placeholder-val="{{true}}"><span class="v-text {{cell.d.cls}}">{{cell.d.text}}</span></sc-if><sc-if value="{{cell.d.kPills}}" hint-placeholder-val="{{false}}"><span class="v-pills"><sc-for list="{{cell.d.pills}}" as="pl" hint-placeholder-count="1"><span class="pill {{pl.cls}}"><sc-if value="{{pl.dot}}" hint-placeholder-val="{{false}}"><span class="sdot"></span></sc-if>{{pl.text}}</span></sc-for></span></sc-if><sc-if value="{{cell.d.kChips}}" hint-placeholder-val="{{false}}"><span class="chips"><sc-for list="{{cell.d.chips}}" as="ch" hint-placeholder-count="1"><sc-if value="{{ch.locked}}" hint-placeholder-val="{{false}}"><span class="chip chip-locked">Restringido</span></sc-if><sc-if value="{{ch.ok}}" hint-placeholder-val="{{true}}"><button type="button" class="chip lift" onClick="{{ch.open}}"><span class="chip-dot" style="background: {{ch.color}}"></span>{{ch.label}}</button></sc-if></sc-for></span></sc-if><sc-if value="{{cell.d.kPeople}}" hint-placeholder-val="{{false}}"><span class="v-people"><sc-for list="{{cell.d.people}}" as="pp" hint-placeholder-count="1"><span class="person"><span class="av sm" style="background: {{pp.color}}">{{pp.initials}}</span>{{pp.name}}</span></sc-for></span></sc-if><sc-if value="{{cell.d.kCheck}}" hint-placeholder-val="{{false}}"><sc-if value="{{cell.d.canToggle}}" hint-placeholder-val="{{false}}"><button type="button" class="cbox lift {{cell.d.checkCls}}" onClick="{{cell.d.toggle}}" aria-pressed="{{cell.d.checked}}" aria-label="{{cell.d.aria}}"><svg class="ic ic-check" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></button></sc-if><sc-if value="{{cell.d.noToggle}}" hint-placeholder-val="{{true}}"><span class="cbox {{cell.d.checkCls}}"><svg class="ic ic-check" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg><span class="sr-only">{{cell.d.srText}}</span></span></sc-if></sc-if><sc-if value="{{cell.d.kBar}}" hint-placeholder-val="{{false}}"><span class="v-bar"><span class="vb-track"><span class="vb-fill" style="width: {{cell.d.pct}}%"></span></span><span class="vb-txt">{{cell.d.text}}</span></span></sc-if><sc-if value="{{cell.d.kRing}}" hint-placeholder-val="{{false}}"><span class="v-bar"><svg class="ring" viewBox="0 0 18 18" aria-hidden="true"><circle class="ring-bg" cx="9" cy="9" r="7"></circle><circle class="ring-fg" cx="9" cy="9" r="7" style="stroke-dasharray: {{cell.d.dash}}"></circle></svg><span class="vb-txt">{{cell.d.text}}</span></span></sc-if><sc-if value="{{cell.d.kLink}}" hint-placeholder-val="{{false}}"><a class="v-link lift" href="{{cell.d.href}}" target="_blank" rel="noopener noreferrer">{{cell.d.linkText}}</a></sc-if><sc-if value="{{cell.d.kFiles}}" hint-placeholder-val="{{false}}"><span class="v-files"><sc-for list="{{cell.d.files}}" as="fl" hint-placeholder-count="1"><span class="file-chip"><svg class="ic ic-xs" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.files}}"></path></svg>{{fl.name}}</span></sc-for></span></sc-if><sc-if value="{{cell.d.kButton}}" hint-placeholder-val="{{false}}"><button type="button" class="btn btn-xs lift" onClick="{{cell.d.run}}" disabled="{{cell.d.btnDis}}"><svg class="ic ic-xs" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.bolt}}"></path></svg>{{cell.d.btnLabel}}</button></sc-if></sc-if>
                   </div>
                 </sc-for>
                 <div class="td"></div>
@@ -2339,7 +2444,7 @@ body.org-dragging,body.org-dragging *{cursor:grabbing!important;user-select:none
                 <sc-for list="{{r.cells}}" as="cell" hint-placeholder-count="7">
                   <div class="td {{cell.align}} {{cell.wrapCls}} {{cell.selCls}}">
                     <sc-if value="{{cell.isTitle}}" hint-placeholder-val="{{false}}"><button type="button" class="title-btn" onClick="{{cell.open}}"><span class="title-txt">{{cell.title}}</span><span class="open-hint"><svg class="ic ic-xs" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.expand}}"></path></svg>Abrir</span></button></sc-if>
-                    <sc-if value="{{cell.notTitle}}" hint-placeholder-val="{{true}}"><button type="button" class="cell-hit" onClick="{{cell.select}}" aria-label="{{cell.aria}}"></button><sc-if value="{{cell.d.kText}}" hint-placeholder-val="{{true}}"><span class="v-text {{cell.d.cls}}">{{cell.d.text}}</span></sc-if><sc-if value="{{cell.d.kPills}}" hint-placeholder-val="{{false}}"><span class="v-pills"><sc-for list="{{cell.d.pills}}" as="pl" hint-placeholder-count="1"><span class="pill {{pl.cls}}"><sc-if value="{{pl.dot}}" hint-placeholder-val="{{false}}"><span class="sdot"></span></sc-if>{{pl.text}}</span></sc-for></span></sc-if><sc-if value="{{cell.d.kChips}}" hint-placeholder-val="{{false}}"><span class="chips"><sc-for list="{{cell.d.chips}}" as="ch" hint-placeholder-count="1"><sc-if value="{{ch.locked}}" hint-placeholder-val="{{false}}"><span class="chip chip-locked">Restringido</span></sc-if><sc-if value="{{ch.ok}}" hint-placeholder-val="{{true}}"><button type="button" class="chip lift" onClick="{{ch.open}}"><span class="chip-dot" style="background: {{ch.color}}"></span>{{ch.label}}</button></sc-if></sc-for></span></sc-if><sc-if value="{{cell.d.kPeople}}" hint-placeholder-val="{{false}}"><span class="v-people"><sc-for list="{{cell.d.people}}" as="pp" hint-placeholder-count="1"><span class="person"><span class="av sm" style="background: {{pp.color}}">{{pp.initials}}</span>{{pp.name}}</span></sc-for></span></sc-if><sc-if value="{{cell.d.kCheck}}" hint-placeholder-val="{{false}}"><sc-if value="{{cell.d.canToggle}}" hint-placeholder-val="{{false}}"><button type="button" class="cbox lift {{cell.d.checkCls}}" onClick="{{cell.d.toggle}}" aria-pressed="{{cell.d.checked}}" aria-label="{{cell.d.aria}}"><svg class="ic ic-check" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></button></sc-if><sc-if value="{{cell.d.noToggle}}" hint-placeholder-val="{{true}}"><span class="cbox {{cell.d.checkCls}}"><svg class="ic ic-check" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg><span class="sr-only">{{cell.d.srText}}</span></span></sc-if></sc-if><sc-if value="{{cell.d.kBar}}" hint-placeholder-val="{{false}}"><span class="v-bar"><span class="vb-track"><span class="vb-fill" style="width: {{cell.d.pct}}%"></span></span><span class="vb-txt">{{cell.d.text}}</span></span></sc-if><sc-if value="{{cell.d.kRing}}" hint-placeholder-val="{{false}}"><span class="v-bar"><svg class="ring" viewBox="0 0 18 18" aria-hidden="true"><circle class="ring-bg" cx="9" cy="9" r="7"></circle><circle class="ring-fg" cx="9" cy="9" r="7" style="stroke-dasharray: {{cell.d.dash}}"></circle></svg><span class="vb-txt">{{cell.d.text}}</span></span></sc-if><sc-if value="{{cell.d.kLink}}" hint-placeholder-val="{{false}}"><a class="v-link lift" href="{{cell.d.href}}" target="_blank" rel="noopener noreferrer">{{cell.d.linkText}}</a></sc-if><sc-if value="{{cell.d.kFiles}}" hint-placeholder-val="{{false}}"><span class="v-files"><sc-for list="{{cell.d.files}}" as="fl" hint-placeholder-count="1"><span class="file-chip"><svg class="ic ic-xs" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.files}}"></path></svg>{{fl.name}}</span></sc-for></span></sc-if><sc-if value="{{cell.d.kButton}}" hint-placeholder-val="{{false}}"><button type="button" class="btn btn-xs lift" onClick="{{cell.d.run}}" disabled="{{cell.d.btnDis}}"><svg class="ic ic-xs" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.bolt}}"></path></svg>{{cell.d.btnLabel}}</button></sc-if></sc-if>
+                    <sc-if value="{{cell.notTitle}}" hint-placeholder-val="{{true}}"><span class="td-lbl">{{cell.lbl}}</span><button type="button" class="cell-hit" onClick="{{cell.select}}" aria-label="{{cell.aria}}"></button><sc-if value="{{cell.d.kText}}" hint-placeholder-val="{{true}}"><span class="v-text {{cell.d.cls}}">{{cell.d.text}}</span></sc-if><sc-if value="{{cell.d.kPills}}" hint-placeholder-val="{{false}}"><span class="v-pills"><sc-for list="{{cell.d.pills}}" as="pl" hint-placeholder-count="1"><span class="pill {{pl.cls}}"><sc-if value="{{pl.dot}}" hint-placeholder-val="{{false}}"><span class="sdot"></span></sc-if>{{pl.text}}</span></sc-for></span></sc-if><sc-if value="{{cell.d.kChips}}" hint-placeholder-val="{{false}}"><span class="chips"><sc-for list="{{cell.d.chips}}" as="ch" hint-placeholder-count="1"><sc-if value="{{ch.locked}}" hint-placeholder-val="{{false}}"><span class="chip chip-locked">Restringido</span></sc-if><sc-if value="{{ch.ok}}" hint-placeholder-val="{{true}}"><button type="button" class="chip lift" onClick="{{ch.open}}"><span class="chip-dot" style="background: {{ch.color}}"></span>{{ch.label}}</button></sc-if></sc-for></span></sc-if><sc-if value="{{cell.d.kPeople}}" hint-placeholder-val="{{false}}"><span class="v-people"><sc-for list="{{cell.d.people}}" as="pp" hint-placeholder-count="1"><span class="person"><span class="av sm" style="background: {{pp.color}}">{{pp.initials}}</span>{{pp.name}}</span></sc-for></span></sc-if><sc-if value="{{cell.d.kCheck}}" hint-placeholder-val="{{false}}"><sc-if value="{{cell.d.canToggle}}" hint-placeholder-val="{{false}}"><button type="button" class="cbox lift {{cell.d.checkCls}}" onClick="{{cell.d.toggle}}" aria-pressed="{{cell.d.checked}}" aria-label="{{cell.d.aria}}"><svg class="ic ic-check" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></button></sc-if><sc-if value="{{cell.d.noToggle}}" hint-placeholder-val="{{true}}"><span class="cbox {{cell.d.checkCls}}"><svg class="ic ic-check" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg><span class="sr-only">{{cell.d.srText}}</span></span></sc-if></sc-if><sc-if value="{{cell.d.kBar}}" hint-placeholder-val="{{false}}"><span class="v-bar"><span class="vb-track"><span class="vb-fill" style="width: {{cell.d.pct}}%"></span></span><span class="vb-txt">{{cell.d.text}}</span></span></sc-if><sc-if value="{{cell.d.kRing}}" hint-placeholder-val="{{false}}"><span class="v-bar"><svg class="ring" viewBox="0 0 18 18" aria-hidden="true"><circle class="ring-bg" cx="9" cy="9" r="7"></circle><circle class="ring-fg" cx="9" cy="9" r="7" style="stroke-dasharray: {{cell.d.dash}}"></circle></svg><span class="vb-txt">{{cell.d.text}}</span></span></sc-if><sc-if value="{{cell.d.kLink}}" hint-placeholder-val="{{false}}"><a class="v-link lift" href="{{cell.d.href}}" target="_blank" rel="noopener noreferrer">{{cell.d.linkText}}</a></sc-if><sc-if value="{{cell.d.kFiles}}" hint-placeholder-val="{{false}}"><span class="v-files"><sc-for list="{{cell.d.files}}" as="fl" hint-placeholder-count="1"><span class="file-chip"><svg class="ic ic-xs" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.files}}"></path></svg>{{fl.name}}</span></sc-for></span></sc-if><sc-if value="{{cell.d.kButton}}" hint-placeholder-val="{{false}}"><button type="button" class="btn btn-xs lift" onClick="{{cell.d.run}}" disabled="{{cell.d.btnDis}}"><svg class="ic ic-xs" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.bolt}}"></path></svg>{{cell.d.btnLabel}}</button></sc-if></sc-if>
                   </div>
                 </sc-for>
                 <div class="td"></div>
@@ -5206,6 +5311,7 @@ Object.assign(Component.prototype, {
     if (p.type === 'rollup') {
       if (p.fn === 'count' || p.fn === 'count_values') return { fmt: 'number', dec: 0 };
       var rel = propOf(t, p.rel), T2 = rel ? s.tables.byId[rel.target] : null, P2 = T2 ? propOf(T2, p.prop) : null;
+      if (P2 && P2.type === 'formula' && p.fn !== 'show') { var f2 = this.numFmtOf(s, T2, P2); return { fmt: p.fn === 'sum' || p.fn === 'avg' || p.fn === 'min' || p.fn === 'max' ? f2.fmt : 'number', dec: f2.dec }; }
       return P2 && P2.type === 'number' ? { fmt: P2.fmt || 'number', dec: P2.dec } : { fmt: 'number' };
     }
     return { fmt: 'number' };
@@ -5255,7 +5361,7 @@ Object.assign(Component.prototype, {
         d.aria = (raw ? 'Desmarcar ' : 'Marcar ') + p.name; d.srText = p.name + ': ' + (raw ? 'sí' : 'no');
         d.toggle = function () { self.setField(t.id, row.id, p.key, !raw, (raw ? 'desmarcó ' : 'marcó ') + p.name + ' en ' + self.titleOf(t, row)); };
         break;
-      case 'url': if (raw) { d.kLink = true; d.href = /^https?:\/\//i.test(raw) ? raw : 'https://' + raw; d.linkText = p.urlShort ? String(raw).replace(/^https?:\/\//i, '').split('/')[0] : String(raw).replace(/^https?:\/\//i, ''); } break;
+      case 'url': if (raw) { d.kLink = true; d.href = /^https?:\/\//i.test(raw) ? raw : 'https://' + raw; d.linkText = p.urlShort ? String(raw).replace(/^https?:\/\//i, '').split('/')[0] : String(raw).replace(/^https?:\/\//i, ''); if (/(1drv\.ms|onedrive\.live\.com|sharepoint\.com)/i.test(d.href)) d.linkText = 'OneDrive · abrir carpeta'; else if (/(drive\.google\.com|docs\.google\.com)/i.test(d.href)) d.linkText = 'Google Drive · abrir carpeta'; } break;
       case 'email': if (raw) { d.kLink = true; d.href = 'mailto:' + raw; d.linkText = raw; } break;
       case 'phone': if (raw) { d.kLink = true; d.href = 'tel:' + String(raw).replace(/[^0-9+]/g, ''); d.linkText = raw; } break;
       case 'place': if (raw) { d.kLink = true; d.href = 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(raw); d.linkText = raw; } break;
@@ -5265,6 +5371,7 @@ Object.assign(Component.prototype, {
         var rf = p.resFmt || 'auto';
         if (typeof raw === 'boolean') { d.kCheck = true; d.checked = raw; d.checkCls = raw ? 'on' : ''; d.srText = p.name + ': ' + (raw ? 'sí' : 'no'); }
         else if (typeof raw === 'number' && rf !== 'text') { d.kText = true; d.text = fmtNumber(raw, rf === 'auto' ? 'number' : rf, p.resDec); d.cls = 'v-num'; }
+        else if (typeof raw === 'string' && (raw === 'Rojo' || raw === 'Amarillo' || raw === 'Verde')) { d.kPills = true; d.pills = [{ text: raw, cls: 'p-' + ({ Rojo: 'red', Amarillo: 'amber', Verde: 'green' })[raw], dot: true }]; }
         else { d.kText = true; d.text = raw == null ? '' : (Array.isArray(raw) ? toStr(raw) : (typeof raw === 'number' ? fmtNum(raw) : String(raw))); }
         break;
       }
@@ -5390,7 +5497,7 @@ Object.assign(Component.prototype, {
       self.groupKeys(s, t, p, r, opts.bucket).forEach(function (k) {
         if (k === '__none') { none.rows.push(r); return; }
         var g = map[String(k)];
-        if (!g) g = add(k, { label: isDateType(p) ? self.bucketLabel(k) : String(k), cls: 'p-gray', color: PALETTE[defs.length % PALETTE.length] });
+        if (!g) { var sem = p.type === 'formula' ? ({ Rojo: 'red', Amarillo: 'amber', Verde: 'green' })[String(k)] : null; g = add(k, { label: isDateType(p) ? self.bucketLabel(k) : String(k), cls: sem ? 'p-' + sem : 'p-gray', color: sem ? SOLID[sem] : PALETTE[defs.length % PALETTE.length] }); }
         g.rows.push(r);
       });
     });
@@ -6119,15 +6226,63 @@ Object.assign(Component.prototype, {
   },
 
   /* ---------- páginas y bloques ---------- */
-  newPage(area) {
+  newPage(area, parentId) {
     var s = this.st();
     var pages = clone(s.pages);
     var id = 'pg' + (s.seq + 1);
     var n = pages.order.length;
-    pages.byId[id] = { id: id, area: area || (s.pages.byId[s.page] && !s.pages.byId[s.page].mine ? s.pages.byId[s.page].area || null : null), cover: null, title: 'Nueva página', icon: DB_ICONS[(n * 5 + 3) % DB_ICONS.length], color: NEW_COLORS[(n + 3) % NEW_COLORS.length], desc: '', blocks: [blk('h' + (s.seq + 2), 'text', 12, { text: '' })] };
+    var par = parentId && s.pages.byId[parentId] ? s.pages.byId[parentId] : null;
+    pages.byId[id] = { id: id, parent: par ? par.id : null, mine: par && par.mine ? true : undefined, area: par ? (par.area || null) : (area || (s.pages.byId[s.page] && !s.pages.byId[s.page].mine ? s.pages.byId[s.page].area || null : null)), cover: null, title: 'Nueva página', icon: DB_ICONS[(n * 5 + 3) % DB_ICONS.length], color: NEW_COLORS[(n + 3) % NEW_COLORS.length], desc: '', blocks: [blk('h' + (s.seq + 2), 'text', 12, { text: '' })] };
     pages.order.push(id);
-    this.setState({ pages: pages, seq: s.seq + 3, screen: 'page', page: id, navOpen: false, addBlockOpen: false, log: this.addLog(s, 'creó una página') });
+    var nf = clone(s.navFold || {}); if (par) delete nf[par.id];
+    this.setState({ pages: pages, seq: s.seq + 3, screen: 'page', page: id, navOpen: false, addBlockOpen: false, navFold: nf, log: this.addLog(s, par ? 'creó una subpágina de ' + (par.title || 'Sin título') : 'creó una página') });
+    this.jellyOn('pg:' + id);
   },
+  /* ---------- subpáginas: árbol de páginas ---------- */
+  pageKids(s, id) { return s.pages.order.filter(function (x) { return s.pages.byId[x] && s.pages.byId[x].parent === id && x !== id; }); },
+  pageDesc(s, id) { var self = this, acc = {}; (function w(x) { self.pageKids(s, x).forEach(function (k) { if (!acc[k]) { acc[k] = true; w(k); } }); })(id); return acc; },
+  pageDepth(s, id) { var d = 0, g = 0, x = s.pages.byId[id]; while (x && x.parent && s.pages.byId[x.parent] && g++ < 12) { d++; x = s.pages.byId[x.parent]; } return d; },
+  pageCrumbs(s, id) { var out = [], g = 0, x = s.pages.byId[id]; while (x && x.parent && s.pages.byId[x.parent] && g++ < 12) { x = s.pages.byId[x.parent]; out.unshift(x); } return out; },
+  /* páginas donde puede colgar esta (no ella misma ni sus descendientes; mismo espacio personal o compartido) */
+  parentChoices(s, pid) {
+    var self = this, me = s.pages.byId[pid]; if (!me) return [];
+    var bad = this.pageDesc(s, pid); bad[pid] = true;
+    var out = [{ id: null, label: 'Nivel principal', depth: 0, on: !me.parent }];
+    s.pages.order.forEach(function (id) {
+      var pg = s.pages.byId[id]; if (!pg || bad[id] || !!pg.mine !== !!me.mine) return;
+      if (self.pageDepth(s, id) >= 5) return;
+      out.push({ id: id, label: pg.title || 'Sin título', depth: self.pageDepth(s, id), on: me.parent === id });
+    });
+    return out;
+  },
+  pageSetParent(pid, parentId) {
+    var s = this.st(), me = s.pages.byId[pid], par = parentId ? s.pages.byId[parentId] : null;
+    if (!me || s.pages.byId[pid] == null) return;
+    if (parentId && (!par || parentId === pid || this.pageDesc(s, pid)[parentId])) { this.toastMsg('Una página no puede quedar dentro de sí misma ni de sus subpáginas.'); return; }
+    if (par && !!par.mine !== !!me.mine) { this.toastMsg('Las páginas personales solo se anidan entre sí.'); return; }
+    if (par && this.pageDepth(s, parentId) >= 5) { this.toastMsg('Máximo 6 niveles de subpáginas.'); return; }
+    var pages = clone(s.pages), pg = pages.byId[pid], self = this;
+    pg.parent = par ? par.id : null;
+    if (par) { pg.area = par.area || null; (function w(x) { self.pageKids(s, x).forEach(function (k) { pages.byId[k].area = par.area || null; w(k); }); })(pid); }
+    var nf = clone(s.navFold || {}); if (par) delete nf[par.id];
+    this.setState({ pages: pages, navFold: nf, parentPick: null, log: this.addLog(s, par ? 'movió «' + (me.title || 'Sin título') + '» dentro de «' + (par.title || 'Sin título') + '»' : 'subió «' + (me.title || 'Sin título') + '» al nivel principal') });
+    this.jellyOn('pg:' + pid);
+  },
+  navFoldToggle(id) { var s = this.st(), nf = clone(s.navFold || {}); if (nf[id]) delete nf[id]; else nf[id] = true; this.setState({ navFold: nf }); },
+  pgDragStart(id, e) { this._dragPg = id; try { e.dataTransfer.setData('text/plain', 'pg:' + id); e.dataTransfer.effectAllowed = 'move'; } catch (err) { } },
+  pgDragEnd(e) { this._dragPg = null; try { document.querySelectorAll('.nav-row.nav-drop,.nav-label.nav-drop').forEach(function (n) { n.classList.remove('nav-drop'); }); } catch (err) { } },
+  pgDragOver(id, e) {
+    var d = this._dragPg; if (!d || d === id) return;
+    var s = this.st(); if (this.pageDesc(s, d)[id]) return;
+    var a = s.pages.byId[d], b = s.pages.byId[id]; if (!a || !b || !!a.mine !== !!b.mine) return;
+    try { e.preventDefault(); e.currentTarget.classList.add('nav-drop'); } catch (err) { }
+  },
+  pgDrop(id, e) { var d = this._dragPg; this.pgDragEnd(e); try { e.preventDefault(); } catch (err) { } if (!d || d === id) return; this.pageSetParent(d, id); },
+  pgRootLeave(e) { try { e.currentTarget.classList.remove('nav-drop'); } catch (err) { } },
+  pgRootOver(e) { if (!this._dragPg) return; try { e.preventDefault(); e.currentTarget.classList.add('nav-drop'); } catch (err) { } },
+  pgRootDrop(e) { var d = this._dragPg; this.pgDragEnd(e); try { e.preventDefault(); } catch (err) { } if (d) this.pageSetParent(d, null); },
+  /* efecto gelatina al soltar: se aplica por estado para que sobreviva al redibujado */
+  jellyOn(key) { var self = this; if (this._jt) clearTimeout(this._jt); this.setState({ jellyKey: key }); this._jt = setTimeout(function () { if (self.st().jellyKey === key) self.setState({ jellyKey: null }); }, 900); },
   updPage(pid, fn) { var s = this.st(); var pages = clone(s.pages); var pg = pages.byId[pid]; if (!pg) return; if (fn(pg, pages) === false) return; this.setState({ pages: pages }); },
   updBlock(bid, fn) { var s = this.st(); var pages = clone(s.pages); var fb = this.findBlock(pages, bid); if (!fb) return; if (fn(fb.block, fb.page) === false) return; this.setState({ pages: pages }); },
   delPage(pid) {
@@ -6135,10 +6290,12 @@ Object.assign(Component.prototype, {
     if (s.confirmDel !== 'pg:' + pid) { this.setState({ confirmDel: 'pg:' + pid }); return; }
     var pages = clone(s.pages);
     if (pages.order.length < 2) { this.toastMsg('Debe quedar al menos una página.'); return; }
-    var title = pages.byId[pid].title;
+    var title = pages.byId[pid].title, up = pages.byId[pid].parent || null;
+    if (up && !pages.byId[up]) up = null;
+    pages.order.forEach(function (x) { if (pages.byId[x] && pages.byId[x].parent === pid) pages.byId[x].parent = up; });
     delete pages.byId[pid];
     pages.order = pages.order.filter(function (x) { return x !== pid; });
-    this.setState({ pages: pages, page: pages.order[0], confirmDel: null, drawer: null });
+    this.setState({ pages: pages, page: up || pages.order[0], confirmDel: null, drawer: null });
     this.toastMsg('Página «' + title + '» eliminada');
   },
   addBlock(pid, spec, extra) {
@@ -6789,9 +6946,11 @@ Object.assign(Component.prototype, {
         gc: gridCols, sel: isOpenRec(r) ? 'is-sel' : '', rc: rowColor(r),
         cells: vprops.map(function (p) {
           var wc = wraps[p.key] ? 'wrap' : '';
-          if (p.type === 'title') return { isTitle: true, notTitle: false, title: r[p.key] || 'Sin título', open: openFn(r), align: '', wrapCls: wc, selCls: '', d: null, select: null, aria: '' };
+          if (p.type === 'title') return { isTitle: true, notTitle: false, title: r[p.key] || 'Sin título', open: openFn(r), align: '', wrapCls: wc, selCls: '', d: null, select: null, aria: '', lbl: '' };
           var isSel = sel && sel.row === r.id && sel.prop === p.key;
-          return { isTitle: false, notTitle: true, title: '', open: null, align: isNumericProp(p) ? 'num' : '', wrapCls: wc, selCls: isSel ? 'cell-sel' : '', d: self.dispOf(s, t, p, r, v, canEdit), aria: 'Editar ' + p.name + ' de ' + self.titleOf(t, r), select: function () { self.setState({ selCell: isSel ? null : { where: where, tid: tid, row: r.id, prop: p.key }, headMenu: null }); } };
+          var dd = self.dispOf(s, t, p, r, v, canEdit);
+          var emp = !(dd.text || (dd.pills || []).length || (dd.chips || []).length || (dd.people || []).length || dd.kCheck || dd.kLink || (dd.files || []).length || dd.kBar || dd.kRing || dd.kButton);
+          return { isTitle: false, notTitle: true, title: '', open: null, align: isNumericProp(p) ? 'num' : '', wrapCls: wc + (emp ? ' td-emp' : ''), selCls: isSel ? 'cell-sel' : '', lbl: p.name, d: dd, aria: 'Editar ' + p.name + ' de ' + self.titleOf(t, r), select: function () { self.setState({ selCell: isSel ? null : { where: where, tid: tid, row: r.id, prop: p.key }, headMenu: null }); } };
         })
       };
     }
@@ -6859,8 +7018,8 @@ Object.assign(Component.prototype, {
         var preset = self.groupPatch(bprop, g.key);
         return { label: g.label, cls: g.cls, dot: g.dot, isPill: g.isPill, isPerson: g.isPerson, avatar: g.avatar, initials: g.initials, count: String(g.rows.length), empty: g.rows.length === 0,
           canAdd: canEdit && !!preset, add: function () { self.newRow(tid, Object.assign(self.viewPreset(s, t, vw, v), preset || {})); },
-          drop: function (e) { try { e.preventDefault(); } catch (err) { } var id = self._drag; if (!id) { try { id = e.dataTransfer.getData('text/plain'); } catch (err2) { id = null; } } self._drag = null; if (id) self.moveToGroup(tid, id, bprop.key, g.key); },
-          cards: g.rows.map(function (r) { return { title: self.titleOf(t, r), open: openFn(r), sel: isOpenRec(r) ? 'is-sel' : '', rc: rowColor(r), drag: canEdit && !!preset, props: propsFor(r), dragStart: function (e) { self._drag = r.id; try { e.dataTransfer.setData('text/plain', r.id); e.dataTransfer.effectAllowed = 'move'; } catch (err) { } }, dragEnd: function () { } }; }) };
+          drop: function (e) { try { e.preventDefault(); } catch (err) { } var id = self._drag; if (!id) { try { id = e.dataTransfer.getData('text/plain'); } catch (err2) { id = null; } } self._drag = null; if (id) { self.moveToGroup(tid, id, bprop.key, g.key); self.jellyOn(id); } },
+          cards: g.rows.map(function (r) { return { title: self.titleOf(t, r), open: openFn(r), sel: isOpenRec(r) ? 'is-sel' : '', rc: rowColor(r) + (s.jellyKey === r.id ? ' jelly' : ''), drag: canEdit && !!preset, props: propsFor(r), dragStart: function (e) { self._drag = r.id; var cd = null; try { e.dataTransfer.setData('text/plain', r.id); e.dataTransfer.effectAllowed = 'move'; cd = e.currentTarget; } catch (err) { } if (cd) setTimeout(function () { cd.classList.add('jk-src'); }, 0); }, dragEnd: function (e) { try { e.currentTarget.classList.remove('jk-src'); document.querySelectorAll('.kcol.jk-over').forEach(function (n) { n.classList.remove('jk-over'); }); } catch (err) { } } }; }) };
       });
     }
     var listItems = layout === 'list' ? sorted.map(function (r) { return { title: self.titleOf(t, r), open: openFn(r), sel: isOpenRec(r) ? 'is-sel' : '', rc: rowColor(r), props: propsFor(r) }; }) : [];
@@ -7421,7 +7580,7 @@ Object.assign(Component.prototype, {
     var xf = ctx.xf, xfSets = ctx.xfSets;
     var BT = { chart: 'Gráfico', kpi: 'Indicador', slicer: 'Segmentación', db: 'Base de datos', sheet: 'Hoja de cálculo', map: 'Mapa de relaciones', heading: 'Encabezado', text: 'Texto', divider: 'Separador' };
     var bv = {
-      id: b.id, cls: 'blk w-' + b.w + ' blk-' + b.type + (ctx.cfgBid === b.id ? ' is-cfg' : ''), typeName: BT[b.type] || 'Bloque',
+      id: b.id, cls: 'blk w-' + b.w + ' blk-' + b.type + (ctx.cfgBid === b.id ? ' is-cfg' : '') + (s.jellyKey === b.id ? ' jelly' : ''), typeName: BT[b.type] || 'Bloque',
       isHeading: b.type === 'heading', isText: b.type === 'text', isDivider: b.type === 'divider', isKpi: false, isSlicer: false, isChart: false, isDb: false, isSheet: b.type === 'sheet', isMap: b.type === 'map', isLocked: false,
       canEdit: ctx.canEditPage, readOnly: !ctx.canEditPage,
       text: b.text || '', setText: function (e) { var val = e.target.value; self.updBlock(b.id, function (x) { x.text = val; }); },
@@ -7549,10 +7708,28 @@ Object.assign(Component.prototype, {
     var unread = inbox.filter(function (n) { return !n.read; }).length;
     var visPages = s.pages.order.filter(function (id) { return self.pageVisible(s, v, s.pages.byId[id]); });
     var pid = visPages.indexOf(s.page) >= 0 ? s.page : visPages[0];
-    function pItem(id) { var pg = s.pages.byId[id]; return { name: pg.title || 'Sin título', icon: ICON[pg.icon] || ICON.page, color: pg.color, on: screen === 'page' && id === pid ? 'on' : '', go: function () { self.goPage(id); } }; }
-    var sideHome = visPages.filter(function (id) { return s.pages.byId[id].mine; }).map(pItem);
-    var sideGeneral = visPages.filter(function (id) { var pg = s.pages.byId[id]; return !pg.mine && !pg.area; }).map(pItem);
-    var sideAreas = s.org.areas.map(function (a) { return { name: a.name, color: a.color, pages: visPages.filter(function (id) { var pg = s.pages.byId[id]; return !pg.mine && pg.area === a.id; }).map(pItem) }; }).filter(function (g) { return g.pages.length > 0; });
+    var navFold = s.navFold || {};
+    var visSet = {}; visPages.forEach(function (id) { visSet[id] = true; });
+    function kidsOf(id) { return visPages.filter(function (x) { return s.pages.byId[x].parent === id && x !== id; }); }
+    function isRootPg(id) { var par = s.pages.byId[id].parent; return !par || par === id || !visSet[par]; }
+    function pItem(id, depth) {
+      var pg = s.pages.byId[id]; var kids = kidsOf(id); var d = depth || 0;
+      return { id: id, name: pg.title || 'Sin título', icon: ICON[pg.icon] || ICON.page, color: pg.color, on: screen === 'page' && id === pid ? 'on' : '', go: function () { self.goPage(id); },
+        depth: String(d), hasKids: kids.length > 0, noKids: kids.length === 0, kidCount: String(kids.length), open: !navFold[id], foldCls: navFold[id] ? '' : 'open',
+        foldAria: (navFold[id] ? 'Mostrar' : 'Ocultar') + ' subpáginas de ' + (pg.title || 'Sin título'), toggle: function () { self.navFoldToggle(id); },
+        canSub: canEditPage && d < 5, addSub: function () { self.newPage(null, id); },
+        jl: s.jellyKey === 'pg:' + id ? 'jelly' : '', canDrag: canEditPage,
+        dragStart: function (e) { self.pgDragStart(id, e); }, dragEnd: function (e) { self.pgDragEnd(e); },
+        dragOver: function (e) { self.pgDragOver(id, e); }, dragLeave: function (e) { try { e.currentTarget.classList.remove('nav-drop'); } catch (err) { } },
+        drop: function (e) { self.pgDrop(id, e); } };
+    }
+    function pFlat(ids, depth, out) {
+      ids.forEach(function (id) { var it = pItem(id, depth); out.push(it); if (it.hasKids && it.open && depth < 6) pFlat(kidsOf(id), depth + 1, out); });
+      return out;
+    }
+    var sideHome = pFlat(visPages.filter(function (id) { return s.pages.byId[id].mine && isRootPg(id); }), 0, []);
+    var sideGeneral = pFlat(visPages.filter(function (id) { var pg = s.pages.byId[id]; return !pg.mine && !pg.area && isRootPg(id); }), 0, []);
+    var sideAreas = s.org.areas.map(function (a) { return { name: a.name, color: a.color, pages: pFlat(visPages.filter(function (id) { var pg = s.pages.byId[id]; return !pg.mine && pg.area === a.id && isRootPg(id); }), 0, []) }; }).filter(function (g) { return g.pages.length > 0; });
     var myCargo = this.cargoOf(s, v.id), myArea = myCargo ? this.orgArea(s, myCargo.area) : null;
     var tidCur = this.curTid(s);
     var sideDbs = s.tables.order.map(function (id) {
@@ -7599,6 +7776,12 @@ Object.assign(Component.prototype, {
         coverUpload: function (e) { self.coverUpload(pid, e); },
         coverRemove: function () { self.coverSet(pid, null); self.setState({ coverPick: null }); },
         coverPos: function () { self.updPage(pid, function (x) { if (!x.cover) return false; var ps = [0, 25, 50, 75, 100]; x.cover.pos = ps[(ps.indexOf(x.cover.pos == null ? 50 : x.cover.pos) + 1) % ps.length]; }); },
+        parentName: (pg.parent && s.pages.byId[pg.parent]) ? (s.pages.byId[pg.parent].title || 'Sin título') : 'Nivel principal', hasParent: !!(pg.parent && s.pages.byId[pg.parent]),
+        canParent: canEditPage, cannotParent: !canEditPage, parentOpen: s.parentPick === pid, toggleParent: function () { self.setState({ parentPick: s.parentPick === pid ? null : pid, areaPick: null }); },
+        parentOpts: this.parentChoices(s, pid).map(function (c) { return { label: c.label, pad: 'padding-left: ' + (10 + c.depth * 14) + 'px', cls: c.on ? 'on' : '', on: c.on, pick: function () { self.pageSetParent(pid, c.id); } }; }),
+        subCount: kidsOf(pid).length, hasSubs: kidsOf(pid).length > 0,
+        subs: kidsOf(pid).map(function (k) { var kp = s.pages.byId[k]; return { name: kp.title || 'Sin título', icon: ICON[kp.icon] || ICON.page, color: kp.color, go: function () { self.goPage(k); }, n: String(kidsOf(k).length), hasN: kidsOf(k).length > 0 }; }),
+        crumbs: this.pageCrumbs(s, pid).map(function (c) { return { name: c.title || 'Sin título', go: function () { self.goPage(c.id); } }; }), hasCrumbs: this.pageCrumbs(s, pid).length > 0,
         areaName: pg.area ? ((this.orgArea(s, pg.area) || {}).name || 'Sin área') : (pg.mine ? 'Personal' : 'General · todos'), areaColor: pg.area ? ((this.orgArea(s, pg.area) || {}).color || '#888') : '#8C8C86',
         canArea: canEditPage && !pg.mine, cannotArea: !(canEditPage && !pg.mine), areaOpen: s.areaPick === pid, toggleArea: function () { self.setState({ areaPick: s.areaPick === pid ? null : pid }); },
         areaOpts: [{ id: null, name: 'General · todos', color: '#8C8C86' }].concat(s.org.areas).map(function (a) { var on = (pg.area || null) === a.id; return { label: a.name, color: a.color, cls: on ? 'on' : '', on: on, pick: function () { self.pageSetArea(pid, a.id); } }; }),
@@ -7805,7 +7988,7 @@ Object.assign(Component.prototype, {
       bannerDetail: bd.join(' '),
       hasToast: !!s.toast, toast: s.toast || '', closeToast: function () { self.setState({ toast: null }); },
 
-      appName: APP_NAME, sideHome: sideHome, sideGeneral: sideGeneral, hasGeneral: sideGeneral.length > 0, sideAreas: sideAreas,
+      appName: APP_NAME, pgRootOver: function (e) { self.pgRootOver(e); }, pgRootLeave: function (e) { self.pgRootLeave(e); }, pgRootDrop: function (e) { self.pgRootDrop(e); }, sideHome: sideHome, sideGeneral: sideGeneral, hasGeneral: sideGeneral.length > 0, sideAreas: sideAreas,
       navOrg: screen === 'org' ? 'on' : '', goOrg: function () { self.setScreen('org'); }, scrOrg: screen === 'org', org: screen === 'org' ? this.orgData(s, v) : null,
       scrPage: screen === 'page', scrDb: screen === 'db' && hasAccess, scrNoAccess: screen === 'db' && !hasAccess,
       scrAi: screen === 'ia', scrPerm: screen === 'permisos', scrTheme: screen === 'tema', scrInbox: screen === 'avisos',
@@ -8404,8 +8587,8 @@ Object.assign(Component.prototype, {
     if (cv.kind === 'color') return 'background: ' + cv.v;
     return 'background: ' + (COVERS[cv.v] || COVERS[0]);
   },
-  blkDragStart(bid, e) { this._dragBlk = bid; try { e.dataTransfer.setData('text/plain', 'blk:' + bid); e.dataTransfer.effectAllowed = 'move'; var el = e.target.closest('.blk'); if (el && e.dataTransfer.setDragImage) e.dataTransfer.setDragImage(el, 24, 20); } catch (err) { } },
-  blkDragEnd(e) { this._dragBlk = null; try { document.querySelectorAll('.blk.drop-before, .blk.drop-after').forEach(function (n) { n.classList.remove('drop-before', 'drop-after'); }); } catch (err) { } },
+  blkDragStart(bid, e) { this._dragBlk = bid; try { e.dataTransfer.setData('text/plain', 'blk:' + bid); e.dataTransfer.effectAllowed = 'move'; var el = e.target.closest('.blk'); if (el && e.dataTransfer.setDragImage) e.dataTransfer.setDragImage(el, 24, 20); if (el) setTimeout(function () { el.classList.add('jk-src'); }, 0); } catch (err) { } },
+  blkDragEnd(e) { this._dragBlk = null; try { document.querySelectorAll('.blk.drop-before, .blk.drop-after, .blk.jk-src').forEach(function (n) { n.classList.remove('drop-before', 'drop-after', 'jk-src'); }); } catch (err) { } },
   dropSide(e) {
     try {
       var el = e.currentTarget, r = el.getBoundingClientRect();
@@ -8432,6 +8615,7 @@ Object.assign(Component.prototype, {
       if (to < 0) { pg.blocks.splice(from, 0, b); return false; }
       pg.blocks.splice(side === 'after' ? to + 1 : to, 0, b);
     });
+    this.jellyOn(bid);
   },
   rzStart(bid, e) { this._rz = { bid: bid, x: 0 }; try { e.dataTransfer.setData('text/plain', 'rz'); e.dataTransfer.effectAllowed = 'move'; var img = document.createElement('canvas'); img.width = img.height = 1; e.dataTransfer.setDragImage(img, 0, 0); } catch (err) { } },
   rzMove(e) { if (this._rz && e.clientX) this._rz.x = e.clientX; },
@@ -8445,7 +8629,7 @@ Object.assign(Component.prototype, {
       var gap = 16, colW = (gr.width + gap) / 12;
       var w = Math.round((x - br.left + gap) / colW);
       w = Math.max(2, Math.min(12, w));
-      this.updBlock(bid, function (b) { if (b.w === w) return false; b.w = w; });
+      this.updBlock(bid, function (b) { if (b.w === w) return false; b.w = w; }); this.jellyOn(bid);
     } catch (err) { }
   },
   todoUpd(bid, fn) { this.updBlock(bid, function (b) { if (!b.items) b.items = []; return fn(b); }); },
@@ -9683,7 +9867,7 @@ Object.assign(Component.prototype, {
     var items = form.items.map(function (it, i) {
       var p = it.kind === 'field' ? propOf(t, it.key) : null;
       var o2 = {
-        isSec: it.kind === 'section', isField: it.kind === 'field' && !!p, cls: (it.kind === 'section' ? 'is-sec' : '') + (drag && drag.over === i && drag.from !== i ? ' drop-' + (drag.from < i ? 'after' : 'before') : '') + (drag && drag.from === i ? ' dragging' : ''),
+        isSec: it.kind === 'section', isField: it.kind === 'field' && !!p, cls: (it.kind === 'section' ? 'is-sec' : '') + (drag && drag.over === i && drag.from !== i ? ' drop-' + (drag.from < i ? 'after' : 'before') : '') + (drag && drag.from === i ? ' dragging' : '') + (s.jellyKey === it.id ? ' jelly' : ''),
         title: it.title || '', setTitle: function (e) { var val = e.target.value; self.fmItemUpd(fid, it.id, function (x) { x.title = val; }); },
         canUp: i > 0, canDown: i < form.items.length - 1, noUp: i === 0, noDown: i === form.items.length - 1,
         up: function () { self.fmMove(fid, i, i - 1); }, down: function () { self.fmMove(fid, i, i + 1); },
@@ -9691,7 +9875,7 @@ Object.assign(Component.prototype, {
         delAria: 'Quitar ' + (p ? p.name : 'sección'),
         dragStart: function (e) { try { e.dataTransfer.effectAllowed = 'move'; e.dataTransfer.setData('text/plain', String(i)); } catch (err) { } self.setState({ fmDrag: { from: i, over: null } }); },
         dragOver: function (e) { try { e.preventDefault(); } catch (err) { } var d = self.st().fmDrag; if (d && d.over !== i) self.setState({ fmDrag: { from: d.from, over: i } }); },
-        drop: function (e) { try { e.preventDefault(); } catch (err) { } var d = self.st().fmDrag; self.setState({ fmDrag: null }); if (d) self.fmMove(fid, d.from, i); },
+        drop: function (e) { try { e.preventDefault(); } catch (err) { } var d = self.st().fmDrag; self.setState({ fmDrag: null }); if (d) { var mv = (self.st().tables.order.map(function (x) { return self.st().tables.byId[x]; }).reduce(function (a, t2) { return a.concat(t2.forms || []); }, []).filter(function (f2) { return f2.id === fid; })[0] || { items: [] }).items[d.from]; self.fmMove(fid, d.from, i); if (mv) self.jellyOn(mv.id); } },
         dragEnd: function () { self.setState({ fmDrag: null }); }
       };
       if (!p) return o2;
@@ -10685,6 +10869,95 @@ function seedTecsur() {
   return { tobj: tobj, tpro: tpro, tpo: tpo, tli: tli, tbr: tbr, tde: tde };
 }
 
+/* ================= Portafolio de proyectos · DATOS DEMO con fórmulas =================
+   Ejemplo para entender y configurar después. Nombres, montos y avances son ficticios.
+   Tablas: ppr Proyectos · phi Hitos · pum Umbrales.
+   Cadena de cálculo: Hito (Plan, Real, Avance) → Valor ganado = Plan × Avance →
+   Proyecto (suma de hitos) → Avance ponderado, Variación de costo, Índice de costo, Desvío → Semáforo según los umbrales. */
+function seedPortafolio() {
+  var NOW = '2026-11-18T09:00', BY = 'ana';
+  // ---- Umbrales (parámetros que usan las fórmulas del semáforo) ----
+  var pum = {
+    id: 'pum', name: 'Umbrales', desc: 'Parámetros del semáforo. Cambia un valor y el semáforo de todos los proyectos se recalcula.', color: '#5A6675', icon: 'i-scale', abbr: 'Um', nextId: 4,
+    props: [
+      { key: 'concepto', name: 'Concepto', type: 'title' },
+      { key: 'valor', name: 'Valor', type: 'number', dec: 'auto' },
+      { key: 'nota', name: 'Nota', type: 'text' }
+    ],
+    rows: [
+      mkRow('pum1', 1, { concepto: 'Umbral amarillo', valor: 5, nota: 'Desvío (en % del plan) a partir del cual el proyecto pasa a Amarillo. Valor demo.' }, NOW, BY),
+      mkRow('pum2', 2, { concepto: 'Umbral rojo', valor: 15, nota: 'Desvío (en % del plan) a partir del cual el proyecto pasa a Rojo. Valor demo.' }, NOW, BY),
+      mkRow('pum3', 3, { concepto: 'Meses de holgura', valor: 2, nota: 'Ejemplo de parámetro para usar en otras fórmulas. Valor demo.' }, NOW, BY)
+    ],
+    views: [mkView('xu1', 'Umbrales', 'table', {})], automations: []
+  };
+  // ---- Proyectos ----
+  var P = [
+    ['PRY-D1', 'Renovación de redes BT · sector demo A', 'Redes BT', 'En ejecución', 'Responsable demo 1', '2026-03-02', '2026-12-18'],
+    ['PRY-D2', 'Mantenimiento preventivo MT · ciclo 2026', 'Mantenimiento MT', 'En ejecución', 'Responsable demo 2', '2026-02-09', '2026-12-04'],
+    ['PRY-D3', 'Programa de capacitación QHSE', 'Capacitación', 'En ejecución', 'Responsable demo 3', '2026-01-12', '2026-12-11'],
+    ['PRY-D4', 'Estandarización de ACU (ejemplo)', 'Gestión de costos', 'Planificado', 'Responsable demo 4', '2026-12-01', '2027-03-26'],
+    ['PRY-D5', 'Actualización de la propuesta de EPP (ejemplo)', 'Gestión de costos', 'En ejecución', 'Responsable demo 4', '2026-09-07', '2026-12-31'],
+    ['PRY-D6', 'Alumbrado público · obra cerrada (ejemplo)', 'Redes BT', 'Cerrado', 'Responsable demo 1', '2026-01-19', '2026-08-28']
+  ];
+  var ppr = {
+    id: 'ppr', name: 'Proyectos', desc: 'DEMO · Portafolio de ejemplo. Los totales vienen de los hitos y el semáforo de la tabla Umbrales: haz clic en una columna para ver su fórmula.', color: '#00468C', icon: 'i-folder', abbr: 'Pr', nextId: P.length + 1,
+    props: [
+      { key: 'cod', name: 'Código', type: 'title' },
+      { key: 'nombre', name: 'Proyecto', type: 'text' },
+      { key: 'programa', name: 'Programa', type: 'select', options: [o('Redes BT', 'blue'), o('Mantenimiento MT', 'teal'), o('Capacitación', 'violet'), o('Gestión de costos', 'amber')] },
+      { key: 'estado', name: 'Estado', type: 'status', options: [so('Planificado', 'gray', 'todo'), so('En ejecución', 'blue', 'doing'), so('En pausa', 'amber', 'doing'), so('Cerrado', 'green', 'done')] },
+      { key: 'resp', name: 'Responsable', type: 'text' },
+      { key: 'inicio', name: 'Inicio', type: 'date', dateFmt: 'short' },
+      { key: 'fin', name: 'Fin previsto', type: 'date', dateFmt: 'short' },
+      { key: 'hitos', name: 'Hitos', type: 'relation', target: 'phi', pair: 'proy' },
+      { key: 'nhit', name: 'N.º de hitos', type: 'rollup', rel: 'hitos', prop: 'cod', fn: 'count' },
+      { key: 'plan', name: 'Plan total', type: 'rollup', rel: 'hitos', prop: 'plan', fn: 'sum', fmt: 'money' },
+      { key: 'real', name: 'Costo real', type: 'rollup', rel: 'hitos', prop: 'real', fn: 'sum', fmt: 'money' },
+      { key: 'gan', name: 'Valor ganado', type: 'rollup', rel: 'hitos', prop: 'gan', fn: 'sum', fmt: 'money' },
+      { key: 'avp', name: 'Avance ponderado', type: 'formula', expr: '=SI([Plan total] > 0; REDONDEAR([Valor ganado] / [Plan total] * 100; 1); 0)', resFmt: 'percent', desc: 'Valor ganado ÷ Plan total. Pondera cada hito por su plan.' },
+      { key: 'vc', name: 'Variación de costo', type: 'formula', expr: '=[Valor ganado] - [Costo real]', resFmt: 'money', desc: 'Negativo = se gastó más de lo que se avanzó.' },
+      { key: 'idc', name: 'Índice de costo', type: 'formula', expr: '=SI([Costo real] > 0; REDONDEAR([Valor ganado] / [Costo real]; 2); 0)', resFmt: 'number', desc: 'Menor que 1 = sobrecosto. Solo es confiable con avance físico verificable.' },
+      { key: 'desv', name: 'Desvío', type: 'formula', expr: '=SI([Plan total] > 0; REDONDEAR(([Costo real] - [Valor ganado]) / [Plan total] * 100; 1); 0)', resFmt: 'percent', desc: 'Sobrecosto en % del plan. Alimenta el semáforo.' },
+      { key: 'sema', name: 'Semáforo', type: 'formula', expr: '=SI([Desvío] > BUSCAR("Umbral rojo"; Umbrales[Concepto]; Umbrales[Valor]); "Rojo"; SI([Desvío] > BUSCAR("Umbral amarillo"; Umbrales[Concepto]; Umbrales[Valor]); "Amarillo"; "Verde"))', resFmt: 'text', desc: 'Compara el Desvío con los valores de la tabla Umbrales.' },
+      { key: 'carpeta', name: 'Carpeta (OneDrive / Drive)', type: 'url', urlShort: true, desc: 'Pega el enlace compartido de la carpeta del proyecto. La conexión automática con OneDrive o Drive queda para una fase posterior.' }
+    ],
+    rows: P.map(function (x, i) { return mkRow('ppr' + (i + 1), i + 1, { cod: x[0], nombre: x[1], programa: x[2], estado: x[3], resp: x[4], inicio: x[5], fin: x[6], hitos: [], carpeta: '' }, NOW, BY); }),
+    views: [mkView('xr1', 'Portafolio', 'table', { hidden: ['resp', 'inicio', 'fin', 'hitos', 'nhit', 'vc', 'idc'] }), mkView('xr2', 'Por estado', 'board', { group: 'estado', hidden: ['estado', 'resp', 'inicio', 'fin', 'hitos', 'nhit', 'plan', 'gan', 'vc', 'idc', 'carpeta'] }), mkView('xr3', 'Calculo completo', 'table', { hidden: ['hitos', 'carpeta'] })], automations: []
+  };
+  // ---- Hitos: [proyecto, fase, nombre, plan, real, avance] ----
+  var H = [
+    [1, 'Inicio', 'Replanteo y permisos', 12000, 11800, 100], [1, 'Ejecución', 'Tendido y conexión', 48000, 55000, 80], [1, 'Ejecución', 'Pruebas', 9000, 0, 0], [1, 'Cierre', 'Cierre y liquidación', 4000, 0, 0],
+    [2, 'Planificación', 'Inspección de equipos', 15000, 14200, 100], [2, 'Ejecución', 'Intervención', 30000, 21000, 60], [2, 'Cierre', 'Informe técnico', 5000, 0, 0],
+    [3, 'Planificación', 'Plan anual', 3000, 3000, 100], [3, 'Ejecución', 'Sesiones primer trimestre', 6000, 5900, 100], [3, 'Ejecución', 'Sesiones segundo trimestre', 6000, 6500, 100], [3, 'Ejecución', 'Sesiones tercer trimestre', 6000, 2000, 40], [3, 'Ejecución', 'Sesiones cuarto trimestre', 6000, 0, 0],
+    [4, 'Planificación', 'Levantamiento de partidas', 8000, 0, 0], [4, 'Ejecución', 'Modelo estándar', 10000, 0, 0],
+    [5, 'Planificación', 'Relevamiento de precios', 4000, 4200, 100], [5, 'Ejecución', 'Propuesta económica', 9000, 6000, 55], [5, 'Cierre', 'Revisión con Operaciones', 3000, 0, 0],
+    [6, 'Ejecución', 'Obra', 60000, 61500, 100], [6, 'Cierre', 'Liquidación', 5000, 5200, 100]
+  ];
+  var cnt = {};
+  var phi = {
+    id: 'phi', name: 'Hitos', desc: 'DEMO · Cada hito tiene un plan, un costo real y un avance. El valor ganado es Plan × Avance y sube al proyecto.', color: '#00705A', icon: 'i-flag', abbr: 'Hi', nextId: H.length + 1,
+    props: [
+      { key: 'cod', name: 'Código', type: 'title' },
+      { key: 'hito', name: 'Hito', type: 'text' },
+      { key: 'proy', name: 'Proyecto', type: 'relation', target: 'ppr', pair: 'hitos', single: true },
+      { key: 'fase', name: 'Fase', type: 'select', options: [o('Inicio', 'gray'), o('Planificación', 'blue'), o('Ejecución', 'teal'), o('Cierre', 'green')] },
+      { key: 'plan', name: 'Plan', type: 'number', fmt: 'money', dec: 'auto' },
+      { key: 'real', name: 'Real', type: 'number', fmt: 'money', dec: 'auto' },
+      { key: 'av', name: 'Avance', type: 'number', fmt: 'percent', showAs: 'bar', max: 100 },
+      { key: 'gan', name: 'Valor ganado', type: 'formula', expr: '=[Plan] * [Avance] / 100', resFmt: 'money', desc: 'Plan × Avance. Es lo que se debería haber gastado por el avance logrado.' },
+      { key: 'dif', name: 'Diferencia', type: 'formula', expr: '=[Real] - [Valor ganado]', resFmt: 'money', desc: 'Positivo = se gastó más de lo ganado.' },
+      { key: 'est', name: 'Estado del hito', type: 'formula', expr: '=SI([Avance] >= 100; "Completo"; SI([Avance] > 0; "En curso"; "Sin iniciar"))', resFmt: 'text' }
+    ],
+    rows: H.map(function (x, i) { cnt[x[0]] = (cnt[x[0]] || 0) + 1; return mkRow('phi' + (i + 1), i + 1, { cod: 'D' + x[0] + '-' + (cnt[x[0]] < 10 ? '0' : '') + cnt[x[0]], hito: x[2], proy: ['ppr' + x[0]], fase: x[1], plan: x[3], real: x[4], av: x[5] }, NOW, BY); }),
+    views: [mkView('xh1', 'Hitos', 'table', { hidden: ['hito'] }), mkView('xh2', 'Por fase', 'board', { group: 'fase', hidden: ['fase', 'gan', 'dif'] }),
+      mkView('xh3', 'Hitos PRY-D1', 'table', { filters: [{ prop: 'cod', op: 'contains', value: 'D1-' }], hidden: ['proy', 'hito'] }),
+      mkView('xh4', 'Hitos PRY-D2', 'table', { filters: [{ prop: 'cod', op: 'contains', value: 'D2-' }], hidden: ['proy', 'hito'] }),
+      mkView('xh5', 'Hitos PRY-D5', 'table', { filters: [{ prop: 'cod', op: 'contains', value: 'D5-' }], hidden: ['proy', 'hito'] })], automations: []
+  };
+  return { ppr: ppr, phi: phi, pum: pum };
+}
+
 /* ================= configuración por tipo de negocio: módulos y propuestas ================= */
 var BIZ_MODULES = [
   { id: 'ventas', name: 'Ventas e inventario', icon: 'i-cart', color: '#BE185D', desc: 'Clientes, pedidos, productos y proveedores', tables: ['cli', 'ped', 'pro', 'prov'] },
@@ -10696,14 +10969,15 @@ var BIZ_MODULES = [
   { id: 'acu', name: 'Ingeniería de costos: ACU', code: 'M02', icon: 'i-calc', color: '#B45309', desc: 'ACU por matrícula y versión, comparador que explica variaciones e impacto de un cambio de precio', tables: ['acu', 'acud'], needs: ['maestros'] },
   { id: 'ops', name: 'Contratos, servicios y OT/SST', code: 'M03', icon: 'i-wrench', color: '#0F766E', desc: 'Contratos con modalidad económica, servicios y órdenes de trabajo sin crear proyectos; HH, km y cantidades programada → reconocida', tables: ['ctr', 'srv', 'ot'], needs: ['acu'] },
   { id: 'tecsur', name: 'Objetivos y procedimientos 2026', code: 'M09', icon: 'i-target', color: '#00468C', desc: 'Objetivos, procedimientos de costos, procedimientos operativos, anexos técnicos sin precios, brechas y decisiones, con vista para Gerencia', tables: ['tobj', 'tpro', 'tpo', 'tli', 'tbr', 'tde'] },
+  { id: 'portafolio', name: 'Portafolio de proyectos (demo con fórmulas)', code: 'M10', icon: 'i-folder', color: '#00468C', desc: 'Datos de ejemplo para entender y configurar: hitos, valor ganado, semáforo con umbrales y páginas con subniveles.', tables: ['ppr', 'phi', 'pum'] },
   { id: 'presu', name: 'Presupuestos y control de costos', code: 'M04', icon: 'i-wallet', color: '#475569', desc: 'Presupuesto inicial y vigente, costo real, compromisos, desviaciones y estimado al cierre', soon: true },
   { id: 'epp', name: 'EPP, equipos y transporte', code: 'M05', icon: 'i-hardhat', color: '#475569', desc: 'Kits por cuadrilla, vida útil, reposición y costo de uso', soon: true },
   { id: 'valor', name: 'Valorizaciones', code: 'M06', icon: 'i-receipt', color: '#475569', desc: 'Elaborada, enviada, observada, aprobada, facturada y cobrada', soon: true },
   { id: 'bi', name: 'Reportes gerenciales', code: 'M08', icon: 'i-chart', color: '#475569', desc: 'Tableros por contrato y jefatura con fórmula, fuente y responsable de cada indicador', soon: true }
 ];
 var BIZ_RUBROS = [
-  { id: 'general', name: 'Proyectos y servicios', desc: 'Para empresas que gestionan proyectos, personal y aprobaciones.', modules: ['proyectos', 'personal', 'aprob', 'campo'] },
-  { id: 'electrico', name: 'Servicios eléctricos y mantenimiento de redes', badge: 'Propuesta basada en TECSUR', desc: 'Contratos con distribuidoras, OT/SST, emergencias, mantenimiento BT/MT, cortes de tarifas y ACU.', modules: ['proyectos', 'personal', 'aprob', 'campo', 'maestros', 'acu', 'ops', 'tecsur'],
+  { id: 'general', name: 'Proyectos y servicios', desc: 'Para empresas que gestionan proyectos, personal y aprobaciones.', modules: ['proyectos', 'personal', 'aprob', 'campo', 'portafolio'] },
+  { id: 'electrico', name: 'Servicios eléctricos y mantenimiento de redes', badge: 'Propuesta basada en TECSUR', desc: 'Contratos con distribuidoras, OT/SST, emergencias, mantenimiento BT/MT, cortes de tarifas y ACU.', modules: ['proyectos', 'personal', 'aprob', 'campo', 'maestros', 'acu', 'ops', 'tecsur', 'portafolio'],
     areas: [{ id: 'a-cos', name: 'Ingeniería de Costos', color: '#7C3AED', icon: 'i-calc', parent: 'a-ger' }],
     cargos: [{ name: 'Jefe de Ingeniería de Costos', area: 'a-cos', parentName: 'Gerente general' }, { name: 'Analista de costos', area: 'a-cos', parentName: 'Jefe de Ingeniería de Costos' }, { name: 'Supervisor de cuadrillas', area: 'a-ope', parentName: 'Jefe de Operaciones y Proyectos' }],
     notes: ['Modalidades, gastos generales y utilidad quedan marcados «por validar»: el sistema no asume reglas contractuales.', 'Las OT se registran por servicio, sin obligarlas a ser proyectos.', 'Lo importado nunca queda validado solo; los ACU aprobados no se recalculan.'] },
@@ -10791,6 +11065,56 @@ Object.assign(Component.prototype, {
       ] });
       made.push(m.name);
     }
+    if (id === 'portafolio') {
+      var pp = seedPortafolio();
+      ['ppr', 'phi', 'pum'].forEach(function (k) { addTable(pp[k]); });
+      var accP = { admin: 'full', finanzas: 'view', ventas: 'none', almacen: 'none', invitado: 'none' };
+      ['ppr', 'phi', 'pum'].forEach(function (k) { addAccess(k, clone(accP)); });
+      ensureArea({ id: 'a-cos', name: 'Ingeniería de Costos', color: '#7C3AED', icon: 'i-calc', parent: 'a-ger' });
+      var FP = function (k, v) { return [{ prop: k, op: 'is', value: v }]; };
+      var FC = function (v) { return [{ prop: 'cod', op: 'contains', value: v }]; };
+      addPage({ id: 'pgpf', area: 'a-cos', cover: { kind: 'grad', v: 3 }, title: 'Portafolio de proyectos · demo', icon: 'i-folder', color: '#00468C', desc: 'Nivel 1 del portafolio. Las páginas de abajo son subniveles: Resumen, Proyectos (con una página por proyecto), Hitos y costos, Umbrales y Archivos.', blocks: [
+        blk('p0', 'callout', 12, { icon: 'i-bulb', text: 'DATOS DEMO: nombres, montos y avances son ficticios. Sirven para ver cómo se encadenan las fórmulas (hito → valor ganado → proyecto → semáforo) antes de cargar datos reales.' }),
+        blk('p1', 'kpi', 3, { title: 'Proyectos', table: 'ppr', val: 'count', filters: [] }),
+        blk('p2', 'kpi', 3, { title: 'En ejecución', table: 'ppr', val: 'count', filters: FP('estado', 'En ejecución') }),
+        blk('p3', 'kpi', 3, { title: 'Plan total (S/ demo)', table: 'phi', val: 'sum:plan', filters: [] }),
+        blk('p4', 'kpi', 3, { title: 'Costo real (S/ demo)', table: 'phi', val: 'sum:real', filters: [] }),
+        blk('p5', 'db', 12, { table: 'ppr', view: 'xr1' })
+      ] });
+      addPage({ id: 'pgpf1', parent: 'pgpf', area: 'a-cos', cover: null, title: 'Resumen ejecutivo', icon: 'i-chart', color: '#00705A', desc: 'Lo que vería la Gerencia: cuántos proyectos hay en cada semáforo y dónde está el costo.', blocks: [
+        blk('q1', 'chart', 6, { title: 'Proyectos por semáforo', table: 'ppr', kind: 'donut', by: 'sema', val: 'count', sort: 'label', limit: 0, filters: [] }),
+        blk('q2', 'chart', 6, { title: 'Plan por proyecto (S/ demo)', table: 'phi', kind: 'bar', by: 'proy', val: 'sum:plan', sort: 'desc', limit: 0, filters: [] }),
+        blk('q3', 'chart', 6, { title: 'Costo real por fase (S/ demo)', table: 'phi', kind: 'bar', by: 'fase', val: 'sum:real', sort: 'label', limit: 0, filters: [] }),
+        blk('q4', 'chart', 6, { title: 'Hitos por estado', table: 'phi', kind: 'donut', by: 'est', val: 'count', sort: 'label', limit: 0, filters: [] })
+      ] });
+      addPage({ id: 'pgpf2', parent: 'pgpf', area: 'a-cos', cover: null, title: 'Proyectos', icon: 'i-briefcase', color: '#B45309', desc: 'Tabla y tablero del portafolio. Cada proyecto de abajo tiene su propia página (subnivel 3).', blocks: [
+        blk('r1', 'db', 12, { table: 'ppr', view: 'xr3' }),
+        blk('r2', 'db', 12, { table: 'ppr', view: 'xr2' })
+      ] });
+      [['pgpf2a', 'D1', 'PRY-D1 · Renovación de redes BT', 'xh3'], ['pgpf2b', 'D2', 'PRY-D2 · Mantenimiento preventivo MT', 'xh4'], ['pgpf2c', 'D5', 'PRY-D5 · Propuesta de EPP (ejemplo)', 'xh5']].forEach(function (x, i) {
+        addPage({ id: x[0], parent: 'pgpf2', area: 'a-cos', cover: null, title: x[2], icon: 'i-flag', color: ['#00468C', '#0F766E', '#B45309'][i], desc: 'Subnivel 3: ficha del proyecto con sus hitos.', blocks: [
+          blk(x[0] + 'a', 'kpi', 4, { title: 'Hitos', table: 'phi', val: 'count', filters: FC(x[1] + '-') }),
+          blk(x[0] + 'b', 'kpi', 4, { title: 'Plan (S/ demo)', table: 'phi', val: 'sum:plan', filters: FC(x[1] + '-') }),
+          blk(x[0] + 'c', 'kpi', 4, { title: 'Costo real (S/ demo)', table: 'phi', val: 'sum:real', filters: FC(x[1] + '-') }),
+          blk(x[0] + 'd', 'db', 12, { table: 'phi', view: x[3] })
+        ] });
+      });
+      addPage({ id: 'pgpf3', parent: 'pgpf', area: 'a-cos', cover: null, title: 'Hitos y costos', icon: 'i-checks', color: '#0F766E', desc: 'Todos los hitos: plan, real, avance y valor ganado.', blocks: [
+        blk('s1', 'callout', 12, { icon: 'info', text: 'Valor ganado = Plan × Avance. Si un hito cuesta más de lo que avanzó, la Diferencia es positiva. El avance debe respaldarse con evidencia física antes de usar el índice de costo para decidir.' }),
+        blk('s2', 'db', 12, { table: 'phi', view: 'xh1' }),
+        blk('s3', 'db', 12, { table: 'phi', view: 'xh2' })
+      ] });
+      addPage({ id: 'pgpf4', parent: 'pgpf', area: 'a-cos', cover: null, title: 'Umbrales y semáforo', icon: 'i-scale', color: '#5A6675', desc: 'Parámetros que usan las fórmulas. Cámbialos aquí, no dentro de las fórmulas.', blocks: [
+        blk('t1', 'callout', 12, { icon: 'info', text: 'El Semáforo de Proyectos compara el Desvío con estos umbrales. Para cambiar los límites edita el valor de la tabla; no hace falta tocar la fórmula.' }),
+        blk('t2', 'db', 12, { table: 'pum', view: 'xu1' })
+      ] });
+      addPage({ id: 'pgpf5', parent: 'pgpf', area: 'a-cos', cover: null, title: 'Archivos en OneDrive o Drive', icon: 'i-file', color: '#475569', desc: 'Cómo enlazar la carpeta de cada proyecto.', blocks: [
+        blk('u1', 'callout', 12, { icon: 'info', text: 'Hoy: en la tabla Proyectos, la columna «Carpeta (OneDrive / Drive)» guarda el enlace compartido de la carpeta; al abrirlo se muestra «OneDrive» o «Google Drive». Más adelante: conexión con inicio de sesión para listar y subir archivos desde la propia tabla (requiere definir con TI la cuenta y los permisos).' }),
+        blk('u2', 'db', 12, { table: 'ppr', view: 'xr3' })
+      ] });
+      if (st.pages.byId['pgtec2'] && !st.pages.byId['pgtec2'].parent) st.pages.byId['pgtec2'].parent = 'pgtec';
+      made.push(m.name);
+    }
     if (id === 'tecsur') {
       var tt = seedTecsur();
       ['tobj', 'tpro', 'tpo', 'tli', 'tbr', 'tde'].forEach(function (k) { addTable(tt[k]); });
@@ -10815,7 +11139,7 @@ Object.assign(Component.prototype, {
         blk('td', 'db', 12, { table: 'tobj', view: 'xo1' }),
         blk('te', 'db', 12, { table: 'tde', view: 'xd1' })
       ] });
-      addPage({ id: 'pgtec2', area: 'a-cos', cover: { kind: 'grad', v: 2 }, title: 'Procedimientos y anexos técnicos', icon: 'i-clipboard', color: '#00705A', desc: 'Índice maestro, PO recibidos, líneas de anexo y brechas', blocks: [
+      addPage({ id: 'pgtec2', parent: 'pgtec', area: 'a-cos', cover: { kind: 'grad', v: 2 }, title: 'Procedimientos y anexos técnicos', icon: 'i-clipboard', color: '#00705A', desc: 'Índice maestro, PO recibidos, líneas de anexo y brechas', blocks: [
         blk('u0', 'callout', 12, { icon: 'info', text: 'Los PO no se modifican. Una cantidad vacía significa que el PO no la indica, no que sea cero. Si cambia la revisión de un PO, sus líneas deben volver a revisarse antes de usarlas en un ACU.' }),
         blk('u1', 'db', 12, { table: 'tpro', view: 'xp1' }),
         blk('u2', 'db', 12, { table: 'tpo', view: 'xq1' }),

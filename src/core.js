@@ -135,6 +135,7 @@ Object.assign(Component.prototype, {
     if (p.type === 'rollup') {
       if (p.fn === 'count' || p.fn === 'count_values') return { fmt: 'number', dec: 0 };
       var rel = propOf(t, p.rel), T2 = rel ? s.tables.byId[rel.target] : null, P2 = T2 ? propOf(T2, p.prop) : null;
+      if (P2 && P2.type === 'formula' && p.fn !== 'show') { var f2 = this.numFmtOf(s, T2, P2); return { fmt: p.fn === 'sum' || p.fn === 'avg' || p.fn === 'min' || p.fn === 'max' ? f2.fmt : 'number', dec: f2.dec }; }
       return P2 && P2.type === 'number' ? { fmt: P2.fmt || 'number', dec: P2.dec } : { fmt: 'number' };
     }
     return { fmt: 'number' };
@@ -184,7 +185,7 @@ Object.assign(Component.prototype, {
         d.aria = (raw ? 'Desmarcar ' : 'Marcar ') + p.name; d.srText = p.name + ': ' + (raw ? 'sí' : 'no');
         d.toggle = function () { self.setField(t.id, row.id, p.key, !raw, (raw ? 'desmarcó ' : 'marcó ') + p.name + ' en ' + self.titleOf(t, row)); };
         break;
-      case 'url': if (raw) { d.kLink = true; d.href = /^https?:\/\//i.test(raw) ? raw : 'https://' + raw; d.linkText = p.urlShort ? String(raw).replace(/^https?:\/\//i, '').split('/')[0] : String(raw).replace(/^https?:\/\//i, ''); } break;
+      case 'url': if (raw) { d.kLink = true; d.href = /^https?:\/\//i.test(raw) ? raw : 'https://' + raw; d.linkText = p.urlShort ? String(raw).replace(/^https?:\/\//i, '').split('/')[0] : String(raw).replace(/^https?:\/\//i, ''); if (/(1drv\.ms|onedrive\.live\.com|sharepoint\.com)/i.test(d.href)) d.linkText = 'OneDrive · abrir carpeta'; else if (/(drive\.google\.com|docs\.google\.com)/i.test(d.href)) d.linkText = 'Google Drive · abrir carpeta'; } break;
       case 'email': if (raw) { d.kLink = true; d.href = 'mailto:' + raw; d.linkText = raw; } break;
       case 'phone': if (raw) { d.kLink = true; d.href = 'tel:' + String(raw).replace(/[^0-9+]/g, ''); d.linkText = raw; } break;
       case 'place': if (raw) { d.kLink = true; d.href = 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(raw); d.linkText = raw; } break;
@@ -194,6 +195,7 @@ Object.assign(Component.prototype, {
         var rf = p.resFmt || 'auto';
         if (typeof raw === 'boolean') { d.kCheck = true; d.checked = raw; d.checkCls = raw ? 'on' : ''; d.srText = p.name + ': ' + (raw ? 'sí' : 'no'); }
         else if (typeof raw === 'number' && rf !== 'text') { d.kText = true; d.text = fmtNumber(raw, rf === 'auto' ? 'number' : rf, p.resDec); d.cls = 'v-num'; }
+        else if (typeof raw === 'string' && (raw === 'Rojo' || raw === 'Amarillo' || raw === 'Verde')) { d.kPills = true; d.pills = [{ text: raw, cls: 'p-' + ({ Rojo: 'red', Amarillo: 'amber', Verde: 'green' })[raw], dot: true }]; }
         else { d.kText = true; d.text = raw == null ? '' : (Array.isArray(raw) ? toStr(raw) : (typeof raw === 'number' ? fmtNum(raw) : String(raw))); }
         break;
       }
@@ -319,7 +321,7 @@ Object.assign(Component.prototype, {
       self.groupKeys(s, t, p, r, opts.bucket).forEach(function (k) {
         if (k === '__none') { none.rows.push(r); return; }
         var g = map[String(k)];
-        if (!g) g = add(k, { label: isDateType(p) ? self.bucketLabel(k) : String(k), cls: 'p-gray', color: PALETTE[defs.length % PALETTE.length] });
+        if (!g) { var sem = p.type === 'formula' ? ({ Rojo: 'red', Amarillo: 'amber', Verde: 'green' })[String(k)] : null; g = add(k, { label: isDateType(p) ? self.bucketLabel(k) : String(k), cls: sem ? 'p-' + sem : 'p-gray', color: sem ? SOLID[sem] : PALETTE[defs.length % PALETTE.length] }); }
         g.rows.push(r);
       });
     });

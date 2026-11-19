@@ -567,15 +567,63 @@ Object.assign(Component.prototype, {
   },
 
   /* ---------- páginas y bloques ---------- */
-  newPage(area) {
+  newPage(area, parentId) {
     var s = this.st();
     var pages = clone(s.pages);
     var id = 'pg' + (s.seq + 1);
     var n = pages.order.length;
-    pages.byId[id] = { id: id, area: area || (s.pages.byId[s.page] && !s.pages.byId[s.page].mine ? s.pages.byId[s.page].area || null : null), cover: null, title: 'Nueva página', icon: DB_ICONS[(n * 5 + 3) % DB_ICONS.length], color: NEW_COLORS[(n + 3) % NEW_COLORS.length], desc: '', blocks: [blk('h' + (s.seq + 2), 'text', 12, { text: '' })] };
+    var par = parentId && s.pages.byId[parentId] ? s.pages.byId[parentId] : null;
+    pages.byId[id] = { id: id, parent: par ? par.id : null, mine: par && par.mine ? true : undefined, area: par ? (par.area || null) : (area || (s.pages.byId[s.page] && !s.pages.byId[s.page].mine ? s.pages.byId[s.page].area || null : null)), cover: null, title: 'Nueva página', icon: DB_ICONS[(n * 5 + 3) % DB_ICONS.length], color: NEW_COLORS[(n + 3) % NEW_COLORS.length], desc: '', blocks: [blk('h' + (s.seq + 2), 'text', 12, { text: '' })] };
     pages.order.push(id);
-    this.setState({ pages: pages, seq: s.seq + 3, screen: 'page', page: id, navOpen: false, addBlockOpen: false, log: this.addLog(s, 'creó una página') });
+    var nf = clone(s.navFold || {}); if (par) delete nf[par.id];
+    this.setState({ pages: pages, seq: s.seq + 3, screen: 'page', page: id, navOpen: false, addBlockOpen: false, navFold: nf, log: this.addLog(s, par ? 'creó una subpágina de ' + (par.title || 'Sin título') : 'creó una página') });
+    this.jellyOn('pg:' + id);
   },
+  /* ---------- subpáginas: árbol de páginas ---------- */
+  pageKids(s, id) { return s.pages.order.filter(function (x) { return s.pages.byId[x] && s.pages.byId[x].parent === id && x !== id; }); },
+  pageDesc(s, id) { var self = this, acc = {}; (function w(x) { self.pageKids(s, x).forEach(function (k) { if (!acc[k]) { acc[k] = true; w(k); } }); })(id); return acc; },
+  pageDepth(s, id) { var d = 0, g = 0, x = s.pages.byId[id]; while (x && x.parent && s.pages.byId[x.parent] && g++ < 12) { d++; x = s.pages.byId[x.parent]; } return d; },
+  pageCrumbs(s, id) { var out = [], g = 0, x = s.pages.byId[id]; while (x && x.parent && s.pages.byId[x.parent] && g++ < 12) { x = s.pages.byId[x.parent]; out.unshift(x); } return out; },
+  /* páginas donde puede colgar esta (no ella misma ni sus descendientes; mismo espacio personal o compartido) */
+  parentChoices(s, pid) {
+    var self = this, me = s.pages.byId[pid]; if (!me) return [];
+    var bad = this.pageDesc(s, pid); bad[pid] = true;
+    var out = [{ id: null, label: 'Nivel principal', depth: 0, on: !me.parent }];
+    s.pages.order.forEach(function (id) {
+      var pg = s.pages.byId[id]; if (!pg || bad[id] || !!pg.mine !== !!me.mine) return;
+      if (self.pageDepth(s, id) >= 5) return;
+      out.push({ id: id, label: pg.title || 'Sin título', depth: self.pageDepth(s, id), on: me.parent === id });
+    });
+    return out;
+  },
+  pageSetParent(pid, parentId) {
+    var s = this.st(), me = s.pages.byId[pid], par = parentId ? s.pages.byId[parentId] : null;
+    if (!me || s.pages.byId[pid] == null) return;
+    if (parentId && (!par || parentId === pid || this.pageDesc(s, pid)[parentId])) { this.toastMsg('Una página no puede quedar dentro de sí misma ni de sus subpáginas.'); return; }
+    if (par && !!par.mine !== !!me.mine) { this.toastMsg('Las páginas personales solo se anidan entre sí.'); return; }
+    if (par && this.pageDepth(s, parentId) >= 5) { this.toastMsg('Máximo 6 niveles de subpáginas.'); return; }
+    var pages = clone(s.pages), pg = pages.byId[pid], self = this;
+    pg.parent = par ? par.id : null;
+    if (par) { pg.area = par.area || null; (function w(x) { self.pageKids(s, x).forEach(function (k) { pages.byId[k].area = par.area || null; w(k); }); })(pid); }
+    var nf = clone(s.navFold || {}); if (par) delete nf[par.id];
+    this.setState({ pages: pages, navFold: nf, parentPick: null, log: this.addLog(s, par ? 'movió «' + (me.title || 'Sin título') + '» dentro de «' + (par.title || 'Sin título') + '»' : 'subió «' + (me.title || 'Sin título') + '» al nivel principal') });
+    this.jellyOn('pg:' + pid);
+  },
+  navFoldToggle(id) { var s = this.st(), nf = clone(s.navFold || {}); if (nf[id]) delete nf[id]; else nf[id] = true; this.setState({ navFold: nf }); },
+  pgDragStart(id, e) { this._dragPg = id; try { e.dataTransfer.setData('text/plain', 'pg:' + id); e.dataTransfer.effectAllowed = 'move'; } catch (err) { } },
+  pgDragEnd(e) { this._dragPg = null; try { document.querySelectorAll('.nav-row.nav-drop,.nav-label.nav-drop').forEach(function (n) { n.classList.remove('nav-drop'); }); } catch (err) { } },
+  pgDragOver(id, e) {
+    var d = this._dragPg; if (!d || d === id) return;
+    var s = this.st(); if (this.pageDesc(s, d)[id]) return;
+    var a = s.pages.byId[d], b = s.pages.byId[id]; if (!a || !b || !!a.mine !== !!b.mine) return;
+    try { e.preventDefault(); e.currentTarget.classList.add('nav-drop'); } catch (err) { }
+  },
+  pgDrop(id, e) { var d = this._dragPg; this.pgDragEnd(e); try { e.preventDefault(); } catch (err) { } if (!d || d === id) return; this.pageSetParent(d, id); },
+  pgRootLeave(e) { try { e.currentTarget.classList.remove('nav-drop'); } catch (err) { } },
+  pgRootOver(e) { if (!this._dragPg) return; try { e.preventDefault(); e.currentTarget.classList.add('nav-drop'); } catch (err) { } },
+  pgRootDrop(e) { var d = this._dragPg; this.pgDragEnd(e); try { e.preventDefault(); } catch (err) { } if (d) this.pageSetParent(d, null); },
+  /* efecto gelatina al soltar: se aplica por estado para que sobreviva al redibujado */
+  jellyOn(key) { var self = this; if (this._jt) clearTimeout(this._jt); this.setState({ jellyKey: key }); this._jt = setTimeout(function () { if (self.st().jellyKey === key) self.setState({ jellyKey: null }); }, 900); },
   updPage(pid, fn) { var s = this.st(); var pages = clone(s.pages); var pg = pages.byId[pid]; if (!pg) return; if (fn(pg, pages) === false) return; this.setState({ pages: pages }); },
   updBlock(bid, fn) { var s = this.st(); var pages = clone(s.pages); var fb = this.findBlock(pages, bid); if (!fb) return; if (fn(fb.block, fb.page) === false) return; this.setState({ pages: pages }); },
   delPage(pid) {
@@ -583,10 +631,12 @@ Object.assign(Component.prototype, {
     if (s.confirmDel !== 'pg:' + pid) { this.setState({ confirmDel: 'pg:' + pid }); return; }
     var pages = clone(s.pages);
     if (pages.order.length < 2) { this.toastMsg('Debe quedar al menos una página.'); return; }
-    var title = pages.byId[pid].title;
+    var title = pages.byId[pid].title, up = pages.byId[pid].parent || null;
+    if (up && !pages.byId[up]) up = null;
+    pages.order.forEach(function (x) { if (pages.byId[x] && pages.byId[x].parent === pid) pages.byId[x].parent = up; });
     delete pages.byId[pid];
     pages.order = pages.order.filter(function (x) { return x !== pid; });
-    this.setState({ pages: pages, page: pages.order[0], confirmDel: null, drawer: null });
+    this.setState({ pages: pages, page: up || pages.order[0], confirmDel: null, drawer: null });
     this.toastMsg('Página «' + title + '» eliminada');
   },
   addBlock(pid, spec, extra) {

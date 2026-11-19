@@ -20,7 +20,7 @@ Object.assign(Component.prototype, {
     var xf = ctx.xf, xfSets = ctx.xfSets;
     var BT = { chart: 'Gráfico', kpi: 'Indicador', slicer: 'Segmentación', db: 'Base de datos', sheet: 'Hoja de cálculo', map: 'Mapa de relaciones', heading: 'Encabezado', text: 'Texto', divider: 'Separador' };
     var bv = {
-      id: b.id, cls: 'blk w-' + b.w + ' blk-' + b.type + (ctx.cfgBid === b.id ? ' is-cfg' : ''), typeName: BT[b.type] || 'Bloque',
+      id: b.id, cls: 'blk w-' + b.w + ' blk-' + b.type + (ctx.cfgBid === b.id ? ' is-cfg' : '') + (s.jellyKey === b.id ? ' jelly' : ''), typeName: BT[b.type] || 'Bloque',
       isHeading: b.type === 'heading', isText: b.type === 'text', isDivider: b.type === 'divider', isKpi: false, isSlicer: false, isChart: false, isDb: false, isSheet: b.type === 'sheet', isMap: b.type === 'map', isLocked: false,
       canEdit: ctx.canEditPage, readOnly: !ctx.canEditPage,
       text: b.text || '', setText: function (e) { var val = e.target.value; self.updBlock(b.id, function (x) { x.text = val; }); },
@@ -148,10 +148,28 @@ Object.assign(Component.prototype, {
     var unread = inbox.filter(function (n) { return !n.read; }).length;
     var visPages = s.pages.order.filter(function (id) { return self.pageVisible(s, v, s.pages.byId[id]); });
     var pid = visPages.indexOf(s.page) >= 0 ? s.page : visPages[0];
-    function pItem(id) { var pg = s.pages.byId[id]; return { name: pg.title || 'Sin título', icon: ICON[pg.icon] || ICON.page, color: pg.color, on: screen === 'page' && id === pid ? 'on' : '', go: function () { self.goPage(id); } }; }
-    var sideHome = visPages.filter(function (id) { return s.pages.byId[id].mine; }).map(pItem);
-    var sideGeneral = visPages.filter(function (id) { var pg = s.pages.byId[id]; return !pg.mine && !pg.area; }).map(pItem);
-    var sideAreas = s.org.areas.map(function (a) { return { name: a.name, color: a.color, pages: visPages.filter(function (id) { var pg = s.pages.byId[id]; return !pg.mine && pg.area === a.id; }).map(pItem) }; }).filter(function (g) { return g.pages.length > 0; });
+    var navFold = s.navFold || {};
+    var visSet = {}; visPages.forEach(function (id) { visSet[id] = true; });
+    function kidsOf(id) { return visPages.filter(function (x) { return s.pages.byId[x].parent === id && x !== id; }); }
+    function isRootPg(id) { var par = s.pages.byId[id].parent; return !par || par === id || !visSet[par]; }
+    function pItem(id, depth) {
+      var pg = s.pages.byId[id]; var kids = kidsOf(id); var d = depth || 0;
+      return { id: id, name: pg.title || 'Sin título', icon: ICON[pg.icon] || ICON.page, color: pg.color, on: screen === 'page' && id === pid ? 'on' : '', go: function () { self.goPage(id); },
+        depth: String(d), hasKids: kids.length > 0, noKids: kids.length === 0, kidCount: String(kids.length), open: !navFold[id], foldCls: navFold[id] ? '' : 'open',
+        foldAria: (navFold[id] ? 'Mostrar' : 'Ocultar') + ' subpáginas de ' + (pg.title || 'Sin título'), toggle: function () { self.navFoldToggle(id); },
+        canSub: canEditPage && d < 5, addSub: function () { self.newPage(null, id); },
+        jl: s.jellyKey === 'pg:' + id ? 'jelly' : '', canDrag: canEditPage,
+        dragStart: function (e) { self.pgDragStart(id, e); }, dragEnd: function (e) { self.pgDragEnd(e); },
+        dragOver: function (e) { self.pgDragOver(id, e); }, dragLeave: function (e) { try { e.currentTarget.classList.remove('nav-drop'); } catch (err) { } },
+        drop: function (e) { self.pgDrop(id, e); } };
+    }
+    function pFlat(ids, depth, out) {
+      ids.forEach(function (id) { var it = pItem(id, depth); out.push(it); if (it.hasKids && it.open && depth < 6) pFlat(kidsOf(id), depth + 1, out); });
+      return out;
+    }
+    var sideHome = pFlat(visPages.filter(function (id) { return s.pages.byId[id].mine && isRootPg(id); }), 0, []);
+    var sideGeneral = pFlat(visPages.filter(function (id) { var pg = s.pages.byId[id]; return !pg.mine && !pg.area && isRootPg(id); }), 0, []);
+    var sideAreas = s.org.areas.map(function (a) { return { name: a.name, color: a.color, pages: pFlat(visPages.filter(function (id) { var pg = s.pages.byId[id]; return !pg.mine && pg.area === a.id && isRootPg(id); }), 0, []) }; }).filter(function (g) { return g.pages.length > 0; });
     var myCargo = this.cargoOf(s, v.id), myArea = myCargo ? this.orgArea(s, myCargo.area) : null;
     var tidCur = this.curTid(s);
     var sideDbs = s.tables.order.map(function (id) {
@@ -198,6 +216,12 @@ Object.assign(Component.prototype, {
         coverUpload: function (e) { self.coverUpload(pid, e); },
         coverRemove: function () { self.coverSet(pid, null); self.setState({ coverPick: null }); },
         coverPos: function () { self.updPage(pid, function (x) { if (!x.cover) return false; var ps = [0, 25, 50, 75, 100]; x.cover.pos = ps[(ps.indexOf(x.cover.pos == null ? 50 : x.cover.pos) + 1) % ps.length]; }); },
+        parentName: (pg.parent && s.pages.byId[pg.parent]) ? (s.pages.byId[pg.parent].title || 'Sin título') : 'Nivel principal', hasParent: !!(pg.parent && s.pages.byId[pg.parent]),
+        canParent: canEditPage, cannotParent: !canEditPage, parentOpen: s.parentPick === pid, toggleParent: function () { self.setState({ parentPick: s.parentPick === pid ? null : pid, areaPick: null }); },
+        parentOpts: this.parentChoices(s, pid).map(function (c) { return { label: c.label, pad: 'padding-left: ' + (10 + c.depth * 14) + 'px', cls: c.on ? 'on' : '', on: c.on, pick: function () { self.pageSetParent(pid, c.id); } }; }),
+        subCount: kidsOf(pid).length, hasSubs: kidsOf(pid).length > 0,
+        subs: kidsOf(pid).map(function (k) { var kp = s.pages.byId[k]; return { name: kp.title || 'Sin título', icon: ICON[kp.icon] || ICON.page, color: kp.color, go: function () { self.goPage(k); }, n: String(kidsOf(k).length), hasN: kidsOf(k).length > 0 }; }),
+        crumbs: this.pageCrumbs(s, pid).map(function (c) { return { name: c.title || 'Sin título', go: function () { self.goPage(c.id); } }; }), hasCrumbs: this.pageCrumbs(s, pid).length > 0,
         areaName: pg.area ? ((this.orgArea(s, pg.area) || {}).name || 'Sin área') : (pg.mine ? 'Personal' : 'General · todos'), areaColor: pg.area ? ((this.orgArea(s, pg.area) || {}).color || '#888') : '#8C8C86',
         canArea: canEditPage && !pg.mine, cannotArea: !(canEditPage && !pg.mine), areaOpen: s.areaPick === pid, toggleArea: function () { self.setState({ areaPick: s.areaPick === pid ? null : pid }); },
         areaOpts: [{ id: null, name: 'General · todos', color: '#8C8C86' }].concat(s.org.areas).map(function (a) { var on = (pg.area || null) === a.id; return { label: a.name, color: a.color, cls: on ? 'on' : '', on: on, pick: function () { self.pageSetArea(pid, a.id); } }; }),
@@ -404,7 +428,7 @@ Object.assign(Component.prototype, {
       bannerDetail: bd.join(' '),
       hasToast: !!s.toast, toast: s.toast || '', closeToast: function () { self.setState({ toast: null }); },
 
-      appName: APP_NAME, sideHome: sideHome, sideGeneral: sideGeneral, hasGeneral: sideGeneral.length > 0, sideAreas: sideAreas,
+      appName: APP_NAME, pgRootOver: function (e) { self.pgRootOver(e); }, pgRootLeave: function (e) { self.pgRootLeave(e); }, pgRootDrop: function (e) { self.pgRootDrop(e); }, sideHome: sideHome, sideGeneral: sideGeneral, hasGeneral: sideGeneral.length > 0, sideAreas: sideAreas,
       navOrg: screen === 'org' ? 'on' : '', goOrg: function () { self.setScreen('org'); }, scrOrg: screen === 'org', org: screen === 'org' ? this.orgData(s, v) : null,
       scrPage: screen === 'page', scrDb: screen === 'db' && hasAccess, scrNoAccess: screen === 'db' && !hasAccess,
       scrAi: screen === 'ia', scrPerm: screen === 'permisos', scrTheme: screen === 'tema', scrInbox: screen === 'avisos',

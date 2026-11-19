@@ -503,7 +503,7 @@ Object.assign(Component.prototype, {
     var items = form.items.map(function (it, i) {
       var p = it.kind === 'field' ? propOf(t, it.key) : null;
       var o2 = {
-        isSec: it.kind === 'section', isField: it.kind === 'field' && !!p, cls: (it.kind === 'section' ? 'is-sec' : '') + (drag && drag.over === i && drag.from !== i ? ' drop-' + (drag.from < i ? 'after' : 'before') : '') + (drag && drag.from === i ? ' dragging' : ''),
+        isSec: it.kind === 'section', isField: it.kind === 'field' && !!p, cls: (it.kind === 'section' ? 'is-sec' : '') + (drag && drag.over === i && drag.from !== i ? ' drop-' + (drag.from < i ? 'after' : 'before') : '') + (drag && drag.from === i ? ' dragging' : '') + (s.jellyKey === it.id ? ' jelly' : ''),
         title: it.title || '', setTitle: function (e) { var val = e.target.value; self.fmItemUpd(fid, it.id, function (x) { x.title = val; }); },
         canUp: i > 0, canDown: i < form.items.length - 1, noUp: i === 0, noDown: i === form.items.length - 1,
         up: function () { self.fmMove(fid, i, i - 1); }, down: function () { self.fmMove(fid, i, i + 1); },
@@ -511,7 +511,7 @@ Object.assign(Component.prototype, {
         delAria: 'Quitar ' + (p ? p.name : 'sección'),
         dragStart: function (e) { try { e.dataTransfer.effectAllowed = 'move'; e.dataTransfer.setData('text/plain', String(i)); } catch (err) { } self.setState({ fmDrag: { from: i, over: null } }); },
         dragOver: function (e) { try { e.preventDefault(); } catch (err) { } var d = self.st().fmDrag; if (d && d.over !== i) self.setState({ fmDrag: { from: d.from, over: i } }); },
-        drop: function (e) { try { e.preventDefault(); } catch (err) { } var d = self.st().fmDrag; self.setState({ fmDrag: null }); if (d) self.fmMove(fid, d.from, i); },
+        drop: function (e) { try { e.preventDefault(); } catch (err) { } var d = self.st().fmDrag; self.setState({ fmDrag: null }); if (d) { var mv = (self.st().tables.order.map(function (x) { return self.st().tables.byId[x]; }).reduce(function (a, t2) { return a.concat(t2.forms || []); }, []).filter(function (f2) { return f2.id === fid; })[0] || { items: [] }).items[d.from]; self.fmMove(fid, d.from, i); if (mv) self.jellyOn(mv.id); } },
         dragEnd: function () { self.setState({ fmDrag: null }); }
       };
       if (!p) return o2;

@@ -26,3 +26,12 @@ Ejemplo de propuesta: TECSUR (servicios eléctricos: ingeniería de costos, ACU,
 - Seis tablas: objetivos, procedimientos de costos (índice maestro), procedimientos operativos, líneas de anexo técnico (153, sin precios), brechas (45) y decisiones (20), más dos páginas: «Vista de Gerencia» y «Procedimientos y anexos técnicos».
 - Datos: `db/tecsur_fase1.json` (Fase 1: ninguna línea validada ni con matrícula ACU). `python3 tools/gen_tecsur_data.py` regenera `src/tecsur_data.js`; `python3 src/assemble.py` arma `app/Trazya.dc.html`.
 - Pruebas: `APP=app/Trazya.dc.html node src/test_tecsur.js`.
+
+## Subpáginas, gelatina, móvil y portafolio demo
+
+- **Subpáginas:** cada página puede colgar de otra (hasta 6 niveles). En la barra lateral: flecha para plegar, «+» para crear una subpágina, y arrastrar una página sobre otra para anidarla (sobre «Páginas» para subirla al nivel principal). También se cambia desde el chip «Dentro de…» del encabezado. Hay migas de pan y una tira de subpáginas. Al borrar una página, sus hijas suben un nivel.
+- **Efecto gelatina:** una oscilación breve y suave al soltar bloques, tarjetas del tablero, campos de formulario y páginas de la barra lateral (`jellyOn` en `actions.js`, clase `.jelly`). Respeta `prefers-reduced-motion`.
+- **Celular:** `<meta viewport>` añadido (sin él el celular dibujaba la versión de escritorio). Por debajo de 700 px las tablas se muestran como tarjetas con etiqueta por campo y los campos vacíos se ocultan; los tableros se desplazan por columnas.
+- **Portafolio demo (M10):** `src/portafolio.js`. Proyectos, Hitos y Umbrales con datos ficticios y fórmulas encadenadas (valor ganado → índice de costo → desvío → semáforo según umbrales). Se instala con la propuesta «Servicios eléctricos» o «Proyectos y servicios».
+- **OneDrive / Drive:** hoy se enlaza con una columna URL (la tabla Proyectos trae «Carpeta (OneDrive / Drive)» y reconoce enlaces de SharePoint, OneDrive y Google Drive). La conexión con inicio de sesión para listar y subir archivos queda para una fase posterior, a definir con TI.
+- `python3 tools/publicar.py` copia `app/Trazya.dc.html` a `docs/index.html` e `index.html`. Pruebas: `APP=app/Trazya.dc.html node src/test_portafolio.js`.
