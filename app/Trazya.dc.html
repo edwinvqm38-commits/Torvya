@@ -13033,6 +13033,62 @@ Object.assign(Component.prototype, {
   };
 })();
 
+/* ================= descargas: dentro de Claude usan el permiso de descargas del visor ================= */
+var _dlPromise = null;
+function dlNamespace() {
+  if (_dlPromise) return _dlPromise;
+  _dlPromise = new Promise(function (res) {
+    var done = false, fin = function (v) { if (!done) { done = true; res(v || null); } };
+    try {
+      if (window.claude && typeof window.claude.use === 'function') window.claude.use('downloads').then(fin, function () { fin(null); });
+      else fin(null);
+    } catch (e) { fin(null); }
+    setTimeout(function () { fin(null); }, 2500);
+  });
+  _dlPromise.then(function (v) { if (!v) _dlPromise = null; });
+  return _dlPromise;
+}
+function dlAnchor(name, blob) {
+  var url = URL.createObjectURL(blob), a = document.createElement('a');
+  a.href = url; a.download = name; a.rel = 'noopener';
+  document.body.appendChild(a); a.click();
+  setTimeout(function () { URL.revokeObjectURL(url); a.remove(); }, 1500);
+}
+Object.assign(Component.prototype, {
+  saveFile(name, mime, data) {
+    var self = this, blob;
+    try { blob = data instanceof Blob ? data : new Blob([data], { type: mime || 'application/octet-stream' }); }
+    catch (e) { this.toastMsg('No se pudo preparar el archivo.'); return; }
+    this.toastMsg('Preparando ' + name + '…');
+    dlNamespace().then(function (ns) {
+      if (ns && typeof ns.save === 'function') {
+        ns.save({ filename: name, data: blob }).then(function () { self.toastMsg('Listo: ' + name); }, function (err) {
+          var c = err && err.code;
+          if (c === 'declined') self.toastMsg('Descarga cancelada.');
+          else if (c === 'rate_limited') self.toastMsg('Ya hay una descarga esperando tu confirmación.');
+          else if (c === 'rejected_extension' || c === 'extension_not_enabled') self.toastMsg('Este visor no permite descargar ese tipo de archivo.');
+          else { try { dlAnchor(name, blob); self.toastMsg('Descargando ' + name); } catch (e2) { self.toastMsg('Este visor no permite descargas.'); } }
+        });
+        return;
+      }
+      try { dlAnchor(name, blob); self.toastMsg('Descargando ' + name); } catch (e3) { self.toastMsg('Este visor no permite descargas.'); }
+    });
+  },
+  download(name, mime, data) { this.saveFile(name, mime, data); },
+  repDownload(name, content, mime) { this.saveFile(name, mime || 'text/plain', content); },
+  /* vista previa: si el visor no deja abrir otra pestaña, se descarga la página lista para imprimir como PDF */
+  repPreview() {
+    var html = this.repHtml(false), w = null;
+    try { w = window.open('', '_blank'); } catch (e) { w = null; }
+    var ok = false;
+    if (w) { try { w.document.open(); w.document.write(html); w.document.close(); ok = true; } catch (e2) { ok = false; } }
+    if (!ok) {
+      this.saveFile(this.repFile() + '.html', 'text/html', html);
+      var self = this; setTimeout(function () { self.toastMsg('Abre el archivo y pulsa «Imprimir o guardar como PDF».'); }, 2600);
+    }
+  }
+});
+
 </script>
 </body>
 </html>
