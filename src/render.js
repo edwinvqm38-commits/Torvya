@@ -118,7 +118,7 @@ Object.assign(Component.prototype, {
       var isSrcC = !!(xf && xf.table === T.id && xf.prop === b.by);
       var rc = rowsFor(isSrcC);
       tag(rc.st);
-      bv.ch = this.chartView(this.chartData(s, T, this.applyFilters(s, T, rc.rows, b.filters, v), { head: false, title: b.title, kind: b.kind, by: b.by, bucket: b.bucket, val: b.val, sort: b.sort, limit: b.limit }, { pid: pid, current: xf }));
+      bv.ch = this.chartView(this.chartData(s, T, this.applyFilters(s, T, rc.rows, b.filters, v), { pal: b.pal, legend: b.legend, head: false, title: b.title, kind: b.kind, by: b.by, bucket: b.bucket, val: b.val, sort: b.sort, limit: b.limit }, { pid: pid, current: xf }));
       return bv;
     }
     if (b.type === 'db') {

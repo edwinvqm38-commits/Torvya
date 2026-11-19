@@ -51,7 +51,7 @@ def seg(x):
 
 def fields(lst):
     return ('''<sc-for list="{{%(L)s}}" as="f" hint-placeholder-count="6">
-<div class="frow {{f.rowCls}}">
+<div class="frow {{f.rowCls}}" data-fkey="{{f.fkey}}">
 <div class="flabel" title="{{f.desc}}">%(ICON)s<span>{{f.label}}</span></div>
 <div class="fval">
 <sc-if value="{{f.eInput}}" H="{{true}}"><div class="fin-row"><input class="finput" type="{{f.itype}}" value="{{f.value}}" onChange="{{f.onChange}}" placeholder="{{f.placeholder}}" aria-label="{{f.label}}"><sc-if value="{{f.hasLink}}" H="{{false}}"><a class="icon-btn sm" href="{{f.linkHref}}" target="_blank" rel="noopener noreferrer" aria-label="{{f.linkAria}}" title="{{f.linkAria}}">%(EXT)s</a></sc-if></div></sc-if>
@@ -73,7 +73,7 @@ def fields(lst):
 <sc-if value="{{f.eButton}}" H="{{false}}"><div><button type="button" class="btn btn-sm" onClick="{{f.run}}">%(BOLT)s{{f.btnLabel}}</button></div></sc-if>
 <sc-if value="{{f.eAi}}" H="{{false}}"><div class="ai-val"><span class="v-ai">{{f.aiText}}</span><button type="button" class="link-btn" onClick="{{f.aiGen}}">%(AI)s{{f.aiBtn}}</button></div></sc-if>
 <sc-if value="{{f.eRead}}" H="{{false}}"><div class="fro">%(DISP)s</div></sc-if>
-<sc-if value="{{f.hasNote}}" H="{{false}}"><span class="fnote">{{f.note}}</span></sc-if>
+<sc-if value="{{f.hasNote}}" H="{{false}}"><span class="fnote">{{f.note}}</span></sc-if><sc-if value="{{f.hasRefs}}" H="{{false}}"><span class="frefs" title="{{f.refsTip}}"><span class="frefs-t">Se calcula con</span><sc-for list="{{f.refs}}" as="rf" hint-placeholder-count="2"><button type="button" class="fref {{rf.cls}}" onClick="{{rf.go}}" title="{{rf.tip}}">{{rf.label}}</button></sc-for></span></sc-if>
 </div>
 </div>
 </sc-for>''' % dict(L=lst, ICON=ic('f.icon', 'sm'), EXT=ic('ICON.ext', 'sm'), CHECK=CHECK, FILE=ic('ICON.files', 'xs'), X12=ic('ICON.x', 'xs'),

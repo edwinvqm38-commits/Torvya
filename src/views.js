@@ -35,7 +35,7 @@ Object.assign(Component.prototype, {
       value: '', itype: 'text', placeholder: 'Vacío', onChange: null, hasLink: false, linkHref: '', linkAria: '',
       options: [], people: [], checked: false, checkCls: '', toggle: null, files: [], addFile: null,
       chips: [], canLink: false, pickerOpen: false, pick: [], pickerTitle: '', togglePicker: null,
-      btnLabel: '', run: null, aiText: '', aiGen: null, aiBtn: '', hasNote: false, note: '', d: null, rowCls: ''
+      btnLabel: '', run: null, aiText: '', aiGen: null, aiBtn: '', hasNote: false, note: '', d: null, rowCls: (s.recHi === p.key ? 'f-hi' : ''), fkey: p.key, hasRefs: false, refs: [], refsTip: ''
     };
     var raw = row[p.key];
     if (p.type === 'title' && canEdit) {
@@ -47,8 +47,8 @@ Object.assign(Component.prototype, {
       f.eRead = true;
       f.d = this.dispOf(s, t, p, row, v, false);
       if (f.d.empty) { f.d.kText = true; f.d.text = '—'; f.d.cls = 'v-muted'; f.d.kButton = false; }
-      if (p.type === 'formula') { f.hasNote = true; f.note = 'Fórmula: ' + (p.expr || '(vacía)') + (f.d.cls === 'v-err' ? ' — ' + f.d.srText : ''); }
-      else if (p.type === 'rollup') { f.hasNote = true; f.note = this.rollupDesc(s, t, p); }
+      if (p.type === 'formula') { if (f.d.cls === 'v-err') { f.hasNote = true; f.note = f.d.srText; } f.refs = this.formulaRefs(s, t, p); f.hasRefs = f.refs.length > 0; f.refsTip = 'Fórmula: ' + (p.expr || '(vacía)'); }
+      else if (p.type === 'rollup') { var rel0 = propOf(t, p.rel), T0 = rel0 ? s.tables.byId[rel0.target] : null, P0 = T0 ? propOf(T0, p.prop) : null; if (T0) { var self0 = this; f.refs = [{ label: T0.name + (P0 && p.fn !== 'count' ? ' · ' + P0.name : ''), cls: 'ext', tip: this.rollupDesc(s, t, p) + ': abrir ' + T0.name, go: function () { self0.go(T0.id, null); } }]; f.hasRefs = true; f.refsTip = this.rollupDesc(s, t, p); } else { f.hasNote = true; f.note = this.rollupDesc(s, t, p); } }
       else if (COMPUTED[p.type]) { f.hasNote = true; f.note = 'Se completa sola'; }
       return f;
     }
@@ -142,7 +142,7 @@ Object.assign(Component.prototype, {
   /* ---------- gráfico ---------- */
   chartData(s, t, rows, cfg, click) {
     var self = this;
-    var P = { title: cfg.title || '', sub: '', hasHead: !!cfg.head, isBar: false, isColumn: false, isLine: false, isDonut: false, empty: false, emptyText: '', bars: [], segs: [], path: '', area: '', dots: [], grid: [], xlabels: [], total: '', totalCaption: '', lw: 640, lh: 200 };
+    var P = { showLegend: true, legendCls: '', title: cfg.title || '', sub: '', hasHead: !!cfg.head, isBar: false, isColumn: false, isLine: false, isDonut: false, empty: false, emptyText: '', bars: [], segs: [], path: '', area: '', dots: [], grid: [], xlabels: [], total: '', totalCaption: '', lw: 640, lh: 200 };
     var by = propOf(t, cfg.by);
     if (!by) { P.empty = true; P.emptyText = 'Elige por qué propiedad agrupar en la configuración.'; return P; }
     var groups = this.groupsOf(s, t, rows, by.key, { hideEmpty: true, bucket: cfg.bucket }) || [];
@@ -152,6 +152,9 @@ Object.assign(Component.prototype, {
     fmt = aggAll.fmt;
     if (cfg.kind !== 'line' && cfg.sort !== 'label') items.sort(function (a, b) { return cfg.sort === 'asc' ? a.value - b.value : b.value - a.value; });
     if (cfg.limit) items = items.slice(0, cfg.limit);
+    var palC = (CHART_PALS.filter(function (x) { return x.id === (cfg.pal || 'auto'); })[0] || CHART_PALS[0]).c;
+    if (palC.length) items.forEach(function (it, i) { it.color = palC[i % palC.length]; });
+    P.showLegend = cfg.legend !== 'hide'; P.legendCls = cfg.legend === 'hide' ? 'no-legend' : '';
     var kind = cfg.kind || 'column';
     P.isBar = kind === 'bar'; P.isColumn = kind === 'column'; P.isLine = kind === 'line'; P.isDonut = kind === 'donut';
     P.sub = aggAll.label + ' por ' + by.name + (isDateType(by) ? ' (' + ({ day: 'día', week: 'semana', month: 'mes' }[cfg.bucket || 'day']) + ')' : '');

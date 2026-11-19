@@ -38,11 +38,11 @@
         <sc-for list="{{$.segs}}" as="sg" hint-placeholder-count="4"><svg class="dn-svg" viewBox="0 0 120 120" aria-hidden="true"><circle class="dn-seg {{sg.cls}}" cx="60" cy="60" r="44" style="stroke: {{sg.color}}; stroke-dasharray: {{sg.dash}}; stroke-dashoffset: {{sg.off}}"></circle></svg></sc-for>
         <div class="dn-center"><strong>{{$.total}}</strong><span>{{$.totalCaption}}</span></div>
       </div>
-      <div class="dn-legend">
+      <sc-if value="{{$.showLegend}}" hint-placeholder-val="{{true}}"><div class="dn-legend">
         <sc-for list="{{$.bars}}" as="b" hint-placeholder-count="4">
           <button type="button" class="dl {{b.cls}}" onClick="{{b.pick}}" aria-label="{{b.aria}}" aria-pressed="{{b.on}}"><span class="dl-dot" style="background: {{b.color}}"></span><span class="dl-lab">{{b.label}}</span><span class="dl-val">{{b.valueText}}</span><span class="dl-share">{{b.share}}</span></button>
         </sc-for>
-      </div>
+      </div></sc-if>
     </div>
   </sc-if>
 </div>

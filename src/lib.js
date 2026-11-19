@@ -845,3 +845,12 @@ var AI_SUGS = [
   { label: '¿Qué productos hay que reponer?', text: '¿Qué productos hay que reponer?' },
   { label: '¿Cuánto ha vendido cada vendedor?', text: '¿Cuánto ha vendido cada vendedor?' }
 ];
+
+/* paletas de gráficos: «auto» usa el color de cada opción */
+var CHART_PALS = [
+  { id: 'auto', n: 'Colores de la tabla', c: [] },
+  { id: 'tecsur', n: 'TECSUR', c: ['#00468C', '#00705A', '#F8D000', '#5A6675', '#3F7FBF', '#4FA88E', '#B9A23A', '#93A0AE'] },
+  { id: 'sobria', n: 'Sobria', c: ['#1E3A5F', '#4C6A8A', '#7B93AD', '#A9BACB', '#5A6675', '#8C969F', '#C2C8CE', '#2F4858'] },
+  { id: 'viva', n: 'Viva', c: ['#2563EB', '#F97316', '#10B981', '#E11D48', '#8B5CF6', '#F59E0B', '#06B6D4', '#84CC16'] },
+  { id: 'mono', n: 'Un solo tono', c: ['#00468C', '#1A5C9F', '#3473B2', '#4E8AC5', '#68A1D8', '#82B8EB', '#9CCFFE', '#B6E0FF'] }
+];

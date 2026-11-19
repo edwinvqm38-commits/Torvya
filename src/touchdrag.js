@@ -37,9 +37,42 @@
     if (vy) { if (sy) sy.scrollTop += vy; else window.scrollBy(0, vy); moved = true; }
     if (sx) { var rx = sx.getBoundingClientRect(), vx = edgeSpeed(S.x, rx.left, rx.right); if (vx) { sx.scrollLeft += vx; moved = true; } }
     if (moved) over(S.x, S.y);
+    if (Math.abs(S.rot || 0) > 0.05) place();
     raf = requestAnimationFrame(loop);
   }
-  function place() { if (S && S.ghost) S.ghost.style.transform = 'translate(' + Math.round(S.x - S.gx) + 'px,' + Math.round(S.y - S.gy) + 'px)'; }
+  /* copia fiel: se copian los estilos calculados de cada nodo, así conserva radios, bordes, colores y sombras */
+  var SKIP = { transition: 1, animation: 1, 'animation-name': 1, 'transition-property': 1, 'pointer-events': 1, cursor: 1, opacity: 1, transform: 1, translate: 1, scale: 1, rotate: 1, position: 1, inset: 1, top: 1, left: 1, right: 1, bottom: 1, margin: 1, 'margin-top': 1, 'margin-left': 1, 'margin-right': 1, 'margin-bottom': 1, 'z-index': 1, 'will-change': 1 };
+  function copyStyle(a, b) {
+    var cs = getComputedStyle(a), out = '';
+    for (var i = 0; i < cs.length; i++) { var k = cs[i]; if (SKIP[k] || k.indexOf('animation') === 0 || k.indexOf('transition') === 0) continue; out += k + ':' + cs.getPropertyValue(k) + ';'; }
+    b.setAttribute('style', out);
+  }
+  function makeGhost(vis, x, y) {
+    var r = vis.getBoundingClientRect(), g = vis.cloneNode(true);
+    var srcs = [vis].concat(Array.prototype.slice.call(vis.querySelectorAll('*'))), dsts = [g].concat(Array.prototype.slice.call(g.querySelectorAll('*')));
+    var lim = Math.min(srcs.length, 260);
+    for (var i = 0; i < lim; i++) copyStyle(srcs[i], dsts[i]);
+    for (var j = lim; j < dsts.length; j++) dsts[j].style.display = 'none';
+    Array.prototype.forEach.call(g.querySelectorAll('.blk-tools,.blk-rz,.open-hint,.cell-hit'), function (n) { n.style.display = 'none'; });
+    dsts.forEach(function (n) { if (n.removeAttribute) { n.removeAttribute('id'); n.removeAttribute('draggable'); n.removeAttribute('data-bid'); } });
+    var w = Math.min(r.width, window.innerWidth - 24), h = Math.min(r.height, 220);
+    var wrap = document.createElement('div');
+    wrap.className = 'td-ghost';
+    wrap.style.width = w + 'px'; wrap.style.height = h + 'px';
+    wrap.style.borderRadius = getComputedStyle(vis).borderRadius;
+    g.style.width = r.width + 'px'; g.style.boxSizing = 'border-box'; g.style.margin = '0';
+    wrap.appendChild(g);
+    document.body.appendChild(wrap);
+    return { el: wrap, gx: Math.max(12, Math.min(x - r.left, w * 0.6)), gy: Math.max(12, Math.min(y - r.top, h * 0.5)) };
+  }
+  /* inclinación suave según la velocidad del gesto */
+  function place() {
+    if (!S || !S.ghost) return;
+    var now = performance.now(), dt = Math.max(8, now - (S.lt || now - 16)), vx = (S.x - (S.lx == null ? S.x : S.lx)) / dt;
+    S.lx = S.x; S.lt = now;
+    var target = Math.max(-5, Math.min(5, vx * 9)); S.rot = (S.rot || 0) + (target - (S.rot || 0)) * 0.25;
+    S.ghost.style.transform = 'translate3d(' + Math.round(S.x - S.gx) + 'px,' + Math.round(S.y - S.gy) + 'px,0) rotate(' + S.rot.toFixed(2) + 'deg)';
+  }
   function over(x, y) {
     var t = document.elementFromPoint(x, y);
     if (t && S.ghost && S.ghost.contains(t)) t = S.over;
@@ -52,15 +85,15 @@
     S.active = true; S.dt = mkDT();
     fire(S.src, 'dragstart', S.x, S.y);
     var vis = S.src.classList.contains('bt-grip') ? (S.src.closest('.blk') || S.src) : S.src;
-    var r = vis.getBoundingClientRect(), g = vis.cloneNode(true), w = Math.min(r.width, window.innerWidth - 24);
-    g.removeAttribute('id'); g.classList.add('td-ghost');
-    g.style.width = w + 'px'; g.style.maxHeight = '150px';
-    S.gx = Math.max(12, Math.min(S.x - r.left, w * 0.6)); S.gy = Math.max(12, Math.min(S.y - r.top, 44));
-    document.body.appendChild(g); S.ghost = g; S.vis = vis; vis.classList.add('td-src');
+    var gh = makeGhost(vis, S.x, S.y); S.ghost = gh.el; S.gx = gh.gx; S.gy = gh.gy; S.vis = vis; vis.classList.add('td-src');
     document.body.classList.add('td-active');
     try { if (navigator.vibrate) navigator.vibrate(10); } catch (e) { }
     place(); over(S.x, S.y);
     if (!raf) raf = requestAnimationFrame(loop);
+  }
+  function settle(g) {
+    g.classList.add('td-gone');
+    setTimeout(function () { if (g.parentNode) g.parentNode.removeChild(g); }, 200);
   }
   function finish(drop) {
     if (!S) return;
@@ -70,11 +103,37 @@
       fire(s.src, 'dragend', s.x, s.y);
       swallowUntil = Date.now() + 500;
       if (s.vis) s.vis.classList.remove('td-src');
-      if (s.ghost) { var g = s.ghost; g.classList.add('td-gone'); setTimeout(function () { if (g.parentNode) g.parentNode.removeChild(g); }, 160); }
+      if (s.ghost) settle(s.ghost);
       document.body.classList.remove('td-active');
     }
     S = null;
   }
+  /* ratón: arrastre nativo, pero con la misma copia fiel en lugar de la imagen del navegador */
+  var M = null, BLANK = null;
+  document.addEventListener('dragstart', function (e) {
+    if (S || !e.isTrusted) return;
+    var src = e.target && e.target.closest ? e.target.closest(SEL) : null;
+    if (!src || !e.dataTransfer) return;
+    try {
+      if (!BLANK) { BLANK = document.createElement('canvas'); BLANK.width = BLANK.height = 1; }
+      e.dataTransfer.setDragImage(BLANK, 0, 0);
+      e.dataTransfer.setDragImage = function () { };
+    } catch (err) { return; }
+    var vis = src.classList.contains('bt-grip') ? (src.closest('.blk') || src) : src;
+    var gh = makeGhost(vis, e.clientX, e.clientY);
+    M = { ghost: gh.el, gx: gh.gx, gy: gh.gy, x: e.clientX, y: e.clientY, vis: vis };
+    S = null; window.__tdM = M;
+    var tmp = S; S = M; place(); S = tmp;
+    setTimeout(function () { vis.classList.add('td-src'); }, 0);
+  }, true);
+  document.addEventListener('dragover', function (e) {
+    if (!M || !e.isTrusted || (!e.clientX && !e.clientY)) return;
+    M.x = e.clientX; M.y = e.clientY; var tmp = S; S = M; place(); S = tmp;
+  }, true);
+  document.addEventListener('dragend', function (e) {
+    if (!M || !e.isTrusted) return;
+    M.vis.classList.remove('td-src'); settle(M.ghost); M = null;
+  }, true);
   document.addEventListener('pointerdown', function (e) {
     if (e.pointerType === 'mouse' || !e.isPrimary || S) return;
     var src = e.target && e.target.closest ? e.target.closest(SEL) : null;

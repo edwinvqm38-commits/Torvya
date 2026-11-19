@@ -579,6 +579,32 @@ Object.assign(Component.prototype, {
     this.setState({ pages: pages, seq: s.seq + 3, screen: 'page', page: id, navOpen: false, addBlockOpen: false, navFold: nf, log: this.addLog(s, par ? 'creó una subpágina de ' + (par.title || 'Sin título') : 'creó una página') });
     this.jellyOn('pg:' + id);
   },
+  /* ---------- fórmulas: componentes navegables ---------- */
+  formulaRefs(s, t, p) {
+    var self = this, out = [], seen = {}, ex = String(p.expr || '');
+    var re = /([A-Za-zÁÉÍÓÚÑáéíóúñ0-9_][A-Za-zÁÉÍÓÚÑáéíóúñ0-9_ .º°]*?)?\[([^\[\]]+)\]|prop\("([^"]+)"\)/g, m;
+    while ((m = re.exec(ex))) {
+      var tn = m[1] ? m[1].trim() : '', cn = (m[2] || m[3] || '').trim();
+      var key = tn + '|' + cn; if (seen[key]) continue; seen[key] = 1;
+      if (tn) {
+        var T2 = null; s.tables.order.forEach(function (id) { if (s.tables.byId[id].name === tn) T2 = s.tables.byId[id]; });
+        if (!T2) continue;
+        out.push({ label: tn + ' · ' + cn, cls: 'ext', tip: 'Abrir la tabla ' + tn, go: function () { self.go(T2.id, null); } });
+        continue;
+      }
+      var q = t.props.filter(function (x) { return x.name === cn; })[0];
+      if (!q) continue;
+      var tgt = q.type === 'relation' ? q.target : (q.type === 'rollup' ? ((propOf(t, q.rel) || {}).target) : null);
+      if (tgt && s.tables.byId[tgt]) out.push({ label: cn, cls: 'ext', tip: 'Viene de ' + s.tables.byId[tgt].name + ': abrir', go: (function (tid) { return function () { self.go(tid, null); }; })(tgt) });
+      else out.push({ label: cn, cls: q.type === 'formula' ? 'calc' : '', tip: 'Ir al campo ' + cn, go: (function (k) { return function () { self.recHighlight(k); }; })(q.key) });
+    }
+    return out;
+  },
+  recHighlight(key) {
+    var self = this; this.setState({ recHi: key });
+    try { setTimeout(function () { var el = document.querySelector('.frow[data-fkey="' + key + '"]'); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' }); }, 30); } catch (e) { }
+    if (this._hiT) clearTimeout(this._hiT); this._hiT = setTimeout(function () { self.setState({ recHi: null }); }, 1600);
+  },
   /* ---------- subpáginas: árbol de páginas ---------- */
   pageKids(s, id) { return s.pages.order.filter(function (x) { return s.pages.byId[x] && s.pages.byId[x].parent === id && x !== id; }); },
   pageDesc(s, id) { var self = this, acc = {}; (function w(x) { self.pageKids(s, x).forEach(function (k) { if (!acc[k]) { acc[k] = true; w(k); } }); })(id); return acc; },

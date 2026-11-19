@@ -1516,17 +1516,33 @@ body.org-dragging,body.org-dragging *{cursor:grabbing!important;user-select:none
   *{-webkit-tap-highlight-color:transparent}
 }
 
-/* ---------- arrastre con el dedo ---------- */
+/* ---------- arrastre: copia fiel que flota ---------- */
 .bt-grip{touch-action:none}
-.td-ghost{position:fixed!important;left:0;top:0;z-index:99999;margin:0!important;pointer-events:none;overflow:hidden;border-radius:var(--r);background:var(--panel);opacity:.97;box-shadow:0 20px 44px rgba(20,20,16,.28),0 6px 14px rgba(20,20,16,.14);animation:tdPop .24s cubic-bezier(.2,.8,.3,1.3) both;will-change:transform}
-.td-ghost *{pointer-events:none!important}
-.td-ghost.td-gone{opacity:0;transition:opacity .15s ease}
-@keyframes tdPop{0%{scale:1}60%{scale:1.05}100%{scale:1.03}}
-.td-src{opacity:.4}
+.td-ghost{position:fixed;left:0;top:0;z-index:99999;pointer-events:none;overflow:hidden;box-shadow:0 22px 48px rgba(20,20,16,.26),0 8px 18px rgba(20,20,16,.14),0 0 0 1px rgba(20,20,16,.04);will-change:transform;transform-origin:50% 30%;animation:tdLift .28s cubic-bezier(.2,.9,.3,1.25) both}
+.td-ghost,.td-ghost *{pointer-events:none!important}
+.td-ghost>*{animation:tdWobble .55s cubic-bezier(.2,.7,.3,1) both}
+@keyframes tdLift{0%{scale:1;box-shadow:0 1px 2px rgba(20,20,16,.06)}100%{scale:1.035}}
+@keyframes tdWobble{0%{transform:scale(1,1)}30%{transform:scale(1.018,.982)}60%{transform:scale(.994,1.006)}100%{transform:scale(1,1)}}
+.td-ghost.td-gone{animation:tdDrop .2s ease-in forwards}
+@keyframes tdDrop{to{scale:.97;opacity:0}}
+.td-src{opacity:.35;filter:saturate(.6);transition:opacity .2s ease,filter .2s ease;outline:2px dashed color-mix(in srgb,var(--acc) 40%,transparent);outline-offset:-2px}
 body.td-active,body.td-active *{user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
 body.td-active .board{scroll-snap-type:none!important}
 @media (pointer:coarse){.nav-row[draggable="true"],.kcard[draggable="true"],.fb-item[draggable="true"]{-webkit-touch-callout:none}}
-@media (prefers-reduced-motion:reduce){.td-ghost{animation:none;scale:1.02}}
+@media (prefers-reduced-motion:reduce){.td-ghost,.td-ghost>*{animation:none}.td-ghost.td-gone{animation:none;opacity:0}}
+/* destino al soltar: línea luminosa */
+.blk.drop-before::before,.blk.drop-after::after{box-shadow:0 0 0 3px color-mix(in srgb,var(--acc) 22%,transparent),0 0 14px color-mix(in srgb,var(--acc) 45%,transparent)}
+/* fórmulas: componentes en vez del texto de la fórmula */
+.frefs{display:flex;flex-wrap:wrap;align-items:center;gap:5px;margin-top:4px}
+.frefs-t{font-size:11px;color:var(--muted)}
+.fref{display:inline-flex;align-items:center;min-height:22px;padding:1px 8px;border-radius:999px;border:1px solid var(--line);background:var(--panel);color:var(--text);font-size:11.5px;cursor:pointer;transition:background .15s ease,border-color .15s ease,transform .15s ease}
+.fref:hover{border-color:var(--acc);background:color-mix(in srgb,var(--acc) 8%,var(--panel));transform:translateY(-1px)}
+.fref.ext::after{content:"↗";margin-left:4px;font-size:10px;color:var(--muted)}
+.fref.calc{border-style:dashed}
+.frow.f-hi{animation:fHi 1.5s ease-out}
+@keyframes fHi{0%,35%{background:color-mix(in srgb,var(--acc) 16%,transparent);box-shadow:0 0 0 2px color-mix(in srgb,var(--acc) 40%,transparent)}100%{background:transparent;box-shadow:none}}
+@media (pointer:coarse){.fref{min-height:30px;padding:3px 11px}}
+
 </style>
 </helmet>
 <div class="app theme-{{mode}} acc-{{accent}} dens-{{density}} rad-{{corners}} font-{{font}}">
@@ -1897,11 +1913,11 @@ body.td-active .board{scroll-snap-type:none!important}
         <sc-for list="{{bl.ch.segs}}" as="sg" hint-placeholder-count="4"><svg class="dn-svg" viewBox="0 0 120 120" aria-hidden="true"><circle class="dn-seg {{sg.cls}}" cx="60" cy="60" r="44" style="stroke: {{sg.color}}; stroke-dasharray: {{sg.dash}}; stroke-dashoffset: {{sg.off}}"></circle></svg></sc-for>
         <div class="dn-center"><strong>{{bl.ch.total}}</strong><span>{{bl.ch.totalCaption}}</span></div>
       </div>
-      <div class="dn-legend">
+      <sc-if value="{{bl.ch.showLegend}}" hint-placeholder-val="{{true}}"><div class="dn-legend">
         <sc-for list="{{bl.ch.bars}}" as="b" hint-placeholder-count="4">
           <button type="button" class="dl {{b.cls}}" onClick="{{b.pick}}" aria-label="{{b.aria}}" aria-pressed="{{b.on}}"><span class="dl-dot" style="background: {{b.color}}"></span><span class="dl-lab">{{b.label}}</span><span class="dl-val">{{b.valueText}}</span><span class="dl-share">{{b.share}}</span></button>
         </sc-for>
-      </div>
+      </div></sc-if>
     </div>
   </sc-if>
 </div>
@@ -1972,7 +1988,7 @@ body.td-active .board{scroll-snap-type:none!important}
         <div class="cb-fx"><span class="fx-badge">fx</span><code class="mono cb-code">{{bl.dv.cb.formula}}</code><sc-if value="{{bl.dv.cb.canEditFormula}}" hint-placeholder-val="{{true}}"><button type="button" class="btn btn-xs" onClick="{{bl.dv.cb.editFormula}}">Editar fórmula</button></sc-if></div>
       </sc-if>
       <div class="cb-field"><sc-for list="{{bl.dv.cb.fields}}" as="f" hint-placeholder-count="6">
-<div class="frow {{f.rowCls}}">
+<div class="frow {{f.rowCls}}" data-fkey="{{f.fkey}}">
 <div class="flabel" title="{{f.desc}}"><svg class="ic ic-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="{{f.icon}}"></path></svg><span>{{f.label}}</span></div>
 <div class="fval">
 <sc-if value="{{f.eInput}}" hint-placeholder-val="{{true}}"><div class="fin-row"><input class="finput" type="{{f.itype}}" value="{{f.value}}" onChange="{{f.onChange}}" placeholder="{{f.placeholder}}" aria-label="{{f.label}}"><sc-if value="{{f.hasLink}}" hint-placeholder-val="{{false}}"><a class="icon-btn sm" href="{{f.linkHref}}" target="_blank" rel="noopener noreferrer" aria-label="{{f.linkAria}}" title="{{f.linkAria}}"><svg class="ic ic-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.ext}}"></path></svg></a></sc-if></div></sc-if>
@@ -1994,7 +2010,7 @@ body.td-active .board{scroll-snap-type:none!important}
 <sc-if value="{{f.eButton}}" hint-placeholder-val="{{false}}"><div><button type="button" class="btn btn-sm" onClick="{{f.run}}"><svg class="ic ic-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.bolt}}"></path></svg>{{f.btnLabel}}</button></div></sc-if>
 <sc-if value="{{f.eAi}}" hint-placeholder-val="{{false}}"><div class="ai-val"><span class="v-ai">{{f.aiText}}</span><button type="button" class="link-btn" onClick="{{f.aiGen}}"><svg class="ic ic-xs" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.ai}}"></path></svg>{{f.aiBtn}}</button></div></sc-if>
 <sc-if value="{{f.eRead}}" hint-placeholder-val="{{false}}"><div class="fro"><sc-if value="{{f.d.kText}}" hint-placeholder-val="{{true}}"><span class="v-text {{f.d.cls}}">{{f.d.text}}</span></sc-if><sc-if value="{{f.d.kPills}}" hint-placeholder-val="{{false}}"><span class="v-pills"><sc-for list="{{f.d.pills}}" as="pl" hint-placeholder-count="1"><span class="pill {{pl.cls}}"><sc-if value="{{pl.dot}}" hint-placeholder-val="{{false}}"><span class="sdot"></span></sc-if>{{pl.text}}</span></sc-for></span></sc-if><sc-if value="{{f.d.kChips}}" hint-placeholder-val="{{false}}"><span class="chips"><sc-for list="{{f.d.chips}}" as="ch" hint-placeholder-count="1"><sc-if value="{{ch.locked}}" hint-placeholder-val="{{false}}"><span class="chip chip-locked">Restringido</span></sc-if><sc-if value="{{ch.ok}}" hint-placeholder-val="{{true}}"><button type="button" class="chip lift" onClick="{{ch.open}}"><span class="chip-dot" style="background: {{ch.color}}"></span>{{ch.label}}</button></sc-if></sc-for></span></sc-if><sc-if value="{{f.d.kPeople}}" hint-placeholder-val="{{false}}"><span class="v-people"><sc-for list="{{f.d.people}}" as="pp" hint-placeholder-count="1"><span class="person"><span class="av sm" style="background: {{pp.color}}">{{pp.initials}}</span>{{pp.name}}</span></sc-for></span></sc-if><sc-if value="{{f.d.kCheck}}" hint-placeholder-val="{{false}}"><sc-if value="{{f.d.canToggle}}" hint-placeholder-val="{{false}}"><button type="button" class="cbox lift {{f.d.checkCls}}" onClick="{{f.d.toggle}}" aria-pressed="{{f.d.checked}}" aria-label="{{f.d.aria}}"><svg class="ic ic-check" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></button></sc-if><sc-if value="{{f.d.noToggle}}" hint-placeholder-val="{{true}}"><span class="cbox {{f.d.checkCls}}"><svg class="ic ic-check" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg><span class="sr-only">{{f.d.srText}}</span></span></sc-if></sc-if><sc-if value="{{f.d.kBar}}" hint-placeholder-val="{{false}}"><span class="v-bar"><span class="vb-track"><span class="vb-fill" style="width: {{f.d.pct}}%"></span></span><span class="vb-txt">{{f.d.text}}</span></span></sc-if><sc-if value="{{f.d.kRing}}" hint-placeholder-val="{{false}}"><span class="v-bar"><svg class="ring" viewBox="0 0 18 18" aria-hidden="true"><circle class="ring-bg" cx="9" cy="9" r="7"></circle><circle class="ring-fg" cx="9" cy="9" r="7" style="stroke-dasharray: {{f.d.dash}}"></circle></svg><span class="vb-txt">{{f.d.text}}</span></span></sc-if><sc-if value="{{f.d.kLink}}" hint-placeholder-val="{{false}}"><a class="v-link lift" href="{{f.d.href}}" target="_blank" rel="noopener noreferrer">{{f.d.linkText}}</a></sc-if><sc-if value="{{f.d.kFiles}}" hint-placeholder-val="{{false}}"><span class="v-files"><sc-for list="{{f.d.files}}" as="fl" hint-placeholder-count="1"><span class="file-chip"><svg class="ic ic-xs" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.files}}"></path></svg>{{fl.name}}</span></sc-for></span></sc-if><sc-if value="{{f.d.kButton}}" hint-placeholder-val="{{false}}"><button type="button" class="btn btn-xs lift" onClick="{{f.d.run}}" disabled="{{f.d.btnDis}}"><svg class="ic ic-xs" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.bolt}}"></path></svg>{{f.d.btnLabel}}</button></sc-if></div></sc-if>
-<sc-if value="{{f.hasNote}}" hint-placeholder-val="{{false}}"><span class="fnote">{{f.note}}</span></sc-if>
+<sc-if value="{{f.hasNote}}" hint-placeholder-val="{{false}}"><span class="fnote">{{f.note}}</span></sc-if><sc-if value="{{f.hasRefs}}" hint-placeholder-val="{{false}}"><span class="frefs" title="{{f.refsTip}}"><span class="frefs-t">Se calcula con</span><sc-for list="{{f.refs}}" as="rf" hint-placeholder-count="2"><button type="button" class="fref {{rf.cls}}" onClick="{{rf.go}}" title="{{rf.tip}}">{{rf.label}}</button></sc-for></span></sc-if>
 </div>
 </div>
 </sc-for></div>
@@ -2171,11 +2187,11 @@ body.td-active .board{scroll-snap-type:none!important}
         <sc-for list="{{bl.dv.chart.segs}}" as="sg" hint-placeholder-count="4"><svg class="dn-svg" viewBox="0 0 120 120" aria-hidden="true"><circle class="dn-seg {{sg.cls}}" cx="60" cy="60" r="44" style="stroke: {{sg.color}}; stroke-dasharray: {{sg.dash}}; stroke-dashoffset: {{sg.off}}"></circle></svg></sc-for>
         <div class="dn-center"><strong>{{bl.dv.chart.total}}</strong><span>{{bl.dv.chart.totalCaption}}</span></div>
       </div>
-      <div class="dn-legend">
+      <sc-if value="{{bl.dv.chart.showLegend}}" hint-placeholder-val="{{true}}"><div class="dn-legend">
         <sc-for list="{{bl.dv.chart.bars}}" as="b" hint-placeholder-count="4">
           <button type="button" class="dl {{b.cls}}" onClick="{{b.pick}}" aria-label="{{b.aria}}" aria-pressed="{{b.on}}"><span class="dl-dot" style="background: {{b.color}}"></span><span class="dl-lab">{{b.label}}</span><span class="dl-val">{{b.valueText}}</span><span class="dl-share">{{b.share}}</span></button>
         </sc-for>
-      </div>
+      </div></sc-if>
     </div>
   </sc-if>
 </div>
@@ -2190,7 +2206,7 @@ body.td-active .board{scroll-snap-type:none!important}
       <p class="sub">{{bl.dv.form.sub}}</p>
       <div class="fields" style="margin-top: 14px">
         <sc-for list="{{bl.dv.form.fields}}" as="f" hint-placeholder-count="6">
-<div class="frow {{f.rowCls}}">
+<div class="frow {{f.rowCls}}" data-fkey="{{f.fkey}}">
 <div class="flabel" title="{{f.desc}}"><svg class="ic ic-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="{{f.icon}}"></path></svg><span>{{f.label}}</span></div>
 <div class="fval">
 <sc-if value="{{f.eInput}}" hint-placeholder-val="{{true}}"><div class="fin-row"><input class="finput" type="{{f.itype}}" value="{{f.value}}" onChange="{{f.onChange}}" placeholder="{{f.placeholder}}" aria-label="{{f.label}}"><sc-if value="{{f.hasLink}}" hint-placeholder-val="{{false}}"><a class="icon-btn sm" href="{{f.linkHref}}" target="_blank" rel="noopener noreferrer" aria-label="{{f.linkAria}}" title="{{f.linkAria}}"><svg class="ic ic-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.ext}}"></path></svg></a></sc-if></div></sc-if>
@@ -2212,7 +2228,7 @@ body.td-active .board{scroll-snap-type:none!important}
 <sc-if value="{{f.eButton}}" hint-placeholder-val="{{false}}"><div><button type="button" class="btn btn-sm" onClick="{{f.run}}"><svg class="ic ic-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.bolt}}"></path></svg>{{f.btnLabel}}</button></div></sc-if>
 <sc-if value="{{f.eAi}}" hint-placeholder-val="{{false}}"><div class="ai-val"><span class="v-ai">{{f.aiText}}</span><button type="button" class="link-btn" onClick="{{f.aiGen}}"><svg class="ic ic-xs" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.ai}}"></path></svg>{{f.aiBtn}}</button></div></sc-if>
 <sc-if value="{{f.eRead}}" hint-placeholder-val="{{false}}"><div class="fro"><sc-if value="{{f.d.kText}}" hint-placeholder-val="{{true}}"><span class="v-text {{f.d.cls}}">{{f.d.text}}</span></sc-if><sc-if value="{{f.d.kPills}}" hint-placeholder-val="{{false}}"><span class="v-pills"><sc-for list="{{f.d.pills}}" as="pl" hint-placeholder-count="1"><span class="pill {{pl.cls}}"><sc-if value="{{pl.dot}}" hint-placeholder-val="{{false}}"><span class="sdot"></span></sc-if>{{pl.text}}</span></sc-for></span></sc-if><sc-if value="{{f.d.kChips}}" hint-placeholder-val="{{false}}"><span class="chips"><sc-for list="{{f.d.chips}}" as="ch" hint-placeholder-count="1"><sc-if value="{{ch.locked}}" hint-placeholder-val="{{false}}"><span class="chip chip-locked">Restringido</span></sc-if><sc-if value="{{ch.ok}}" hint-placeholder-val="{{true}}"><button type="button" class="chip lift" onClick="{{ch.open}}"><span class="chip-dot" style="background: {{ch.color}}"></span>{{ch.label}}</button></sc-if></sc-for></span></sc-if><sc-if value="{{f.d.kPeople}}" hint-placeholder-val="{{false}}"><span class="v-people"><sc-for list="{{f.d.people}}" as="pp" hint-placeholder-count="1"><span class="person"><span class="av sm" style="background: {{pp.color}}">{{pp.initials}}</span>{{pp.name}}</span></sc-for></span></sc-if><sc-if value="{{f.d.kCheck}}" hint-placeholder-val="{{false}}"><sc-if value="{{f.d.canToggle}}" hint-placeholder-val="{{false}}"><button type="button" class="cbox lift {{f.d.checkCls}}" onClick="{{f.d.toggle}}" aria-pressed="{{f.d.checked}}" aria-label="{{f.d.aria}}"><svg class="ic ic-check" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></button></sc-if><sc-if value="{{f.d.noToggle}}" hint-placeholder-val="{{true}}"><span class="cbox {{f.d.checkCls}}"><svg class="ic ic-check" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg><span class="sr-only">{{f.d.srText}}</span></span></sc-if></sc-if><sc-if value="{{f.d.kBar}}" hint-placeholder-val="{{false}}"><span class="v-bar"><span class="vb-track"><span class="vb-fill" style="width: {{f.d.pct}}%"></span></span><span class="vb-txt">{{f.d.text}}</span></span></sc-if><sc-if value="{{f.d.kRing}}" hint-placeholder-val="{{false}}"><span class="v-bar"><svg class="ring" viewBox="0 0 18 18" aria-hidden="true"><circle class="ring-bg" cx="9" cy="9" r="7"></circle><circle class="ring-fg" cx="9" cy="9" r="7" style="stroke-dasharray: {{f.d.dash}}"></circle></svg><span class="vb-txt">{{f.d.text}}</span></span></sc-if><sc-if value="{{f.d.kLink}}" hint-placeholder-val="{{false}}"><a class="v-link lift" href="{{f.d.href}}" target="_blank" rel="noopener noreferrer">{{f.d.linkText}}</a></sc-if><sc-if value="{{f.d.kFiles}}" hint-placeholder-val="{{false}}"><span class="v-files"><sc-for list="{{f.d.files}}" as="fl" hint-placeholder-count="1"><span class="file-chip"><svg class="ic ic-xs" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.files}}"></path></svg>{{fl.name}}</span></sc-for></span></sc-if><sc-if value="{{f.d.kButton}}" hint-placeholder-val="{{false}}"><button type="button" class="btn btn-xs lift" onClick="{{f.d.run}}" disabled="{{f.d.btnDis}}"><svg class="ic ic-xs" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.bolt}}"></path></svg>{{f.d.btnLabel}}</button></sc-if></div></sc-if>
-<sc-if value="{{f.hasNote}}" hint-placeholder-val="{{false}}"><span class="fnote">{{f.note}}</span></sc-if>
+<sc-if value="{{f.hasNote}}" hint-placeholder-val="{{false}}"><span class="fnote">{{f.note}}</span></sc-if><sc-if value="{{f.hasRefs}}" hint-placeholder-val="{{false}}"><span class="frefs" title="{{f.refsTip}}"><span class="frefs-t">Se calcula con</span><sc-for list="{{f.refs}}" as="rf" hint-placeholder-count="2"><button type="button" class="fref {{rf.cls}}" onClick="{{rf.go}}" title="{{rf.tip}}">{{rf.label}}</button></sc-for></span></sc-if>
 </div>
 </div>
 </sc-for>
@@ -2395,7 +2411,7 @@ body.td-active .board{scroll-snap-type:none!important}
         <div class="cb-fx"><span class="fx-badge">fx</span><code class="mono cb-code">{{db.dv.cb.formula}}</code><sc-if value="{{db.dv.cb.canEditFormula}}" hint-placeholder-val="{{true}}"><button type="button" class="btn btn-xs" onClick="{{db.dv.cb.editFormula}}">Editar fórmula</button></sc-if></div>
       </sc-if>
       <div class="cb-field"><sc-for list="{{db.dv.cb.fields}}" as="f" hint-placeholder-count="6">
-<div class="frow {{f.rowCls}}">
+<div class="frow {{f.rowCls}}" data-fkey="{{f.fkey}}">
 <div class="flabel" title="{{f.desc}}"><svg class="ic ic-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="{{f.icon}}"></path></svg><span>{{f.label}}</span></div>
 <div class="fval">
 <sc-if value="{{f.eInput}}" hint-placeholder-val="{{true}}"><div class="fin-row"><input class="finput" type="{{f.itype}}" value="{{f.value}}" onChange="{{f.onChange}}" placeholder="{{f.placeholder}}" aria-label="{{f.label}}"><sc-if value="{{f.hasLink}}" hint-placeholder-val="{{false}}"><a class="icon-btn sm" href="{{f.linkHref}}" target="_blank" rel="noopener noreferrer" aria-label="{{f.linkAria}}" title="{{f.linkAria}}"><svg class="ic ic-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.ext}}"></path></svg></a></sc-if></div></sc-if>
@@ -2417,7 +2433,7 @@ body.td-active .board{scroll-snap-type:none!important}
 <sc-if value="{{f.eButton}}" hint-placeholder-val="{{false}}"><div><button type="button" class="btn btn-sm" onClick="{{f.run}}"><svg class="ic ic-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.bolt}}"></path></svg>{{f.btnLabel}}</button></div></sc-if>
 <sc-if value="{{f.eAi}}" hint-placeholder-val="{{false}}"><div class="ai-val"><span class="v-ai">{{f.aiText}}</span><button type="button" class="link-btn" onClick="{{f.aiGen}}"><svg class="ic ic-xs" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.ai}}"></path></svg>{{f.aiBtn}}</button></div></sc-if>
 <sc-if value="{{f.eRead}}" hint-placeholder-val="{{false}}"><div class="fro"><sc-if value="{{f.d.kText}}" hint-placeholder-val="{{true}}"><span class="v-text {{f.d.cls}}">{{f.d.text}}</span></sc-if><sc-if value="{{f.d.kPills}}" hint-placeholder-val="{{false}}"><span class="v-pills"><sc-for list="{{f.d.pills}}" as="pl" hint-placeholder-count="1"><span class="pill {{pl.cls}}"><sc-if value="{{pl.dot}}" hint-placeholder-val="{{false}}"><span class="sdot"></span></sc-if>{{pl.text}}</span></sc-for></span></sc-if><sc-if value="{{f.d.kChips}}" hint-placeholder-val="{{false}}"><span class="chips"><sc-for list="{{f.d.chips}}" as="ch" hint-placeholder-count="1"><sc-if value="{{ch.locked}}" hint-placeholder-val="{{false}}"><span class="chip chip-locked">Restringido</span></sc-if><sc-if value="{{ch.ok}}" hint-placeholder-val="{{true}}"><button type="button" class="chip lift" onClick="{{ch.open}}"><span class="chip-dot" style="background: {{ch.color}}"></span>{{ch.label}}</button></sc-if></sc-for></span></sc-if><sc-if value="{{f.d.kPeople}}" hint-placeholder-val="{{false}}"><span class="v-people"><sc-for list="{{f.d.people}}" as="pp" hint-placeholder-count="1"><span class="person"><span class="av sm" style="background: {{pp.color}}">{{pp.initials}}</span>{{pp.name}}</span></sc-for></span></sc-if><sc-if value="{{f.d.kCheck}}" hint-placeholder-val="{{false}}"><sc-if value="{{f.d.canToggle}}" hint-placeholder-val="{{false}}"><button type="button" class="cbox lift {{f.d.checkCls}}" onClick="{{f.d.toggle}}" aria-pressed="{{f.d.checked}}" aria-label="{{f.d.aria}}"><svg class="ic ic-check" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></button></sc-if><sc-if value="{{f.d.noToggle}}" hint-placeholder-val="{{true}}"><span class="cbox {{f.d.checkCls}}"><svg class="ic ic-check" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg><span class="sr-only">{{f.d.srText}}</span></span></sc-if></sc-if><sc-if value="{{f.d.kBar}}" hint-placeholder-val="{{false}}"><span class="v-bar"><span class="vb-track"><span class="vb-fill" style="width: {{f.d.pct}}%"></span></span><span class="vb-txt">{{f.d.text}}</span></span></sc-if><sc-if value="{{f.d.kRing}}" hint-placeholder-val="{{false}}"><span class="v-bar"><svg class="ring" viewBox="0 0 18 18" aria-hidden="true"><circle class="ring-bg" cx="9" cy="9" r="7"></circle><circle class="ring-fg" cx="9" cy="9" r="7" style="stroke-dasharray: {{f.d.dash}}"></circle></svg><span class="vb-txt">{{f.d.text}}</span></span></sc-if><sc-if value="{{f.d.kLink}}" hint-placeholder-val="{{false}}"><a class="v-link lift" href="{{f.d.href}}" target="_blank" rel="noopener noreferrer">{{f.d.linkText}}</a></sc-if><sc-if value="{{f.d.kFiles}}" hint-placeholder-val="{{false}}"><span class="v-files"><sc-for list="{{f.d.files}}" as="fl" hint-placeholder-count="1"><span class="file-chip"><svg class="ic ic-xs" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.files}}"></path></svg>{{fl.name}}</span></sc-for></span></sc-if><sc-if value="{{f.d.kButton}}" hint-placeholder-val="{{false}}"><button type="button" class="btn btn-xs lift" onClick="{{f.d.run}}" disabled="{{f.d.btnDis}}"><svg class="ic ic-xs" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.bolt}}"></path></svg>{{f.d.btnLabel}}</button></sc-if></div></sc-if>
-<sc-if value="{{f.hasNote}}" hint-placeholder-val="{{false}}"><span class="fnote">{{f.note}}</span></sc-if>
+<sc-if value="{{f.hasNote}}" hint-placeholder-val="{{false}}"><span class="fnote">{{f.note}}</span></sc-if><sc-if value="{{f.hasRefs}}" hint-placeholder-val="{{false}}"><span class="frefs" title="{{f.refsTip}}"><span class="frefs-t">Se calcula con</span><sc-for list="{{f.refs}}" as="rf" hint-placeholder-count="2"><button type="button" class="fref {{rf.cls}}" onClick="{{rf.go}}" title="{{rf.tip}}">{{rf.label}}</button></sc-for></span></sc-if>
 </div>
 </div>
 </sc-for></div>
@@ -2594,11 +2610,11 @@ body.td-active .board{scroll-snap-type:none!important}
         <sc-for list="{{db.dv.chart.segs}}" as="sg" hint-placeholder-count="4"><svg class="dn-svg" viewBox="0 0 120 120" aria-hidden="true"><circle class="dn-seg {{sg.cls}}" cx="60" cy="60" r="44" style="stroke: {{sg.color}}; stroke-dasharray: {{sg.dash}}; stroke-dashoffset: {{sg.off}}"></circle></svg></sc-for>
         <div class="dn-center"><strong>{{db.dv.chart.total}}</strong><span>{{db.dv.chart.totalCaption}}</span></div>
       </div>
-      <div class="dn-legend">
+      <sc-if value="{{db.dv.chart.showLegend}}" hint-placeholder-val="{{true}}"><div class="dn-legend">
         <sc-for list="{{db.dv.chart.bars}}" as="b" hint-placeholder-count="4">
           <button type="button" class="dl {{b.cls}}" onClick="{{b.pick}}" aria-label="{{b.aria}}" aria-pressed="{{b.on}}"><span class="dl-dot" style="background: {{b.color}}"></span><span class="dl-lab">{{b.label}}</span><span class="dl-val">{{b.valueText}}</span><span class="dl-share">{{b.share}}</span></button>
         </sc-for>
-      </div>
+      </div></sc-if>
     </div>
   </sc-if>
 </div>
@@ -2613,7 +2629,7 @@ body.td-active .board{scroll-snap-type:none!important}
       <p class="sub">{{db.dv.form.sub}}</p>
       <div class="fields" style="margin-top: 14px">
         <sc-for list="{{db.dv.form.fields}}" as="f" hint-placeholder-count="6">
-<div class="frow {{f.rowCls}}">
+<div class="frow {{f.rowCls}}" data-fkey="{{f.fkey}}">
 <div class="flabel" title="{{f.desc}}"><svg class="ic ic-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="{{f.icon}}"></path></svg><span>{{f.label}}</span></div>
 <div class="fval">
 <sc-if value="{{f.eInput}}" hint-placeholder-val="{{true}}"><div class="fin-row"><input class="finput" type="{{f.itype}}" value="{{f.value}}" onChange="{{f.onChange}}" placeholder="{{f.placeholder}}" aria-label="{{f.label}}"><sc-if value="{{f.hasLink}}" hint-placeholder-val="{{false}}"><a class="icon-btn sm" href="{{f.linkHref}}" target="_blank" rel="noopener noreferrer" aria-label="{{f.linkAria}}" title="{{f.linkAria}}"><svg class="ic ic-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.ext}}"></path></svg></a></sc-if></div></sc-if>
@@ -2635,7 +2651,7 @@ body.td-active .board{scroll-snap-type:none!important}
 <sc-if value="{{f.eButton}}" hint-placeholder-val="{{false}}"><div><button type="button" class="btn btn-sm" onClick="{{f.run}}"><svg class="ic ic-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.bolt}}"></path></svg>{{f.btnLabel}}</button></div></sc-if>
 <sc-if value="{{f.eAi}}" hint-placeholder-val="{{false}}"><div class="ai-val"><span class="v-ai">{{f.aiText}}</span><button type="button" class="link-btn" onClick="{{f.aiGen}}"><svg class="ic ic-xs" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.ai}}"></path></svg>{{f.aiBtn}}</button></div></sc-if>
 <sc-if value="{{f.eRead}}" hint-placeholder-val="{{false}}"><div class="fro"><sc-if value="{{f.d.kText}}" hint-placeholder-val="{{true}}"><span class="v-text {{f.d.cls}}">{{f.d.text}}</span></sc-if><sc-if value="{{f.d.kPills}}" hint-placeholder-val="{{false}}"><span class="v-pills"><sc-for list="{{f.d.pills}}" as="pl" hint-placeholder-count="1"><span class="pill {{pl.cls}}"><sc-if value="{{pl.dot}}" hint-placeholder-val="{{false}}"><span class="sdot"></span></sc-if>{{pl.text}}</span></sc-for></span></sc-if><sc-if value="{{f.d.kChips}}" hint-placeholder-val="{{false}}"><span class="chips"><sc-for list="{{f.d.chips}}" as="ch" hint-placeholder-count="1"><sc-if value="{{ch.locked}}" hint-placeholder-val="{{false}}"><span class="chip chip-locked">Restringido</span></sc-if><sc-if value="{{ch.ok}}" hint-placeholder-val="{{true}}"><button type="button" class="chip lift" onClick="{{ch.open}}"><span class="chip-dot" style="background: {{ch.color}}"></span>{{ch.label}}</button></sc-if></sc-for></span></sc-if><sc-if value="{{f.d.kPeople}}" hint-placeholder-val="{{false}}"><span class="v-people"><sc-for list="{{f.d.people}}" as="pp" hint-placeholder-count="1"><span class="person"><span class="av sm" style="background: {{pp.color}}">{{pp.initials}}</span>{{pp.name}}</span></sc-for></span></sc-if><sc-if value="{{f.d.kCheck}}" hint-placeholder-val="{{false}}"><sc-if value="{{f.d.canToggle}}" hint-placeholder-val="{{false}}"><button type="button" class="cbox lift {{f.d.checkCls}}" onClick="{{f.d.toggle}}" aria-pressed="{{f.d.checked}}" aria-label="{{f.d.aria}}"><svg class="ic ic-check" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></button></sc-if><sc-if value="{{f.d.noToggle}}" hint-placeholder-val="{{true}}"><span class="cbox {{f.d.checkCls}}"><svg class="ic ic-check" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg><span class="sr-only">{{f.d.srText}}</span></span></sc-if></sc-if><sc-if value="{{f.d.kBar}}" hint-placeholder-val="{{false}}"><span class="v-bar"><span class="vb-track"><span class="vb-fill" style="width: {{f.d.pct}}%"></span></span><span class="vb-txt">{{f.d.text}}</span></span></sc-if><sc-if value="{{f.d.kRing}}" hint-placeholder-val="{{false}}"><span class="v-bar"><svg class="ring" viewBox="0 0 18 18" aria-hidden="true"><circle class="ring-bg" cx="9" cy="9" r="7"></circle><circle class="ring-fg" cx="9" cy="9" r="7" style="stroke-dasharray: {{f.d.dash}}"></circle></svg><span class="vb-txt">{{f.d.text}}</span></span></sc-if><sc-if value="{{f.d.kLink}}" hint-placeholder-val="{{false}}"><a class="v-link lift" href="{{f.d.href}}" target="_blank" rel="noopener noreferrer">{{f.d.linkText}}</a></sc-if><sc-if value="{{f.d.kFiles}}" hint-placeholder-val="{{false}}"><span class="v-files"><sc-for list="{{f.d.files}}" as="fl" hint-placeholder-count="1"><span class="file-chip"><svg class="ic ic-xs" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.files}}"></path></svg>{{fl.name}}</span></sc-for></span></sc-if><sc-if value="{{f.d.kButton}}" hint-placeholder-val="{{false}}"><button type="button" class="btn btn-xs lift" onClick="{{f.d.run}}" disabled="{{f.d.btnDis}}"><svg class="ic ic-xs" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.bolt}}"></path></svg>{{f.d.btnLabel}}</button></sc-if></div></sc-if>
-<sc-if value="{{f.hasNote}}" hint-placeholder-val="{{false}}"><span class="fnote">{{f.note}}</span></sc-if>
+<sc-if value="{{f.hasNote}}" hint-placeholder-val="{{false}}"><span class="fnote">{{f.note}}</span></sc-if><sc-if value="{{f.hasRefs}}" hint-placeholder-val="{{false}}"><span class="frefs" title="{{f.refsTip}}"><span class="frefs-t">Se calcula con</span><sc-for list="{{f.refs}}" as="rf" hint-placeholder-count="2"><button type="button" class="fref {{rf.cls}}" onClick="{{rf.go}}" title="{{rf.tip}}">{{rf.label}}</button></sc-for></span></sc-if>
 </div>
 </div>
 </sc-for>
@@ -2904,7 +2920,7 @@ body.td-active .board{scroll-snap-type:none!important}
       <sc-if value="{{sec.hasTitle}}" hint-placeholder-val="{{true}}"><h3 class="ph-sect">{{sec.title}}</h3></sc-if>
       <div class="fields">
         <sc-for list="{{sec.fields}}" as="f" hint-placeholder-count="6">
-<div class="frow {{f.rowCls}}">
+<div class="frow {{f.rowCls}}" data-fkey="{{f.fkey}}">
 <div class="flabel" title="{{f.desc}}"><svg class="ic ic-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="{{f.icon}}"></path></svg><span>{{f.label}}</span></div>
 <div class="fval">
 <sc-if value="{{f.eInput}}" hint-placeholder-val="{{true}}"><div class="fin-row"><input class="finput" type="{{f.itype}}" value="{{f.value}}" onChange="{{f.onChange}}" placeholder="{{f.placeholder}}" aria-label="{{f.label}}"><sc-if value="{{f.hasLink}}" hint-placeholder-val="{{false}}"><a class="icon-btn sm" href="{{f.linkHref}}" target="_blank" rel="noopener noreferrer" aria-label="{{f.linkAria}}" title="{{f.linkAria}}"><svg class="ic ic-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.ext}}"></path></svg></a></sc-if></div></sc-if>
@@ -2926,7 +2942,7 @@ body.td-active .board{scroll-snap-type:none!important}
 <sc-if value="{{f.eButton}}" hint-placeholder-val="{{false}}"><div><button type="button" class="btn btn-sm" onClick="{{f.run}}"><svg class="ic ic-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.bolt}}"></path></svg>{{f.btnLabel}}</button></div></sc-if>
 <sc-if value="{{f.eAi}}" hint-placeholder-val="{{false}}"><div class="ai-val"><span class="v-ai">{{f.aiText}}</span><button type="button" class="link-btn" onClick="{{f.aiGen}}"><svg class="ic ic-xs" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.ai}}"></path></svg>{{f.aiBtn}}</button></div></sc-if>
 <sc-if value="{{f.eRead}}" hint-placeholder-val="{{false}}"><div class="fro"><sc-if value="{{f.d.kText}}" hint-placeholder-val="{{true}}"><span class="v-text {{f.d.cls}}">{{f.d.text}}</span></sc-if><sc-if value="{{f.d.kPills}}" hint-placeholder-val="{{false}}"><span class="v-pills"><sc-for list="{{f.d.pills}}" as="pl" hint-placeholder-count="1"><span class="pill {{pl.cls}}"><sc-if value="{{pl.dot}}" hint-placeholder-val="{{false}}"><span class="sdot"></span></sc-if>{{pl.text}}</span></sc-for></span></sc-if><sc-if value="{{f.d.kChips}}" hint-placeholder-val="{{false}}"><span class="chips"><sc-for list="{{f.d.chips}}" as="ch" hint-placeholder-count="1"><sc-if value="{{ch.locked}}" hint-placeholder-val="{{false}}"><span class="chip chip-locked">Restringido</span></sc-if><sc-if value="{{ch.ok}}" hint-placeholder-val="{{true}}"><button type="button" class="chip lift" onClick="{{ch.open}}"><span class="chip-dot" style="background: {{ch.color}}"></span>{{ch.label}}</button></sc-if></sc-for></span></sc-if><sc-if value="{{f.d.kPeople}}" hint-placeholder-val="{{false}}"><span class="v-people"><sc-for list="{{f.d.people}}" as="pp" hint-placeholder-count="1"><span class="person"><span class="av sm" style="background: {{pp.color}}">{{pp.initials}}</span>{{pp.name}}</span></sc-for></span></sc-if><sc-if value="{{f.d.kCheck}}" hint-placeholder-val="{{false}}"><sc-if value="{{f.d.canToggle}}" hint-placeholder-val="{{false}}"><button type="button" class="cbox lift {{f.d.checkCls}}" onClick="{{f.d.toggle}}" aria-pressed="{{f.d.checked}}" aria-label="{{f.d.aria}}"><svg class="ic ic-check" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></button></sc-if><sc-if value="{{f.d.noToggle}}" hint-placeholder-val="{{true}}"><span class="cbox {{f.d.checkCls}}"><svg class="ic ic-check" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg><span class="sr-only">{{f.d.srText}}</span></span></sc-if></sc-if><sc-if value="{{f.d.kBar}}" hint-placeholder-val="{{false}}"><span class="v-bar"><span class="vb-track"><span class="vb-fill" style="width: {{f.d.pct}}%"></span></span><span class="vb-txt">{{f.d.text}}</span></span></sc-if><sc-if value="{{f.d.kRing}}" hint-placeholder-val="{{false}}"><span class="v-bar"><svg class="ring" viewBox="0 0 18 18" aria-hidden="true"><circle class="ring-bg" cx="9" cy="9" r="7"></circle><circle class="ring-fg" cx="9" cy="9" r="7" style="stroke-dasharray: {{f.d.dash}}"></circle></svg><span class="vb-txt">{{f.d.text}}</span></span></sc-if><sc-if value="{{f.d.kLink}}" hint-placeholder-val="{{false}}"><a class="v-link lift" href="{{f.d.href}}" target="_blank" rel="noopener noreferrer">{{f.d.linkText}}</a></sc-if><sc-if value="{{f.d.kFiles}}" hint-placeholder-val="{{false}}"><span class="v-files"><sc-for list="{{f.d.files}}" as="fl" hint-placeholder-count="1"><span class="file-chip"><svg class="ic ic-xs" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.files}}"></path></svg>{{fl.name}}</span></sc-for></span></sc-if><sc-if value="{{f.d.kButton}}" hint-placeholder-val="{{false}}"><button type="button" class="btn btn-xs lift" onClick="{{f.d.run}}" disabled="{{f.d.btnDis}}"><svg class="ic ic-xs" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.bolt}}"></path></svg>{{f.d.btnLabel}}</button></sc-if></div></sc-if>
-<sc-if value="{{f.hasNote}}" hint-placeholder-val="{{false}}"><span class="fnote">{{f.note}}</span></sc-if>
+<sc-if value="{{f.hasNote}}" hint-placeholder-val="{{false}}"><span class="fnote">{{f.note}}</span></sc-if><sc-if value="{{f.hasRefs}}" hint-placeholder-val="{{false}}"><span class="frefs" title="{{f.refsTip}}"><span class="frefs-t">Se calcula con</span><sc-for list="{{f.refs}}" as="rf" hint-placeholder-count="2"><button type="button" class="fref {{rf.cls}}" onClick="{{rf.go}}" title="{{rf.tip}}">{{rf.label}}</button></sc-for></span></sc-if>
 </div>
 </div>
 </sc-for>
@@ -3032,7 +3048,7 @@ body.td-active .board{scroll-snap-type:none!important}
       <sc-if value="{{sec.hasTitle}}" hint-placeholder-val="{{true}}"><h3 class="ph-sect">{{sec.title}}</h3></sc-if>
       <div class="fields">
         <sc-for list="{{sec.fields}}" as="f" hint-placeholder-count="6">
-<div class="frow {{f.rowCls}}">
+<div class="frow {{f.rowCls}}" data-fkey="{{f.fkey}}">
 <div class="flabel" title="{{f.desc}}"><svg class="ic ic-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="{{f.icon}}"></path></svg><span>{{f.label}}</span></div>
 <div class="fval">
 <sc-if value="{{f.eInput}}" hint-placeholder-val="{{true}}"><div class="fin-row"><input class="finput" type="{{f.itype}}" value="{{f.value}}" onChange="{{f.onChange}}" placeholder="{{f.placeholder}}" aria-label="{{f.label}}"><sc-if value="{{f.hasLink}}" hint-placeholder-val="{{false}}"><a class="icon-btn sm" href="{{f.linkHref}}" target="_blank" rel="noopener noreferrer" aria-label="{{f.linkAria}}" title="{{f.linkAria}}"><svg class="ic ic-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.ext}}"></path></svg></a></sc-if></div></sc-if>
@@ -3054,7 +3070,7 @@ body.td-active .board{scroll-snap-type:none!important}
 <sc-if value="{{f.eButton}}" hint-placeholder-val="{{false}}"><div><button type="button" class="btn btn-sm" onClick="{{f.run}}"><svg class="ic ic-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.bolt}}"></path></svg>{{f.btnLabel}}</button></div></sc-if>
 <sc-if value="{{f.eAi}}" hint-placeholder-val="{{false}}"><div class="ai-val"><span class="v-ai">{{f.aiText}}</span><button type="button" class="link-btn" onClick="{{f.aiGen}}"><svg class="ic ic-xs" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.ai}}"></path></svg>{{f.aiBtn}}</button></div></sc-if>
 <sc-if value="{{f.eRead}}" hint-placeholder-val="{{false}}"><div class="fro"><sc-if value="{{f.d.kText}}" hint-placeholder-val="{{true}}"><span class="v-text {{f.d.cls}}">{{f.d.text}}</span></sc-if><sc-if value="{{f.d.kPills}}" hint-placeholder-val="{{false}}"><span class="v-pills"><sc-for list="{{f.d.pills}}" as="pl" hint-placeholder-count="1"><span class="pill {{pl.cls}}"><sc-if value="{{pl.dot}}" hint-placeholder-val="{{false}}"><span class="sdot"></span></sc-if>{{pl.text}}</span></sc-for></span></sc-if><sc-if value="{{f.d.kChips}}" hint-placeholder-val="{{false}}"><span class="chips"><sc-for list="{{f.d.chips}}" as="ch" hint-placeholder-count="1"><sc-if value="{{ch.locked}}" hint-placeholder-val="{{false}}"><span class="chip chip-locked">Restringido</span></sc-if><sc-if value="{{ch.ok}}" hint-placeholder-val="{{true}}"><button type="button" class="chip lift" onClick="{{ch.open}}"><span class="chip-dot" style="background: {{ch.color}}"></span>{{ch.label}}</button></sc-if></sc-for></span></sc-if><sc-if value="{{f.d.kPeople}}" hint-placeholder-val="{{false}}"><span class="v-people"><sc-for list="{{f.d.people}}" as="pp" hint-placeholder-count="1"><span class="person"><span class="av sm" style="background: {{pp.color}}">{{pp.initials}}</span>{{pp.name}}</span></sc-for></span></sc-if><sc-if value="{{f.d.kCheck}}" hint-placeholder-val="{{false}}"><sc-if value="{{f.d.canToggle}}" hint-placeholder-val="{{false}}"><button type="button" class="cbox lift {{f.d.checkCls}}" onClick="{{f.d.toggle}}" aria-pressed="{{f.d.checked}}" aria-label="{{f.d.aria}}"><svg class="ic ic-check" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></button></sc-if><sc-if value="{{f.d.noToggle}}" hint-placeholder-val="{{true}}"><span class="cbox {{f.d.checkCls}}"><svg class="ic ic-check" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg><span class="sr-only">{{f.d.srText}}</span></span></sc-if></sc-if><sc-if value="{{f.d.kBar}}" hint-placeholder-val="{{false}}"><span class="v-bar"><span class="vb-track"><span class="vb-fill" style="width: {{f.d.pct}}%"></span></span><span class="vb-txt">{{f.d.text}}</span></span></sc-if><sc-if value="{{f.d.kRing}}" hint-placeholder-val="{{false}}"><span class="v-bar"><svg class="ring" viewBox="0 0 18 18" aria-hidden="true"><circle class="ring-bg" cx="9" cy="9" r="7"></circle><circle class="ring-fg" cx="9" cy="9" r="7" style="stroke-dasharray: {{f.d.dash}}"></circle></svg><span class="vb-txt">{{f.d.text}}</span></span></sc-if><sc-if value="{{f.d.kLink}}" hint-placeholder-val="{{false}}"><a class="v-link lift" href="{{f.d.href}}" target="_blank" rel="noopener noreferrer">{{f.d.linkText}}</a></sc-if><sc-if value="{{f.d.kFiles}}" hint-placeholder-val="{{false}}"><span class="v-files"><sc-for list="{{f.d.files}}" as="fl" hint-placeholder-count="1"><span class="file-chip"><svg class="ic ic-xs" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.files}}"></path></svg>{{fl.name}}</span></sc-for></span></sc-if><sc-if value="{{f.d.kButton}}" hint-placeholder-val="{{false}}"><button type="button" class="btn btn-xs lift" onClick="{{f.d.run}}" disabled="{{f.d.btnDis}}"><svg class="ic ic-xs" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.bolt}}"></path></svg>{{f.d.btnLabel}}</button></sc-if></div></sc-if>
-<sc-if value="{{f.hasNote}}" hint-placeholder-val="{{false}}"><span class="fnote">{{f.note}}</span></sc-if>
+<sc-if value="{{f.hasNote}}" hint-placeholder-val="{{false}}"><span class="fnote">{{f.note}}</span></sc-if><sc-if value="{{f.hasRefs}}" hint-placeholder-val="{{false}}"><span class="frefs" title="{{f.refsTip}}"><span class="frefs-t">Se calcula con</span><sc-for list="{{f.refs}}" as="rf" hint-placeholder-count="2"><button type="button" class="fref {{rf.cls}}" onClick="{{rf.go}}" title="{{rf.tip}}">{{rf.label}}</button></sc-for></span></sc-if>
 </div>
 </div>
 </sc-for>
@@ -3678,7 +3694,7 @@ body.td-active .board{scroll-snap-type:none!important}
       <div class="rec-meta">{{rec.meta}}</div>
       <div class="fields">
         <sc-for list="{{rec.fields}}" as="f" hint-placeholder-count="6">
-<div class="frow {{f.rowCls}}">
+<div class="frow {{f.rowCls}}" data-fkey="{{f.fkey}}">
 <div class="flabel" title="{{f.desc}}"><svg class="ic ic-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="{{f.icon}}"></path></svg><span>{{f.label}}</span></div>
 <div class="fval">
 <sc-if value="{{f.eInput}}" hint-placeholder-val="{{true}}"><div class="fin-row"><input class="finput" type="{{f.itype}}" value="{{f.value}}" onChange="{{f.onChange}}" placeholder="{{f.placeholder}}" aria-label="{{f.label}}"><sc-if value="{{f.hasLink}}" hint-placeholder-val="{{false}}"><a class="icon-btn sm" href="{{f.linkHref}}" target="_blank" rel="noopener noreferrer" aria-label="{{f.linkAria}}" title="{{f.linkAria}}"><svg class="ic ic-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.ext}}"></path></svg></a></sc-if></div></sc-if>
@@ -3700,7 +3716,7 @@ body.td-active .board{scroll-snap-type:none!important}
 <sc-if value="{{f.eButton}}" hint-placeholder-val="{{false}}"><div><button type="button" class="btn btn-sm" onClick="{{f.run}}"><svg class="ic ic-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.bolt}}"></path></svg>{{f.btnLabel}}</button></div></sc-if>
 <sc-if value="{{f.eAi}}" hint-placeholder-val="{{false}}"><div class="ai-val"><span class="v-ai">{{f.aiText}}</span><button type="button" class="link-btn" onClick="{{f.aiGen}}"><svg class="ic ic-xs" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.ai}}"></path></svg>{{f.aiBtn}}</button></div></sc-if>
 <sc-if value="{{f.eRead}}" hint-placeholder-val="{{false}}"><div class="fro"><sc-if value="{{f.d.kText}}" hint-placeholder-val="{{true}}"><span class="v-text {{f.d.cls}}">{{f.d.text}}</span></sc-if><sc-if value="{{f.d.kPills}}" hint-placeholder-val="{{false}}"><span class="v-pills"><sc-for list="{{f.d.pills}}" as="pl" hint-placeholder-count="1"><span class="pill {{pl.cls}}"><sc-if value="{{pl.dot}}" hint-placeholder-val="{{false}}"><span class="sdot"></span></sc-if>{{pl.text}}</span></sc-for></span></sc-if><sc-if value="{{f.d.kChips}}" hint-placeholder-val="{{false}}"><span class="chips"><sc-for list="{{f.d.chips}}" as="ch" hint-placeholder-count="1"><sc-if value="{{ch.locked}}" hint-placeholder-val="{{false}}"><span class="chip chip-locked">Restringido</span></sc-if><sc-if value="{{ch.ok}}" hint-placeholder-val="{{true}}"><button type="button" class="chip lift" onClick="{{ch.open}}"><span class="chip-dot" style="background: {{ch.color}}"></span>{{ch.label}}</button></sc-if></sc-for></span></sc-if><sc-if value="{{f.d.kPeople}}" hint-placeholder-val="{{false}}"><span class="v-people"><sc-for list="{{f.d.people}}" as="pp" hint-placeholder-count="1"><span class="person"><span class="av sm" style="background: {{pp.color}}">{{pp.initials}}</span>{{pp.name}}</span></sc-for></span></sc-if><sc-if value="{{f.d.kCheck}}" hint-placeholder-val="{{false}}"><sc-if value="{{f.d.canToggle}}" hint-placeholder-val="{{false}}"><button type="button" class="cbox lift {{f.d.checkCls}}" onClick="{{f.d.toggle}}" aria-pressed="{{f.d.checked}}" aria-label="{{f.d.aria}}"><svg class="ic ic-check" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></button></sc-if><sc-if value="{{f.d.noToggle}}" hint-placeholder-val="{{true}}"><span class="cbox {{f.d.checkCls}}"><svg class="ic ic-check" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg><span class="sr-only">{{f.d.srText}}</span></span></sc-if></sc-if><sc-if value="{{f.d.kBar}}" hint-placeholder-val="{{false}}"><span class="v-bar"><span class="vb-track"><span class="vb-fill" style="width: {{f.d.pct}}%"></span></span><span class="vb-txt">{{f.d.text}}</span></span></sc-if><sc-if value="{{f.d.kRing}}" hint-placeholder-val="{{false}}"><span class="v-bar"><svg class="ring" viewBox="0 0 18 18" aria-hidden="true"><circle class="ring-bg" cx="9" cy="9" r="7"></circle><circle class="ring-fg" cx="9" cy="9" r="7" style="stroke-dasharray: {{f.d.dash}}"></circle></svg><span class="vb-txt">{{f.d.text}}</span></span></sc-if><sc-if value="{{f.d.kLink}}" hint-placeholder-val="{{false}}"><a class="v-link lift" href="{{f.d.href}}" target="_blank" rel="noopener noreferrer">{{f.d.linkText}}</a></sc-if><sc-if value="{{f.d.kFiles}}" hint-placeholder-val="{{false}}"><span class="v-files"><sc-for list="{{f.d.files}}" as="fl" hint-placeholder-count="1"><span class="file-chip"><svg class="ic ic-xs" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.files}}"></path></svg>{{fl.name}}</span></sc-for></span></sc-if><sc-if value="{{f.d.kButton}}" hint-placeholder-val="{{false}}"><button type="button" class="btn btn-xs lift" onClick="{{f.d.run}}" disabled="{{f.d.btnDis}}"><svg class="ic ic-xs" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.bolt}}"></path></svg>{{f.d.btnLabel}}</button></sc-if></div></sc-if>
-<sc-if value="{{f.hasNote}}" hint-placeholder-val="{{false}}"><span class="fnote">{{f.note}}</span></sc-if>
+<sc-if value="{{f.hasNote}}" hint-placeholder-val="{{false}}"><span class="fnote">{{f.note}}</span></sc-if><sc-if value="{{f.hasRefs}}" hint-placeholder-val="{{false}}"><span class="frefs" title="{{f.refsTip}}"><span class="frefs-t">Se calcula con</span><sc-for list="{{f.refs}}" as="rf" hint-placeholder-count="2"><button type="button" class="fref {{rf.cls}}" onClick="{{rf.go}}" title="{{rf.tip}}">{{rf.label}}</button></sc-for></span></sc-if>
 </div>
 </div>
 </sc-for>
@@ -3833,6 +3849,8 @@ body.td-active .board{scroll-snap-type:none!important}
         <sc-if value="{{bk.isChart}}" hint-placeholder-val="{{true}}">
           <div class="dfield"><span class="dlabel">Orden</span><div class="seg"><sc-for list="{{bk.sortSeg}}" as="o" hint-placeholder-count="3"><button type="button" class="seg-btn {{o.cls}}" onClick="{{o.pick}}"><sc-if value="{{o.hasIcon}}" hint-placeholder-val="{{false}}"><svg class="ic ic-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="{{o.icon}}"></path></svg></sc-if><span>{{o.label}}</span></button></sc-for></div></div>
           <div class="dfield"><span class="dlabel">Mostrar</span><div class="seg"><sc-for list="{{bk.topSeg}}" as="o" hint-placeholder-count="3"><button type="button" class="seg-btn {{o.cls}}" onClick="{{o.pick}}"><sc-if value="{{o.hasIcon}}" hint-placeholder-val="{{false}}"><svg class="ic ic-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="{{o.icon}}"></path></svg></sc-if><span>{{o.label}}</span></button></sc-for></div></div>
+          <div class="dfield"><span class="dlabel">Paleta de colores</span><div class="seg"><sc-for list="{{bk.palSeg}}" as="o" hint-placeholder-count="3"><button type="button" class="seg-btn {{o.cls}}" onClick="{{o.pick}}"><sc-if value="{{o.hasIcon}}" hint-placeholder-val="{{false}}"><svg class="ic ic-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="{{o.icon}}"></path></svg></sc-if><span>{{o.label}}</span></button></sc-for></div></div>
+          <div class="dfield"><span class="dlabel">Leyenda</span><div class="seg"><sc-for list="{{bk.legendSeg}}" as="o" hint-placeholder-count="3"><button type="button" class="seg-btn {{o.cls}}" onClick="{{o.pick}}"><sc-if value="{{o.hasIcon}}" hint-placeholder-val="{{false}}"><svg class="ic ic-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="{{o.icon}}"></path></svg></sc-if><span>{{o.label}}</span></button></sc-for></div></div>
         </sc-if>
         <sc-if value="{{bk.hasRules}}" hint-placeholder-val="{{true}}"><div class="dsec">Filtros propios del bloque</div><p class="sub sm" style="margin: 0">{{brl.rulesIntro}}</p>
 <sc-for list="{{brl.rulesV}}" as="ru" hint-placeholder-count="1">
@@ -5186,6 +5204,15 @@ var AI_SUGS = [
   { label: '¿Cuánto ha vendido cada vendedor?', text: '¿Cuánto ha vendido cada vendedor?' }
 ];
 
+/* paletas de gráficos: «auto» usa el color de cada opción */
+var CHART_PALS = [
+  { id: 'auto', n: 'Colores de la tabla', c: [] },
+  { id: 'tecsur', n: 'TECSUR', c: ['#00468C', '#00705A', '#F8D000', '#5A6675', '#3F7FBF', '#4FA88E', '#B9A23A', '#93A0AE'] },
+  { id: 'sobria', n: 'Sobria', c: ['#1E3A5F', '#4C6A8A', '#7B93AD', '#A9BACB', '#5A6675', '#8C969F', '#C2C8CE', '#2F4858'] },
+  { id: 'viva', n: 'Viva', c: ['#2563EB', '#F97316', '#10B981', '#E11D48', '#8B5CF6', '#F59E0B', '#06B6D4', '#84CC16'] },
+  { id: 'mono', n: 'Un solo tono', c: ['#00468C', '#1A5C9F', '#3473B2', '#4E8AC5', '#68A1D8', '#82B8EB', '#9CCFFE', '#B6E0FF'] }
+];
+
 /* ================= componente: lectura y cálculo ================= */
 class Component extends DCLogic {
   st() {
@@ -6250,6 +6277,32 @@ Object.assign(Component.prototype, {
     this.setState({ pages: pages, seq: s.seq + 3, screen: 'page', page: id, navOpen: false, addBlockOpen: false, navFold: nf, log: this.addLog(s, par ? 'creó una subpágina de ' + (par.title || 'Sin título') : 'creó una página') });
     this.jellyOn('pg:' + id);
   },
+  /* ---------- fórmulas: componentes navegables ---------- */
+  formulaRefs(s, t, p) {
+    var self = this, out = [], seen = {}, ex = String(p.expr || '');
+    var re = /([A-Za-zÁÉÍÓÚÑáéíóúñ0-9_][A-Za-zÁÉÍÓÚÑáéíóúñ0-9_ .º°]*?)?\[([^\[\]]+)\]|prop\("([^"]+)"\)/g, m;
+    while ((m = re.exec(ex))) {
+      var tn = m[1] ? m[1].trim() : '', cn = (m[2] || m[3] || '').trim();
+      var key = tn + '|' + cn; if (seen[key]) continue; seen[key] = 1;
+      if (tn) {
+        var T2 = null; s.tables.order.forEach(function (id) { if (s.tables.byId[id].name === tn) T2 = s.tables.byId[id]; });
+        if (!T2) continue;
+        out.push({ label: tn + ' · ' + cn, cls: 'ext', tip: 'Abrir la tabla ' + tn, go: function () { self.go(T2.id, null); } });
+        continue;
+      }
+      var q = t.props.filter(function (x) { return x.name === cn; })[0];
+      if (!q) continue;
+      var tgt = q.type === 'relation' ? q.target : (q.type === 'rollup' ? ((propOf(t, q.rel) || {}).target) : null);
+      if (tgt && s.tables.byId[tgt]) out.push({ label: cn, cls: 'ext', tip: 'Viene de ' + s.tables.byId[tgt].name + ': abrir', go: (function (tid) { return function () { self.go(tid, null); }; })(tgt) });
+      else out.push({ label: cn, cls: q.type === 'formula' ? 'calc' : '', tip: 'Ir al campo ' + cn, go: (function (k) { return function () { self.recHighlight(k); }; })(q.key) });
+    }
+    return out;
+  },
+  recHighlight(key) {
+    var self = this; this.setState({ recHi: key });
+    try { setTimeout(function () { var el = document.querySelector('.frow[data-fkey="' + key + '"]'); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' }); }, 30); } catch (e) { }
+    if (this._hiT) clearTimeout(this._hiT); this._hiT = setTimeout(function () { self.setState({ recHi: null }); }, 1600);
+  },
   /* ---------- subpáginas: árbol de páginas ---------- */
   pageKids(s, id) { return s.pages.order.filter(function (x) { return s.pages.byId[x] && s.pages.byId[x].parent === id && x !== id; }); },
   pageDesc(s, id) { var self = this, acc = {}; (function w(x) { self.pageKids(s, x).forEach(function (k) { if (!acc[k]) { acc[k] = true; w(k); } }); })(id); return acc; },
@@ -6594,7 +6647,7 @@ Object.assign(Component.prototype, {
       value: '', itype: 'text', placeholder: 'Vacío', onChange: null, hasLink: false, linkHref: '', linkAria: '',
       options: [], people: [], checked: false, checkCls: '', toggle: null, files: [], addFile: null,
       chips: [], canLink: false, pickerOpen: false, pick: [], pickerTitle: '', togglePicker: null,
-      btnLabel: '', run: null, aiText: '', aiGen: null, aiBtn: '', hasNote: false, note: '', d: null, rowCls: ''
+      btnLabel: '', run: null, aiText: '', aiGen: null, aiBtn: '', hasNote: false, note: '', d: null, rowCls: (s.recHi === p.key ? 'f-hi' : ''), fkey: p.key, hasRefs: false, refs: [], refsTip: ''
     };
     var raw = row[p.key];
     if (p.type === 'title' && canEdit) {
@@ -6606,8 +6659,8 @@ Object.assign(Component.prototype, {
       f.eRead = true;
       f.d = this.dispOf(s, t, p, row, v, false);
       if (f.d.empty) { f.d.kText = true; f.d.text = '—'; f.d.cls = 'v-muted'; f.d.kButton = false; }
-      if (p.type === 'formula') { f.hasNote = true; f.note = 'Fórmula: ' + (p.expr || '(vacía)') + (f.d.cls === 'v-err' ? ' — ' + f.d.srText : ''); }
-      else if (p.type === 'rollup') { f.hasNote = true; f.note = this.rollupDesc(s, t, p); }
+      if (p.type === 'formula') { if (f.d.cls === 'v-err') { f.hasNote = true; f.note = f.d.srText; } f.refs = this.formulaRefs(s, t, p); f.hasRefs = f.refs.length > 0; f.refsTip = 'Fórmula: ' + (p.expr || '(vacía)'); }
+      else if (p.type === 'rollup') { var rel0 = propOf(t, p.rel), T0 = rel0 ? s.tables.byId[rel0.target] : null, P0 = T0 ? propOf(T0, p.prop) : null; if (T0) { var self0 = this; f.refs = [{ label: T0.name + (P0 && p.fn !== 'count' ? ' · ' + P0.name : ''), cls: 'ext', tip: this.rollupDesc(s, t, p) + ': abrir ' + T0.name, go: function () { self0.go(T0.id, null); } }]; f.hasRefs = true; f.refsTip = this.rollupDesc(s, t, p); } else { f.hasNote = true; f.note = this.rollupDesc(s, t, p); } }
       else if (COMPUTED[p.type]) { f.hasNote = true; f.note = 'Se completa sola'; }
       return f;
     }
@@ -6701,7 +6754,7 @@ Object.assign(Component.prototype, {
   /* ---------- gráfico ---------- */
   chartData(s, t, rows, cfg, click) {
     var self = this;
-    var P = { title: cfg.title || '', sub: '', hasHead: !!cfg.head, isBar: false, isColumn: false, isLine: false, isDonut: false, empty: false, emptyText: '', bars: [], segs: [], path: '', area: '', dots: [], grid: [], xlabels: [], total: '', totalCaption: '', lw: 640, lh: 200 };
+    var P = { showLegend: true, legendCls: '', title: cfg.title || '', sub: '', hasHead: !!cfg.head, isBar: false, isColumn: false, isLine: false, isDonut: false, empty: false, emptyText: '', bars: [], segs: [], path: '', area: '', dots: [], grid: [], xlabels: [], total: '', totalCaption: '', lw: 640, lh: 200 };
     var by = propOf(t, cfg.by);
     if (!by) { P.empty = true; P.emptyText = 'Elige por qué propiedad agrupar en la configuración.'; return P; }
     var groups = this.groupsOf(s, t, rows, by.key, { hideEmpty: true, bucket: cfg.bucket }) || [];
@@ -6711,6 +6764,9 @@ Object.assign(Component.prototype, {
     fmt = aggAll.fmt;
     if (cfg.kind !== 'line' && cfg.sort !== 'label') items.sort(function (a, b) { return cfg.sort === 'asc' ? a.value - b.value : b.value - a.value; });
     if (cfg.limit) items = items.slice(0, cfg.limit);
+    var palC = (CHART_PALS.filter(function (x) { return x.id === (cfg.pal || 'auto'); })[0] || CHART_PALS[0]).c;
+    if (palC.length) items.forEach(function (it, i) { it.color = palC[i % palC.length]; });
+    P.showLegend = cfg.legend !== 'hide'; P.legendCls = cfg.legend === 'hide' ? 'no-legend' : '';
     var kind = cfg.kind || 'column';
     P.isBar = kind === 'bar'; P.isColumn = kind === 'column'; P.isLine = kind === 'line'; P.isDonut = kind === 'donut';
     P.sub = aggAll.label + ' por ' + by.name + (isDateType(by) ? ' (' + ({ day: 'día', week: 'semana', month: 'mes' }[cfg.bucket || 'day']) + ')' : '');
@@ -7158,7 +7214,7 @@ Object.assign(Component.prototype, {
       rl: { rulesV: [], ruleProps: [] }, brl: { rulesV: [], ruleProps: [] }, sortsV: [], sortProps: [], groupAll: [], propsV: [], typesV: [], aiItems: [], conns: [], relQuick: [], autosV: [],
       trigSeg: [], trigProps: [], trigVals: [], actSeg: [], whoOpts: [], actProps: [], actVals: [], aiPropsV: [], dbColors: [], dbIcons: [], srcs: [],
       pe: { opts: [], typeList: [], fmtOpts: [], decSeg: [], showSeg: [], dateSeg: [], defOpts: [], checkSeg: [], resSeg: [], widthSeg: [], rollRels: [], rollProps: [], rollFns: [], insertProps: [], insertFns: [], btnProps: [], btnVals: [], aiModes: [] },
-      bk: { widthSeg: [], kindSeg: [], srcRadio: [], byRadio: [], bucketSeg: [], aggSeg: [], valRadio: [], sortSeg: [], topSeg: [], propRadio: [], colsSeg: [], rowsSeg: [] }
+      bk: { widthSeg: [], kindSeg: [], srcRadio: [], byRadio: [], bucketSeg: [], aggSeg: [], valRadio: [], sortSeg: [], topSeg: [], palSeg: [], legendSeg: [], propRadio: [], colsSeg: [], rowsSeg: [] }
     };
     ['root', 'layout', 'visibility', 'rules', 'sort', 'group', 'props', 'propEdit', 'newProp', 'automations', 'autoNew', 'ai', 'more', 'sources', 'block'].forEach(function (k) { D['dp_' + k] = false; });
     if (!page) return D;
@@ -7187,7 +7243,7 @@ Object.assign(Component.prototype, {
         }),
         up: function () { self.moveBlock(bid, -1); }, down: function () { self.moveBlock(bid, 1); },
         del: function () { self.delBlock(bid); }, delLabel: s.confirmDel === 'blk:' + bid ? 'Pulsa otra vez para quitar el bloque' : 'Quitar bloque',
-        kindSeg: [], byRadio: [], bucketSeg: [], aggSeg: [], valRadio: [], sortSeg: [], topSeg: [], propRadio: [], colsSeg: [], rowsSeg: [], hasBucket: false, needsVal: false
+        kindSeg: [], byRadio: [], bucketSeg: [], aggSeg: [], valRadio: [], sortSeg: [], topSeg: [], palSeg: [], legendSeg: [], propRadio: [], colsSeg: [], rowsSeg: [], hasBucket: false, needsVal: false
       };
       if (T && (b.type === 'chart' || b.type === 'kpi')) {
         var rp = this.rprops(s, T, v.role);
@@ -7211,6 +7267,8 @@ Object.assign(Component.prototype, {
         bk.hasBucket = !!byP && isDateType(byP);
         bk.bucketSeg = seg([{ id: 'day', label: 'Día' }, { id: 'week', label: 'Semana' }, { id: 'month', label: 'Mes' }], b.bucket || 'day', function (k) { upd(function (x) { x.bucket = k; }); });
         bk.sortSeg = seg([{ id: 'desc', label: 'Mayor a menor' }, { id: 'asc', label: 'Menor a mayor' }, { id: 'label', label: 'Por etiqueta' }], b.sort || 'desc', function (k) { upd(function (x) { x.sort = k; }); });
+        bk.palSeg = seg(CHART_PALS.map(function (x) { return { id: x.id, label: x.n }; }), b.pal || 'auto', function (k) { upd(function (x) { x.pal = k; }); });
+        bk.legendSeg = seg([{ id: 'show', label: 'Mostrar leyenda' }, { id: 'hide', label: 'Ocultar' }], b.legend || 'show', function (k) { upd(function (x) { x.legend = k; }); });
         bk.topSeg = seg([{ id: 0, label: 'Todos' }, { id: 5, label: 'Top 5' }, { id: 10, label: 'Top 10' }], b.limit || 0, function (k) { upd(function (x) { x.limit = Number(k); }); });
       }
       if (T && b.type === 'slicer') {
@@ -7690,7 +7748,7 @@ Object.assign(Component.prototype, {
       var isSrcC = !!(xf && xf.table === T.id && xf.prop === b.by);
       var rc = rowsFor(isSrcC);
       tag(rc.st);
-      bv.ch = this.chartView(this.chartData(s, T, this.applyFilters(s, T, rc.rows, b.filters, v), { head: false, title: b.title, kind: b.kind, by: b.by, bucket: b.bucket, val: b.val, sort: b.sort, limit: b.limit }, { pid: pid, current: xf }));
+      bv.ch = this.chartView(this.chartData(s, T, this.applyFilters(s, T, rc.rows, b.filters, v), { pal: b.pal, legend: b.legend, head: false, title: b.title, kind: b.kind, by: b.by, bucket: b.bucket, val: b.val, sort: b.sort, limit: b.limit }, { pid: pid, current: xf }));
       return bv;
     }
     if (b.type === 'db') {
@@ -11009,9 +11067,42 @@ function seedPortafolio() {
     if (vy) { if (sy) sy.scrollTop += vy; else window.scrollBy(0, vy); moved = true; }
     if (sx) { var rx = sx.getBoundingClientRect(), vx = edgeSpeed(S.x, rx.left, rx.right); if (vx) { sx.scrollLeft += vx; moved = true; } }
     if (moved) over(S.x, S.y);
+    if (Math.abs(S.rot || 0) > 0.05) place();
     raf = requestAnimationFrame(loop);
   }
-  function place() { if (S && S.ghost) S.ghost.style.transform = 'translate(' + Math.round(S.x - S.gx) + 'px,' + Math.round(S.y - S.gy) + 'px)'; }
+  /* copia fiel: se copian los estilos calculados de cada nodo, así conserva radios, bordes, colores y sombras */
+  var SKIP = { transition: 1, animation: 1, 'animation-name': 1, 'transition-property': 1, 'pointer-events': 1, cursor: 1, opacity: 1, transform: 1, translate: 1, scale: 1, rotate: 1, position: 1, inset: 1, top: 1, left: 1, right: 1, bottom: 1, margin: 1, 'margin-top': 1, 'margin-left': 1, 'margin-right': 1, 'margin-bottom': 1, 'z-index': 1, 'will-change': 1 };
+  function copyStyle(a, b) {
+    var cs = getComputedStyle(a), out = '';
+    for (var i = 0; i < cs.length; i++) { var k = cs[i]; if (SKIP[k] || k.indexOf('animation') === 0 || k.indexOf('transition') === 0) continue; out += k + ':' + cs.getPropertyValue(k) + ';'; }
+    b.setAttribute('style', out);
+  }
+  function makeGhost(vis, x, y) {
+    var r = vis.getBoundingClientRect(), g = vis.cloneNode(true);
+    var srcs = [vis].concat(Array.prototype.slice.call(vis.querySelectorAll('*'))), dsts = [g].concat(Array.prototype.slice.call(g.querySelectorAll('*')));
+    var lim = Math.min(srcs.length, 260);
+    for (var i = 0; i < lim; i++) copyStyle(srcs[i], dsts[i]);
+    for (var j = lim; j < dsts.length; j++) dsts[j].style.display = 'none';
+    Array.prototype.forEach.call(g.querySelectorAll('.blk-tools,.blk-rz,.open-hint,.cell-hit'), function (n) { n.style.display = 'none'; });
+    dsts.forEach(function (n) { if (n.removeAttribute) { n.removeAttribute('id'); n.removeAttribute('draggable'); n.removeAttribute('data-bid'); } });
+    var w = Math.min(r.width, window.innerWidth - 24), h = Math.min(r.height, 220);
+    var wrap = document.createElement('div');
+    wrap.className = 'td-ghost';
+    wrap.style.width = w + 'px'; wrap.style.height = h + 'px';
+    wrap.style.borderRadius = getComputedStyle(vis).borderRadius;
+    g.style.width = r.width + 'px'; g.style.boxSizing = 'border-box'; g.style.margin = '0';
+    wrap.appendChild(g);
+    document.body.appendChild(wrap);
+    return { el: wrap, gx: Math.max(12, Math.min(x - r.left, w * 0.6)), gy: Math.max(12, Math.min(y - r.top, h * 0.5)) };
+  }
+  /* inclinación suave según la velocidad del gesto */
+  function place() {
+    if (!S || !S.ghost) return;
+    var now = performance.now(), dt = Math.max(8, now - (S.lt || now - 16)), vx = (S.x - (S.lx == null ? S.x : S.lx)) / dt;
+    S.lx = S.x; S.lt = now;
+    var target = Math.max(-5, Math.min(5, vx * 9)); S.rot = (S.rot || 0) + (target - (S.rot || 0)) * 0.25;
+    S.ghost.style.transform = 'translate3d(' + Math.round(S.x - S.gx) + 'px,' + Math.round(S.y - S.gy) + 'px,0) rotate(' + S.rot.toFixed(2) + 'deg)';
+  }
   function over(x, y) {
     var t = document.elementFromPoint(x, y);
     if (t && S.ghost && S.ghost.contains(t)) t = S.over;
@@ -11024,15 +11115,15 @@ function seedPortafolio() {
     S.active = true; S.dt = mkDT();
     fire(S.src, 'dragstart', S.x, S.y);
     var vis = S.src.classList.contains('bt-grip') ? (S.src.closest('.blk') || S.src) : S.src;
-    var r = vis.getBoundingClientRect(), g = vis.cloneNode(true), w = Math.min(r.width, window.innerWidth - 24);
-    g.removeAttribute('id'); g.classList.add('td-ghost');
-    g.style.width = w + 'px'; g.style.maxHeight = '150px';
-    S.gx = Math.max(12, Math.min(S.x - r.left, w * 0.6)); S.gy = Math.max(12, Math.min(S.y - r.top, 44));
-    document.body.appendChild(g); S.ghost = g; S.vis = vis; vis.classList.add('td-src');
+    var gh = makeGhost(vis, S.x, S.y); S.ghost = gh.el; S.gx = gh.gx; S.gy = gh.gy; S.vis = vis; vis.classList.add('td-src');
     document.body.classList.add('td-active');
     try { if (navigator.vibrate) navigator.vibrate(10); } catch (e) { }
     place(); over(S.x, S.y);
     if (!raf) raf = requestAnimationFrame(loop);
+  }
+  function settle(g) {
+    g.classList.add('td-gone');
+    setTimeout(function () { if (g.parentNode) g.parentNode.removeChild(g); }, 200);
   }
   function finish(drop) {
     if (!S) return;
@@ -11042,11 +11133,37 @@ function seedPortafolio() {
       fire(s.src, 'dragend', s.x, s.y);
       swallowUntil = Date.now() + 500;
       if (s.vis) s.vis.classList.remove('td-src');
-      if (s.ghost) { var g = s.ghost; g.classList.add('td-gone'); setTimeout(function () { if (g.parentNode) g.parentNode.removeChild(g); }, 160); }
+      if (s.ghost) settle(s.ghost);
       document.body.classList.remove('td-active');
     }
     S = null;
   }
+  /* ratón: arrastre nativo, pero con la misma copia fiel en lugar de la imagen del navegador */
+  var M = null, BLANK = null;
+  document.addEventListener('dragstart', function (e) {
+    if (S || !e.isTrusted) return;
+    var src = e.target && e.target.closest ? e.target.closest(SEL) : null;
+    if (!src || !e.dataTransfer) return;
+    try {
+      if (!BLANK) { BLANK = document.createElement('canvas'); BLANK.width = BLANK.height = 1; }
+      e.dataTransfer.setDragImage(BLANK, 0, 0);
+      e.dataTransfer.setDragImage = function () { };
+    } catch (err) { return; }
+    var vis = src.classList.contains('bt-grip') ? (src.closest('.blk') || src) : src;
+    var gh = makeGhost(vis, e.clientX, e.clientY);
+    M = { ghost: gh.el, gx: gh.gx, gy: gh.gy, x: e.clientX, y: e.clientY, vis: vis };
+    S = null; window.__tdM = M;
+    var tmp = S; S = M; place(); S = tmp;
+    setTimeout(function () { vis.classList.add('td-src'); }, 0);
+  }, true);
+  document.addEventListener('dragover', function (e) {
+    if (!M || !e.isTrusted || (!e.clientX && !e.clientY)) return;
+    M.x = e.clientX; M.y = e.clientY; var tmp = S; S = M; place(); S = tmp;
+  }, true);
+  document.addEventListener('dragend', function (e) {
+    if (!M || !e.isTrusted) return;
+    M.vis.classList.remove('td-src'); settle(M.ghost); M = null;
+  }, true);
   document.addEventListener('pointerdown', function (e) {
     if (e.pointerType === 'mouse' || !e.isPrimary || S) return;
     var src = e.target && e.target.closest ? e.target.closest(SEL) : null;

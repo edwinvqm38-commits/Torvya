@@ -16,7 +16,7 @@ Object.assign(Component.prototype, {
       rl: { rulesV: [], ruleProps: [] }, brl: { rulesV: [], ruleProps: [] }, sortsV: [], sortProps: [], groupAll: [], propsV: [], typesV: [], aiItems: [], conns: [], relQuick: [], autosV: [],
       trigSeg: [], trigProps: [], trigVals: [], actSeg: [], whoOpts: [], actProps: [], actVals: [], aiPropsV: [], dbColors: [], dbIcons: [], srcs: [],
       pe: { opts: [], typeList: [], fmtOpts: [], decSeg: [], showSeg: [], dateSeg: [], defOpts: [], checkSeg: [], resSeg: [], widthSeg: [], rollRels: [], rollProps: [], rollFns: [], insertProps: [], insertFns: [], btnProps: [], btnVals: [], aiModes: [] },
-      bk: { widthSeg: [], kindSeg: [], srcRadio: [], byRadio: [], bucketSeg: [], aggSeg: [], valRadio: [], sortSeg: [], topSeg: [], propRadio: [], colsSeg: [], rowsSeg: [] }
+      bk: { widthSeg: [], kindSeg: [], srcRadio: [], byRadio: [], bucketSeg: [], aggSeg: [], valRadio: [], sortSeg: [], topSeg: [], palSeg: [], legendSeg: [], propRadio: [], colsSeg: [], rowsSeg: [] }
     };
     ['root', 'layout', 'visibility', 'rules', 'sort', 'group', 'props', 'propEdit', 'newProp', 'automations', 'autoNew', 'ai', 'more', 'sources', 'block'].forEach(function (k) { D['dp_' + k] = false; });
     if (!page) return D;
@@ -45,7 +45,7 @@ Object.assign(Component.prototype, {
         }),
         up: function () { self.moveBlock(bid, -1); }, down: function () { self.moveBlock(bid, 1); },
         del: function () { self.delBlock(bid); }, delLabel: s.confirmDel === 'blk:' + bid ? 'Pulsa otra vez para quitar el bloque' : 'Quitar bloque',
-        kindSeg: [], byRadio: [], bucketSeg: [], aggSeg: [], valRadio: [], sortSeg: [], topSeg: [], propRadio: [], colsSeg: [], rowsSeg: [], hasBucket: false, needsVal: false
+        kindSeg: [], byRadio: [], bucketSeg: [], aggSeg: [], valRadio: [], sortSeg: [], topSeg: [], palSeg: [], legendSeg: [], propRadio: [], colsSeg: [], rowsSeg: [], hasBucket: false, needsVal: false
       };
       if (T && (b.type === 'chart' || b.type === 'kpi')) {
         var rp = this.rprops(s, T, v.role);
@@ -69,6 +69,8 @@ Object.assign(Component.prototype, {
         bk.hasBucket = !!byP && isDateType(byP);
         bk.bucketSeg = seg([{ id: 'day', label: 'Día' }, { id: 'week', label: 'Semana' }, { id: 'month', label: 'Mes' }], b.bucket || 'day', function (k) { upd(function (x) { x.bucket = k; }); });
         bk.sortSeg = seg([{ id: 'desc', label: 'Mayor a menor' }, { id: 'asc', label: 'Menor a mayor' }, { id: 'label', label: 'Por etiqueta' }], b.sort || 'desc', function (k) { upd(function (x) { x.sort = k; }); });
+        bk.palSeg = seg(CHART_PALS.map(function (x) { return { id: x.id, label: x.n }; }), b.pal || 'auto', function (k) { upd(function (x) { x.pal = k; }); });
+        bk.legendSeg = seg([{ id: 'show', label: 'Mostrar leyenda' }, { id: 'hide', label: 'Ocultar' }], b.legend || 'show', function (k) { upd(function (x) { x.legend = k; }); });
         bk.topSeg = seg([{ id: 0, label: 'Todos' }, { id: 5, label: 'Top 5' }, { id: 10, label: 'Top 10' }], b.limit || 0, function (k) { upd(function (x) { x.limit = Number(k); }); });
       }
       if (T && b.type === 'slicer') {
