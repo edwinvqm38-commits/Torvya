@@ -103,7 +103,7 @@ assert '[[' not in markup, markup[markup.index('[['):markup.index('[[') + 60]
 assert '$.' not in markup
 
 css = open(BASE + 'style.css', encoding='utf-8').read()
-js = '\n'.join(open(BASE + f, encoding='utf-8').read() for f in ['icons.js', 'lib.js', 'core.js', 'actions.js', 'views.js', 'drawer.js', 'render.js', 'pm.js', 'org2.js', 'doc.js', 'forms.js', 'costos.js', 'tecsur_data.js', 'tecsur.js', 'portafolio.js', 'negocio.js'])
+js = '\n'.join(open(BASE + f, encoding='utf-8').read() for f in ['icons.js', 'lib.js', 'core.js', 'actions.js', 'views.js', 'drawer.js', 'render.js', 'pm.js', 'org2.js', 'doc.js', 'forms.js', 'costos.js', 'tecsur_data.js', 'tecsur.js', 'portafolio.js', 'touchdrag.js', 'negocio.js'])
 assert '</' not in js
 
 props = {
