@@ -1764,6 +1764,26 @@ body.td-active .board{scroll-snap-type:none!important}
 .rec.full .lk-cells{grid-template-columns:repeat(3,minmax(0,1fr))}
 .rec.full .rec-cols{grid-template-columns:minmax(0,1fr) minmax(0,1.2fr)}
 .rec.full .lk-row{grid-template-columns:minmax(0,1.2fr) minmax(0,2.4fr) 96px 22px 72px}
+
+/* fondo elegido: gana sobre el fondo propio de tarjetas, indicadores, tablas y del registro */
+.blk.has-bg.rc-red,.rec.rc-red,.rec.rc-red .rec-top{background:#FDF1F0}
+.theme-dark .blk.has-bg.rc-red,.theme-dark .rec.rc-red,.theme-dark .rec.rc-red .rec-top{background:#2A1A19}
+.blk.has-bg.rc-amber,.rec.rc-amber,.rec.rc-amber .rec-top{background:#FEF6E7}
+.theme-dark .blk.has-bg.rc-amber,.theme-dark .rec.rc-amber,.theme-dark .rec.rc-amber .rec-top{background:#2A2214}
+.blk.has-bg.rc-green,.rec.rc-green,.rec.rc-green .rec-top{background:#EEF8F2}
+.theme-dark .blk.has-bg.rc-green,.theme-dark .rec.rc-green,.theme-dark .rec.rc-green .rec-top{background:#16241B}
+.blk.has-bg.rc-blue,.rec.rc-blue,.rec.rc-blue .rec-top{background:#EEF3FD}
+.theme-dark .blk.has-bg.rc-blue,.theme-dark .rec.rc-blue,.theme-dark .rec.rc-blue .rec-top{background:#17202F}
+.blk.has-bg.rc-violet,.rec.rc-violet,.rec.rc-violet .rec-top{background:#F5F0FE}
+.theme-dark .blk.has-bg.rc-violet,.theme-dark .rec.rc-violet,.theme-dark .rec.rc-violet .rec-top{background:#211B2E}
+.blk.has-bg.rc-gray,.rec.rc-gray,.rec.rc-gray .rec-top{background:#F2F2EF}
+.theme-dark .blk.has-bg.rc-gray,.theme-dark .rec.rc-gray,.theme-dark .rec.rc-gray .rec-top{background:#222226}
+.blk.has-bg.rc-teal,.rec.rc-teal,.rec.rc-teal .rec-top{background:#ECF7F6}
+.theme-dark .blk.has-bg.rc-teal,.theme-dark .rec.rc-teal,.theme-dark .rec.rc-teal .rec-top{background:#142423}
+.blk.has-bg.rc-pink,.rec.rc-pink,.rec.rc-pink .rec-top{background:#FDF0F6}
+.theme-dark .blk.has-bg.rc-pink,.theme-dark .rec.rc-pink,.theme-dark .rec.rc-pink .rec-top{background:#2A1821}
+.blk.has-bg .tbl,.blk.has-bg .th-row{background:transparent}
+@media (max-width:812px){.tone-pop{position:fixed;left:12px;right:12px;bottom:calc(12px + env(safe-area-inset-bottom,0px));top:auto;width:auto;z-index:95;box-shadow:0 -6px 30px rgba(20,20,16,.22)}.tone-grid{gap:8px}}
 </style>
 </helmet>
 <div class="app theme-{{mode}} acc-{{accent}} dens-{{density}} rad-{{corners}} font-{{font}}">
@@ -12962,6 +12982,54 @@ Object.assign(Component.prototype, {
     }
     out.rec = rec;
     return out;
+  };
+})();
+
+/* ================= cerrar al tocar fuera ================= */
+var OUT_FLOAT = '.oppop,.op-scrim,.tone-pop,.fmt-bar,.fmt-pal,.menu,.picker,.picker-pop,.cover-pop,.slash-menu,.addview,.headbar,.addblk,.org-lvedit,.modal,.drawer,.scrim,.toast,[role="dialog"],[role="menu"],[role="listbox"]';
+var OUT_TOGGLE = '[aria-expanded],[aria-haspopup]';
+var OUT_KEYS = ['bkPal', 'recPal', 'fmtCol', 'viewMenu', 'tplMenu', 'picker', 'parentPick', 'coverPick', 'areaPick', 'iconPick', 'addViewOpen', 'fmAddOpen', 'fmNewOpen', 'headMenu', 'orgLvlOpen', 'mention', 'fxOpen', 'addBlockOpen', 'dAdding', 'dTypeChange'];
+Object.assign(Component.prototype, {
+  outsideDown(e) {
+    var t = e && e.target;
+    if (!t || !t.closest) return;
+    var s = this.st(), p = {}, n = 0;
+    var inFloat = !!t.closest(OUT_FLOAT), onToggle = !!t.closest(OUT_TOGGLE);
+    if (!inFloat && !onToggle) OUT_KEYS.forEach(function (k) { if (s[k]) { p[k] = k === 'addBlockOpen' || k === 'orgLvlOpen' || k === 'dAdding' ? false : null; n++; } });
+    /* registro abierto como panel lateral: se cierra al tocar fuera de él */
+    if (s.rec && !inFloat && !t.closest('.rec')) {
+      var recEl = null; try { recEl = document.querySelector('.rec'); } catch (er) { recEl = null; }
+      if (recEl && !recEl.classList.contains('full')) { p.rec = null; p.picker = null; p.recFull = null; n++; }
+    }
+    /* celda seleccionada de una tabla */
+    if (s.selCell && !s.opPop && !t.closest('.tbl,.cellbar') && !inFloat) { p.selCell = null; n++; }
+    /* detalle de cargo en el organigrama */
+    if (s.orgSel && !inFloat && !t.closest('.org-panel,.org-slot,.org-node')) { p.orgSel = null; n++; }
+    /* menú del celular */
+    if (s.navOpen && !t.closest('.side')) { p.navOpen = false; n++; }
+    if (n) this.setState(p);
+  }
+});
+(function () {
+  var baseRv = Component.prototype.renderVals;
+  Component.prototype.renderVals = function () {
+    var self = this;
+    if (!this._outBound) {
+      this._outBound = true;
+      try {
+        var h = function (e) { self.outsideDown(e); };
+        if (window.PointerEvent) document.addEventListener('pointerdown', h, true);
+        else { document.addEventListener('mousedown', h, true); document.addEventListener('touchstart', h, true); }
+        document.addEventListener('keydown', function (e) {
+          if (e.key !== 'Escape') return;
+          var s = self.st(), p = {}, n = 0;
+          OUT_KEYS.forEach(function (k) { if (s[k]) { p[k] = k === 'addBlockOpen' || k === 'orgLvlOpen' || k === 'dAdding' ? false : null; n++; } });
+          if (s.opPop) { p.opPop = null; p.opQ = ''; n++; }
+          if (n) self.setState(p);
+        });
+      } catch (e) { }
+    }
+    return baseRv.call(this);
   };
 })();
 

@@ -413,3 +413,51 @@ Object.assign(Component.prototype, {
     return out;
   };
 })();
+
+/* ================= cerrar al tocar fuera ================= */
+var OUT_FLOAT = '.oppop,.op-scrim,.tone-pop,.fmt-bar,.fmt-pal,.menu,.picker,.picker-pop,.cover-pop,.slash-menu,.addview,.headbar,.addblk,.org-lvedit,.modal,.drawer,.scrim,.toast,[role="dialog"],[role="menu"],[role="listbox"]';
+var OUT_TOGGLE = '[aria-expanded],[aria-haspopup]';
+var OUT_KEYS = ['bkPal', 'recPal', 'fmtCol', 'viewMenu', 'tplMenu', 'picker', 'parentPick', 'coverPick', 'areaPick', 'iconPick', 'addViewOpen', 'fmAddOpen', 'fmNewOpen', 'headMenu', 'orgLvlOpen', 'mention', 'fxOpen', 'addBlockOpen', 'dAdding', 'dTypeChange'];
+Object.assign(Component.prototype, {
+  outsideDown(e) {
+    var t = e && e.target;
+    if (!t || !t.closest) return;
+    var s = this.st(), p = {}, n = 0;
+    var inFloat = !!t.closest(OUT_FLOAT), onToggle = !!t.closest(OUT_TOGGLE);
+    if (!inFloat && !onToggle) OUT_KEYS.forEach(function (k) { if (s[k]) { p[k] = k === 'addBlockOpen' || k === 'orgLvlOpen' || k === 'dAdding' ? false : null; n++; } });
+    /* registro abierto como panel lateral: se cierra al tocar fuera de él */
+    if (s.rec && !inFloat && !t.closest('.rec')) {
+      var recEl = null; try { recEl = document.querySelector('.rec'); } catch (er) { recEl = null; }
+      if (recEl && !recEl.classList.contains('full')) { p.rec = null; p.picker = null; p.recFull = null; n++; }
+    }
+    /* celda seleccionada de una tabla */
+    if (s.selCell && !s.opPop && !t.closest('.tbl,.cellbar') && !inFloat) { p.selCell = null; n++; }
+    /* detalle de cargo en el organigrama */
+    if (s.orgSel && !inFloat && !t.closest('.org-panel,.org-slot,.org-node')) { p.orgSel = null; n++; }
+    /* menú del celular */
+    if (s.navOpen && !t.closest('.side')) { p.navOpen = false; n++; }
+    if (n) this.setState(p);
+  }
+});
+(function () {
+  var baseRv = Component.prototype.renderVals;
+  Component.prototype.renderVals = function () {
+    var self = this;
+    if (!this._outBound) {
+      this._outBound = true;
+      try {
+        var h = function (e) { self.outsideDown(e); };
+        if (window.PointerEvent) document.addEventListener('pointerdown', h, true);
+        else { document.addEventListener('mousedown', h, true); document.addEventListener('touchstart', h, true); }
+        document.addEventListener('keydown', function (e) {
+          if (e.key !== 'Escape') return;
+          var s = self.st(), p = {}, n = 0;
+          OUT_KEYS.forEach(function (k) { if (s[k]) { p[k] = k === 'addBlockOpen' || k === 'orgLvlOpen' || k === 'dAdding' ? false : null; n++; } });
+          if (s.opPop) { p.opPop = null; p.opQ = ''; n++; }
+          if (n) self.setState(p);
+        });
+      } catch (e) { }
+    }
+    return baseRv.call(this);
+  };
+})();
