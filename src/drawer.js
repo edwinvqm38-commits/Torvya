@@ -16,7 +16,7 @@ Object.assign(Component.prototype, {
       rl: { rulesV: [], ruleProps: [] }, brl: { rulesV: [], ruleProps: [] }, sortsV: [], sortProps: [], groupAll: [], propsV: [], typesV: [], aiItems: [], conns: [], relQuick: [], autosV: [],
       trigSeg: [], trigProps: [], trigVals: [], actSeg: [], whoOpts: [], actProps: [], actVals: [], aiPropsV: [], dbColors: [], dbIcons: [], srcs: [],
       pe: { opts: [], typeList: [], fmtOpts: [], decSeg: [], showSeg: [], dateSeg: [], defOpts: [], checkSeg: [], resSeg: [], widthSeg: [], rollRels: [], rollProps: [], rollFns: [], insertProps: [], insertFns: [], btnProps: [], btnVals: [], aiModes: [] },
-      bk: { widthSeg: [], kindSeg: [], srcRadio: [], byRadio: [], bucketSeg: [], aggSeg: [], valRadio: [], sortSeg: [], topSeg: [], palSeg: [], legendSeg: [], propRadio: [], colsSeg: [], rowsSeg: [] }
+      bk: { widthSeg: [], kindSeg: [], srcRadio: [], byRadio: [], bucketSeg: [], aggSeg: [], valRadio: [], sortSeg: [], topSeg: [], palSeg: [], legendSeg: [], labelsSeg: [], goalColorSeg: [], goalDirSeg: [], goal: '', setGoal: null, propRadio: [], colsSeg: [], rowsSeg: [] }
     };
     ['root', 'layout', 'visibility', 'rules', 'sort', 'group', 'props', 'propEdit', 'newProp', 'automations', 'autoNew', 'ai', 'more', 'sources', 'block'].forEach(function (k) { D['dp_' + k] = false; });
     if (!page) return D;
@@ -45,8 +45,11 @@ Object.assign(Component.prototype, {
         }),
         up: function () { self.moveBlock(bid, -1); }, down: function () { self.moveBlock(bid, 1); },
         del: function () { self.delBlock(bid); }, delLabel: s.confirmDel === 'blk:' + bid ? 'Pulsa otra vez para quitar el bloque' : 'Quitar bloque',
-        kindSeg: [], byRadio: [], bucketSeg: [], aggSeg: [], valRadio: [], sortSeg: [], topSeg: [], palSeg: [], legendSeg: [], propRadio: [], colsSeg: [], rowsSeg: [], hasBucket: false, needsVal: false
+        kindSeg: [], byRadio: [], bucketSeg: [], aggSeg: [], valRadio: [], sortSeg: [], topSeg: [], palSeg: [], legendSeg: [], labelsSeg: [], goalColorSeg: [], goalDirSeg: [], goal: '', setGoal: null, propRadio: [], colsSeg: [], rowsSeg: [], hasBucket: false, needsVal: false
       };
+      bk.goal = b.goal == null ? '' : String(b.goal);
+      bk.setGoal = function (e) { var val = String(e.target.value).trim().replace(',', '.'); upd(function (x) { x.goal = val === '' || isNaN(Number(val)) ? null : Number(val); }); };
+      bk.goalDirSeg = seg([{ id: 'up', label: 'Mayor es mejor' }, { id: 'down', label: 'Menor es mejor' }], b.goalDir || 'up', function (k) { upd(function (x) { x.goalDir = k; }); });
       if (T && (b.type === 'chart' || b.type === 'kpi')) {
         var rp = this.rprops(s, T, v.role);
         var spec = String(b.val || 'count').split(':'), fn = spec[0], vk = spec[1];
@@ -71,6 +74,8 @@ Object.assign(Component.prototype, {
         bk.sortSeg = seg([{ id: 'desc', label: 'Mayor a menor' }, { id: 'asc', label: 'Menor a mayor' }, { id: 'label', label: 'Por etiqueta' }], b.sort || 'desc', function (k) { upd(function (x) { x.sort = k; }); });
         bk.palSeg = seg(CHART_PALS.map(function (x) { return { id: x.id, label: x.n }; }), b.pal || 'auto', function (k) { upd(function (x) { x.pal = k; }); });
         bk.legendSeg = seg([{ id: 'show', label: 'Mostrar leyenda' }, { id: 'hide', label: 'Ocultar' }], b.legend || 'show', function (k) { upd(function (x) { x.legend = k; }); });
+        bk.labelsSeg = seg([{ id: 'show', label: 'Mostrar valores' }, { id: 'hide', label: 'Ocultar' }], b.labels || 'show', function (k) { upd(function (x) { x.labels = k; }); });
+        bk.goalColorSeg = seg([{ id: 'off', label: 'Colores normales' }, { id: 'on', label: 'Verde o rojo según la meta' }], b.goalColor ? 'on' : 'off', function (k) { upd(function (x) { x.goalColor = k === 'on'; }); });
         bk.topSeg = seg([{ id: 0, label: 'Todos' }, { id: 5, label: 'Top 5' }, { id: 10, label: 'Top 10' }], b.limit || 0, function (k) { upd(function (x) { x.limit = Number(k); }); });
       }
       if (T && b.type === 'slicer') {

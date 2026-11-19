@@ -140,4 +140,11 @@ c.jellyOn('pg:pgpf3'); R('jelly'); const sa = r.sideAreas.find(a => a.name === '
 // enlace a OneDrive / Drive
 const row0 = c.st().tables.byId.ppr.rows[0]; row0.carpeta = 'https://tecsur.sharepoint.com/sites/costos/Shared%20Documents/PRY-D1';
 c.goPage('pgpf'); R('carpeta');
+c.goPage('pgpf'); R('pg'); r.pg.exportRep(); R('reporte abierto');
+log('Reporte:', r.rp.open, r.rp.count, '|', r.rp.secs.map(x => x.kind + ':' + x.name.slice(0,20)).join(' / '));
+r.rp.secs[1].down(); R('mover'); r.rp.secs[0].toggle(); R('toggle'); r.rp.tplSeg[1].pick(); R('tecnico');
+const d = c.repData(); log('Datos:', d.map(x => x.type + (x.rows ? '(' + x.rows.length + 'f×' + x.cols.length + 'c)' : '')).join(' '));
+const html = c.repHtml(false); log('HTML:', html.length, 'bytes | h1:', (html.match(/<h1/g)||[]).length, '| tablas:', (html.match(/class="dt"/g)||[]).length, '| svg:', (html.match(/<svg/g)||[]).length, '| índice:', html.includes('Índice'));
+c.goPage('pgpf1'); R('pg1'); r.pg.exportRep(); R('rep2'); log('HTML pgpf1 svg:', (c.repHtml(false).match(/<svg/g)||[]).length);
+r.rp.close(); R('cerrar');
 log('Avisos de plantilla:', issues.length); issues.slice(0, 25).forEach(i => log(' -', i));

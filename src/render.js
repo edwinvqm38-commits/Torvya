@@ -32,7 +32,7 @@ Object.assign(Component.prototype, {
       del: function () { self.delBlock(b.id); }, delCls: s.confirmDel === 'blk:' + b.id ? 'danger-on' : '', delAria: s.confirmDel === 'blk:' + b.id ? 'Pulsa otra vez para quitar el bloque' : 'Quitar bloque',
       title: b.title || '', srcName: '', srcIcon: ICON.db, srcColor: '#888', goSrc: null, lockText: '',
       xfTag: '', hasXfTag: false, xfTagCls: '',
-      kpi: { value: '', caption: '' }, sl: { opts: [], hasSel: false, clear: null, empty: false }, ch: null, dv: null, sh: null, mp: null
+      kpi: { value: '', caption: '', hasGoal: false, goalText: '', goalPct: '0', stateCls: '' }, sl: { opts: [], hasSel: false, clear: null, empty: false }, ch: null, dv: null, sh: null, mp: null
     };
     bv.isTodo = b.type === 'todo'; bv.isCallout = b.type === 'callout'; bv.isPm = b.type === 'pm';
     if (bv.isTodo || bv.isCallout || bv.isPm) bv.hasConfig = false;
@@ -118,7 +118,7 @@ Object.assign(Component.prototype, {
       var isSrcC = !!(xf && xf.table === T.id && xf.prop === b.by);
       var rc = rowsFor(isSrcC);
       tag(rc.st);
-      bv.ch = this.chartView(this.chartData(s, T, this.applyFilters(s, T, rc.rows, b.filters, v), { pal: b.pal, legend: b.legend, head: false, title: b.title, kind: b.kind, by: b.by, bucket: b.bucket, val: b.val, sort: b.sort, limit: b.limit }, { pid: pid, current: xf }));
+      bv.ch = this.chartView(this.chartData(s, T, this.applyFilters(s, T, rc.rows, b.filters, v), { goal: b.goal, goalDir: b.goalDir, goalColor: !!b.goalColor, labels: b.labels, pal: b.pal, legend: b.legend, head: false, title: b.title, kind: b.kind, by: b.by, bucket: b.bucket, val: b.val, sort: b.sort, limit: b.limit }, { pid: pid, current: xf }));
       return bv;
     }
     if (b.type === 'db') {
@@ -137,7 +137,7 @@ Object.assign(Component.prototype, {
     var v = this.viewer(s);
     var isAdminView = v.role === 'admin';
     var previewing = s.viewAs !== 'ana';
-    var accent = s.accent || this.props.accent || 'indigo';
+    var accent = s.accent || this.props.accent || 'tecsur';
     var mode = s.mode || (this.props.dark ? 'dark' : 'light');
     var screen = s.screen;
     if (!isAdminView && (screen === 'permisos' || screen === 'tema')) screen = 'page';
@@ -216,6 +216,7 @@ Object.assign(Component.prototype, {
         coverUpload: function (e) { self.coverUpload(pid, e); },
         coverRemove: function () { self.coverSet(pid, null); self.setState({ coverPick: null }); },
         coverPos: function () { self.updPage(pid, function (x) { if (!x.cover) return false; var ps = [0, 25, 50, 75, 100]; x.cover.pos = ps[(ps.indexOf(x.cover.pos == null ? 50 : x.cover.pos) + 1) % ps.length]; }); },
+        exportRep: function () { self.repOpen(pid); },
         parentName: (pg.parent && s.pages.byId[pg.parent]) ? (s.pages.byId[pg.parent].title || 'Sin título') : 'Nivel principal', hasParent: !!(pg.parent && s.pages.byId[pg.parent]),
         canParent: canEditPage, cannotParent: !canEditPage, parentOpen: s.parentPick === pid, toggleParent: function () { self.setState({ parentPick: s.parentPick === pid ? null : pid, areaPick: null }); },
         parentOpts: this.parentChoices(s, pid).map(function (c) { return { label: c.label, pad: 'padding-left: ' + (10 + c.depth * 14) + 'px', cls: c.on ? 'on' : '', on: c.on, pick: function () { self.pageSetParent(pid, c.id); } }; }),
@@ -428,7 +429,7 @@ Object.assign(Component.prototype, {
       bannerDetail: bd.join(' '),
       hasToast: !!s.toast, toast: s.toast || '', closeToast: function () { self.setState({ toast: null }); },
 
-      appName: APP_NAME, pgRootOver: function (e) { self.pgRootOver(e); }, pgRootLeave: function (e) { self.pgRootLeave(e); }, pgRootDrop: function (e) { self.pgRootDrop(e); }, sideHome: sideHome, sideGeneral: sideGeneral, hasGeneral: sideGeneral.length > 0, sideAreas: sideAreas,
+      appName: APP_NAME, rp: this.repView(s, v), pgRootOver: function (e) { self.pgRootOver(e); }, pgRootLeave: function (e) { self.pgRootLeave(e); }, pgRootDrop: function (e) { self.pgRootDrop(e); }, sideHome: sideHome, sideGeneral: sideGeneral, hasGeneral: sideGeneral.length > 0, sideAreas: sideAreas,
       navOrg: screen === 'org' ? 'on' : '', goOrg: function () { self.setScreen('org'); }, scrOrg: screen === 'org', org: screen === 'org' ? this.orgData(s, v) : null,
       scrPage: screen === 'page', scrDb: screen === 'db' && hasAccess, scrNoAccess: screen === 'db' && !hasAccess,
       scrAi: screen === 'ia', scrPerm: screen === 'permisos', scrTheme: screen === 'tema', scrInbox: screen === 'avisos',
@@ -458,7 +459,7 @@ Object.assign(Component.prototype, {
       modeOpts: opts([{ id: 'light', label: 'Claro' }, { id: 'dark', label: 'Oscuro' }], mode, 'mode'),
       densOpts: opts([{ id: 'comfy', label: 'Cómoda' }, { id: 'compact', label: 'Compacta' }], s.density, 'density'),
       cornerOpts: opts([{ id: 'round', label: 'Redondeadas' }, { id: 'square', label: 'Rectas' }], s.corners, 'corners'),
-      fontOpts: opts([{ id: 'inter', label: 'Inter', ff: 'ff-inter' }, { id: 'grotesk', label: 'Space Grotesk', ff: 'ff-grotesk' }, { id: 'plex', label: 'IBM Plex Sans', ff: 'ff-plex' }], s.font, 'font'),
+      fontOpts: opts([{ id: 'calibri', label: 'Calibri (TECSUR)', ff: 'ff-calibri' }, { id: 'inter', label: 'Inter', ff: 'ff-inter' }, { id: 'grotesk', label: 'Space Grotesk', ff: 'ff-grotesk' }, { id: 'plex', label: 'IBM Plex Sans', ff: 'ff-plex' }], s.font, 'font'),
 
       inbox: inboxV, inboxEmpty: inboxV.length === 0, markAllRead: function () { self.markAllRead(); }, previewIcon: ICON['i-cart'],
       ICON: ICON

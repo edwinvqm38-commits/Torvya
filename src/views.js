@@ -142,7 +142,7 @@ Object.assign(Component.prototype, {
   /* ---------- gráfico ---------- */
   chartData(s, t, rows, cfg, click) {
     var self = this;
-    var P = { showLegend: true, legendCls: '', title: cfg.title || '', sub: '', hasHead: !!cfg.head, isBar: false, isColumn: false, isLine: false, isDonut: false, empty: false, emptyText: '', bars: [], segs: [], path: '', area: '', dots: [], grid: [], xlabels: [], total: '', totalCaption: '', lw: 640, lh: 200 };
+    var P = { showLegend: true, legendCls: '', boxCls: '', hasGoal: false, goalPct: '0', goalText: '', title: cfg.title || '', sub: '', hasHead: !!cfg.head, isBar: false, isColumn: false, isLine: false, isDonut: false, empty: false, emptyText: '', bars: [], segs: [], path: '', area: '', dots: [], grid: [], xlabels: [], total: '', totalCaption: '', lw: 640, lh: 200 };
     var by = propOf(t, cfg.by);
     if (!by) { P.empty = true; P.emptyText = 'Elige por qué propiedad agrupar en la configuración.'; return P; }
     var groups = this.groupsOf(s, t, rows, by.key, { hideEmpty: true, bucket: cfg.bucket }) || [];
@@ -159,7 +159,11 @@ Object.assign(Component.prototype, {
     P.isBar = kind === 'bar'; P.isColumn = kind === 'column'; P.isLine = kind === 'line'; P.isDonut = kind === 'donut';
     P.sub = aggAll.label + ' por ' + by.name + (isDateType(by) ? ' (' + ({ day: 'día', week: 'semana', month: 'mes' }[cfg.bucket || 'day']) + ')' : '');
     if (!items.length) { P.empty = true; P.emptyText = 'No hay datos con los filtros actuales.'; return P; }
-    var max = Math.max.apply(null, [0].concat(items.map(function (x) { return x.value; }))) || 1;
+    var goal = (cfg.goal === '' || cfg.goal == null || isNaN(Number(cfg.goal))) ? null : Number(cfg.goal);
+    var max = Math.max.apply(null, [0, goal || 0].concat(items.map(function (x) { return x.value; }))) || 1;
+    if (goal != null && cfg.goalColor) items.forEach(function (it) { var ok = cfg.goalDir === 'down' ? it.value <= goal : it.value >= goal; it.color = ok ? '#2F9A5C' : '#D2483B'; });
+    P.boxCls = (cfg.labels === 'hide' ? 'no-vals ' : '') + (cfg.legend === 'hide' ? 'no-legend' : '');
+    P.hasGoal = goal != null && (P.isBar || P.isColumn); P.goalPct = goal != null ? (goal / max * 100).toFixed(2) : '0';
     var total = items.reduce(function (a, x) { return a + x.value; }, 0);
     var xf = click ? click.current : null;
     var hasSel = !!(xf && xf.table === t.id && xf.prop === by.key);
@@ -170,6 +174,7 @@ Object.assign(Component.prototype, {
         pick: click ? function () { self.setXf(click.pid, { table: t.id, prop: by.key, bucket: cfg.bucket, key: x.key, label: by.name + ': ' + x.label }); } : function () { } };
     });
     P.total = fmtv(total);
+    if (goal != null) P.goalText = 'Meta: ' + fmtv(goal);
     P.totalCaption = cfg.val === 'count' ? 'registros' : 'total';
     if (P.isLine) {
       var W = 640, H = 200, px = 28, pt = 14, pb = 14, n = items.length;
@@ -192,7 +197,16 @@ Object.assign(Component.prototype, {
     var f = a.fmt || { fmt: 'number' };
     var v = a.value;
     var txt = v == null ? '—' : fmtNumber(v, f.fmt, cfg.val === 'count' ? 0 : (Math.abs(v) >= 1000 ? 0 : (f.dec === 'auto' ? undefined : f.dec)), f.sep);
-    return { value: txt, caption: a.label + ' · ' + rows.length + (rows.length === 1 ? ' registro' : ' registros') };
+    var out = { value: txt, caption: a.label + ' · ' + rows.length + (rows.length === 1 ? ' registro' : ' registros'), hasGoal: false, goalText: '', goalPct: '0', stateCls: '' };
+    var g = (cfg.goal === '' || cfg.goal == null || isNaN(Number(cfg.goal))) ? null : Number(cfg.goal);
+    if (g != null && v != null) {
+      var ok = cfg.goalDir === 'down' ? v <= g : v >= g;
+      var pct = g ? Math.round(v / g * 100) : 0;
+      out.hasGoal = true; out.goalPct = String(Math.max(0, Math.min(100, pct)));
+      out.goalText = 'Meta ' + fmtNumber(g, f.fmt, cfg.val === 'count' ? 0 : (Math.abs(g) >= 1000 ? 0 : undefined), f.sep) + ' · ' + pct + ' %';
+      out.stateCls = ok ? 'kpi-ok' : 'kpi-bad';
+    }
+    return out;
   },
   applyFilters(s, t, rows, filters, v) { var self = this; return (filters || []).length ? rows.filter(function (r) { return filters.every(function (f) { return self.ruleMatch(s, t, f, r, v); }); }) : rows; },
 

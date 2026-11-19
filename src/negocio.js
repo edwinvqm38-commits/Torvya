@@ -18,7 +18,7 @@ var BIZ_MODULES = [
 var BIZ_RUBROS = [
   { id: 'general', name: 'Proyectos y servicios', desc: 'Para empresas que gestionan proyectos, personal y aprobaciones.', modules: ['proyectos', 'personal', 'aprob', 'campo', 'portafolio'] },
   { id: 'electrico', name: 'Servicios eléctricos y mantenimiento de redes', badge: 'Propuesta basada en TECSUR', desc: 'Contratos con distribuidoras, OT/SST, emergencias, mantenimiento BT/MT, cortes de tarifas y ACU.', modules: ['proyectos', 'personal', 'aprob', 'campo', 'maestros', 'acu', 'ops', 'tecsur', 'portafolio'],
-    areas: [{ id: 'a-cos', name: 'Ingeniería de Costos', color: '#7C3AED', icon: 'i-calc', parent: 'a-ger' }],
+    areas: [{ id: 'a-cos', name: 'Ingeniería de Costos', color: '#00468C', icon: 'i-calc', parent: 'a-ger' }],
     cargos: [{ name: 'Jefe de Ingeniería de Costos', area: 'a-cos', parentName: 'Gerente general' }, { name: 'Analista de costos', area: 'a-cos', parentName: 'Jefe de Ingeniería de Costos' }, { name: 'Supervisor de cuadrillas', area: 'a-ope', parentName: 'Jefe de Operaciones y Proyectos' }],
     notes: ['Modalidades, gastos generales y utilidad quedan marcados «por validar»: el sistema no asume reglas contractuales.', 'Las OT se registran por servicio, sin obligarlas a ser proyectos.', 'Lo importado nunca queda validado solo; los ACU aprobados no se recalculan.'] },
   { id: 'construccion', name: 'Construcción y obras', desc: 'Obras por proyecto con presupuesto por partidas y partes diarios.', modules: ['proyectos', 'personal', 'aprob', 'campo', 'maestros', 'acu'] },
@@ -45,7 +45,7 @@ Object.assign(Component.prototype, {
       ['cor', 'rec', 'prc'].forEach(function (k) { addTable(mm[k]); });
       var acc = { admin: 'full', finanzas: 'full', ventas: 'none', almacen: 'view', invitado: 'none' };
       ['cor', 'rec', 'prc'].forEach(function (k) { addAccess(k, clone(acc)); });
-      ensureArea({ id: 'a-cos', name: 'Ingeniería de Costos', color: '#7C3AED', icon: 'i-calc', parent: 'a-ger' });
+      ensureArea({ id: 'a-cos', name: 'Ingeniería de Costos', color: '#00468C', icon: 'i-calc', parent: 'a-ger' });
       addPage({ id: 'pgcos', area: 'a-cos', cover: { kind: 'grad', v: 2 }, title: 'Ingeniería de costos', icon: 'i-calc', color: '#7C3AED', desc: 'Recursos, cortes de tarifas, historial de precios y ACU', blocks: [
         blk('k0', 'callout', 12, { icon: 'i-bulb', text: 'Propuesta para no empezar de cero: cada corte de tarifas (semanal o mensual) se importa y queda «por validar». Un recurso tiene un solo código y guarda sus equivalencias; su precio nunca se sobrescribe, se agrega al historial con su vigencia. Abre «Ingeniería de costos» en el menú para importar, validar y comparar.' }),
         blk('k1', 'kpi', 3, { title: 'Recursos', table: 'rec', val: 'count', filters: [] }),
@@ -110,7 +110,7 @@ Object.assign(Component.prototype, {
       ['ppr', 'phi', 'pum'].forEach(function (k) { addTable(pp[k]); });
       var accP = { admin: 'full', finanzas: 'view', ventas: 'none', almacen: 'none', invitado: 'none' };
       ['ppr', 'phi', 'pum'].forEach(function (k) { addAccess(k, clone(accP)); });
-      ensureArea({ id: 'a-cos', name: 'Ingeniería de Costos', color: '#7C3AED', icon: 'i-calc', parent: 'a-ger' });
+      ensureArea({ id: 'a-cos', name: 'Ingeniería de Costos', color: '#00468C', icon: 'i-calc', parent: 'a-ger' });
       var FP = function (k, v) { return [{ prop: k, op: 'is', value: v }]; };
       var FC = function (v) { return [{ prop: 'cod', op: 'contains', value: v }]; };
       addPage({ id: 'pgpf', area: 'a-cos', cover: { kind: 'grad', v: 3 }, title: 'Portafolio de proyectos · demo', icon: 'i-folder', color: '#00468C', desc: 'Nivel 1 del portafolio. Las páginas de abajo son subniveles: Resumen, Proyectos (con una página por proyecto), Hitos y costos, Umbrales y Archivos.', blocks: [
@@ -118,24 +118,24 @@ Object.assign(Component.prototype, {
         blk('p1', 'kpi', 3, { title: 'Proyectos', table: 'ppr', val: 'count', filters: [] }),
         blk('p2', 'kpi', 3, { title: 'En ejecución', table: 'ppr', val: 'count', filters: FP('estado', 'En ejecución') }),
         blk('p3', 'kpi', 3, { title: 'Plan total (S/ demo)', table: 'phi', val: 'sum:plan', filters: [] }),
-        blk('p4', 'kpi', 3, { title: 'Costo real (S/ demo)', table: 'phi', val: 'sum:real', filters: [] }),
+        blk('p4', 'kpi', 3, { title: 'Costo real (S/ demo)', table: 'phi', val: 'sum:real', filters: [], goal: 249000, goalDir: 'down' }),
         blk('p5', 'db', 12, { table: 'ppr', view: 'xr1' })
       ] });
       addPage({ id: 'pgpf1', parent: 'pgpf', area: 'a-cos', cover: null, title: 'Resumen ejecutivo', icon: 'i-chart', color: '#00705A', desc: 'Lo que vería la Gerencia: cuántos proyectos hay en cada semáforo y dónde está el costo.', blocks: [
         blk('q1', 'chart', 6, { title: 'Proyectos por semáforo', table: 'ppr', kind: 'donut', by: 'sema', val: 'count', sort: 'label', limit: 0, filters: [] }),
         blk('q2', 'chart', 6, { title: 'Plan por proyecto (S/ demo)', table: 'phi', kind: 'bar', by: 'proy', val: 'sum:plan', sort: 'desc', limit: 0, filters: [] }),
-        blk('q3', 'chart', 6, { title: 'Costo real por fase (S/ demo)', table: 'phi', kind: 'bar', by: 'fase', val: 'sum:real', sort: 'label', limit: 0, filters: [] }),
+        blk('q3', 'chart', 6, { title: 'Costo real por proyecto vs. tope demo de S/ 60,000', table: 'phi', kind: 'column', by: 'proy', val: 'sum:real', sort: 'desc', limit: 0, filters: [], goal: 60000, goalDir: 'down', goalColor: true, pal: 'tecsur' }),
         blk('q4', 'chart', 6, { title: 'Hitos por estado', table: 'phi', kind: 'donut', by: 'est', val: 'count', sort: 'label', limit: 0, filters: [] })
       ] });
       addPage({ id: 'pgpf2', parent: 'pgpf', area: 'a-cos', cover: null, title: 'Proyectos', icon: 'i-briefcase', color: '#B45309', desc: 'Tabla y tablero del portafolio. Cada proyecto de abajo tiene su propia página (subnivel 3).', blocks: [
         blk('r1', 'db', 12, { table: 'ppr', view: 'xr3' }),
         blk('r2', 'db', 12, { table: 'ppr', view: 'xr2' })
       ] });
-      [['pgpf2a', 'D1', 'PRY-D1 · Renovación de redes BT', 'xh3'], ['pgpf2b', 'D2', 'PRY-D2 · Mantenimiento preventivo MT', 'xh4'], ['pgpf2c', 'D5', 'PRY-D5 · Propuesta de EPP (ejemplo)', 'xh5']].forEach(function (x, i) {
+      [['pgpf2a', 'D1', 'PRY-D1 · Renovación de redes BT', 'xh3', 50400], ['pgpf2b', 'D2', 'PRY-D2 · Mantenimiento preventivo MT', 'xh4', 33000], ['pgpf2c', 'D5', 'PRY-D5 · Propuesta de EPP (ejemplo)', 'xh5', 8950]].forEach(function (x, i) {
         addPage({ id: x[0], parent: 'pgpf2', area: 'a-cos', cover: null, title: x[2], icon: 'i-flag', color: ['#00468C', '#0F766E', '#B45309'][i], desc: 'Subnivel 3: ficha del proyecto con sus hitos.', blocks: [
           blk(x[0] + 'a', 'kpi', 4, { title: 'Hitos', table: 'phi', val: 'count', filters: FC(x[1] + '-') }),
           blk(x[0] + 'b', 'kpi', 4, { title: 'Plan (S/ demo)', table: 'phi', val: 'sum:plan', filters: FC(x[1] + '-') }),
-          blk(x[0] + 'c', 'kpi', 4, { title: 'Costo real (S/ demo)', table: 'phi', val: 'sum:real', filters: FC(x[1] + '-') }),
+          blk(x[0] + 'c', 'kpi', 4, { title: 'Costo real vs. valor ganado (S/ demo)', table: 'phi', val: 'sum:real', filters: FC(x[1] + '-'), goal: x[4], goalDir: 'down' }),
           blk(x[0] + 'd', 'db', 12, { table: 'phi', view: x[3] })
         ] });
       });
@@ -160,7 +160,7 @@ Object.assign(Component.prototype, {
       ['tobj', 'tpro', 'tpo', 'tli', 'tbr', 'tde'].forEach(function (k) { addTable(tt[k]); });
       var accT = { admin: 'full', finanzas: 'view', ventas: 'none', almacen: 'none', invitado: 'none' };
       ['tobj', 'tpro', 'tpo', 'tli', 'tbr', 'tde'].forEach(function (k) { addAccess(k, clone(accT)); });
-      ensureArea({ id: 'a-cos', name: 'Ingeniería de Costos', color: '#7C3AED', icon: 'i-calc', parent: 'a-ger' });
+      ensureArea({ id: 'a-cos', name: 'Ingeniería de Costos', color: '#00468C', icon: 'i-calc', parent: 'a-ger' });
       var F = function (k, v) { return [{ prop: k, op: 'is', value: v }]; };
       addPage({ id: 'pgtec', area: 'a-cos', cover: { kind: 'grad', v: 1 }, title: 'Objetivos 2026 · Vista de Gerencia', icon: 'i-target', color: '#00468C', desc: 'Del procedimiento operativo al ACU: avance, brechas y decisiones requeridas (Fase 1, sin precios)', blocks: [
         blk('t0', 'callout', 12, { icon: 'i-bulb', text: 'Tres niveles: A) procedimiento operativo, B) anexo técnico de recursos sin precios, C) ACU económico (Costos). Datos de la Fase 1: ninguna línea está validada ni tiene matrícula ACU.' }),

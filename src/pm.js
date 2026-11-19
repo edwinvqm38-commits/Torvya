@@ -1,5 +1,5 @@
 /* ================= organigrama, proyectos (PMBOK), páginas tipo Notion ================= */
-var APP_NAME = 'Trama';
+var APP_NAME = 'Trazya';
 var PM_TABLES = ['proy', 'tar', 'rie', 'int'];
 var PM_EDS = [{ id: '6', n: 'PMBOK 6' }, { id: '7', n: 'PMBOK 7' }, { id: '8', n: 'PMBOK 8' }];
 var PM_ED_NOTE = {

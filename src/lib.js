@@ -1,5 +1,6 @@
 /* ================= constantes ================= */
 var ACCENTS = [
+  { id: 'tecsur', name: 'TECSUR', hex: '#00468C' },
   { id: 'indigo', name: 'Índigo', hex: '#4F46E5' }, { id: 'azul', name: 'Azul', hex: '#1D4ED8' }, { id: 'esmeralda', name: 'Esmeralda', hex: '#047857' },
   { id: 'ambar', name: 'Ámbar', hex: '#B45309' }, { id: 'rosa', name: 'Rosa', hex: '#BE185D' }, { id: 'grafito', name: 'Grafito', hex: '#27272A' }
 ];
@@ -791,7 +792,7 @@ function makeInitial() {
     log: seedLog(), notifs: seedNotifs(),
     comments: { p1: [{ who: 'marta', text: 'Confirmar el descuento antes de facturar.', when: 'Hoy, 08:47' }] },
     draft: '', aiText: '', aiProp: null, aiAns: null, aiCreated: {}, reqSent: {},
-    ws: 'Constructora Andina', accent: null, mode: null, density: 'comfy', corners: 'round', font: 'inter', seq: 400,
+    ws: 'TECSUR · Ingeniería de Costos', accent: null, mode: null, density: 'comfy', corners: 'round', font: 'calibri', seq: 400,
     drawer: null, dCtx: null, dProp: null, dAdding: false, dTypeChange: false, newPropName: '', newPropSearch: '', optDraft: '', confirmDel: null, autoDraft: null,
     addViewOpen: null, headMenu: null, selCell: null, collapsed: {}, calMonth: {}, formDrafts: {}, sheetSel: {}, xf: {}, mapHi: null,
     addBlockOpen: false, iconPick: null, toast: null, toastId: 0,

@@ -36,3 +36,10 @@ Ejemplo de propuesta: TECSUR (servicios eléctricos: ingeniería de costos, ACU,
 - **OneDrive / Drive:** hoy se enlaza con una columna URL (la tabla Proyectos trae «Carpeta (OneDrive / Drive)» y reconoce enlaces de SharePoint, OneDrive y Google Drive). La conexión con inicio de sesión para listar y subir archivos queda para una fase posterior, a definir con TI.
 - `python3 tools/publicar.py` copia `app/Trazya.dc.html` a `docs/index.html` e `index.html`. Pruebas: `APP=app/Trazya.dc.html node src/test_portafolio.js`.
 - **Arrastre con el dedo** (`src/touchdrag.js`): el arrastre nativo no existe en pantallas táctiles, así que este módulo convierte el gesto en los mismos eventos. El asa de un bloque arrastra de inmediato; tarjetas, campos y páginas, con pulsación larga (~0,3 s). La pantalla se desplaza sola cerca de los bordes. El ratón sigue usando el arrastre nativo.
+
+## Tema TECSUR, formato tipo Power BI y reportes
+
+- **Tema TECSUR por defecto:** acento azul 00468C, verde 00705A y amarillo F8D000, fuente Calibri (Carlito como respaldo), nombre «Trazya · TECSUR · Ingeniería de Costos». Se cambia en «Personalizar».
+- **Formato de gráficos** (botón de configurar del bloque): paleta (tabla, TECSUR, Sobria, Viva, Un solo tono), leyenda, etiquetas de valor, meta con línea punteada y barras en verde o rojo según la meta.
+- **Indicadores con meta:** valor de meta, «mayor es mejor» o «menor es mejor», barra de avance y color de estado.
+- **Exportar reporte** (botón en cada página, `src/report.js` y `src/officegen.js`): plantilla Ejecutiva o Técnica, portada editable, estado del documento, orden y selección de secciones, conclusión. Salidas: vista previa e impresión a PDF (A4, pie «Página X de Y»), Word .docx real (estilos Título 1, índice actualizable, figuras como imagen) y Excel .xlsx real (una hoja por tabla o gráfico, encabezado inmovilizado, filtros y hoja de fórmulas). Se genera en el navegador, sin servidor.

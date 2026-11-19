@@ -1,11 +1,12 @@
-<div class="chart-box">
+<div class="chart-box {{$.boxCls}}">
+  <sc-if value="{{$.hasGoal}}" hint-placeholder-val="{{false}}"><div class="ch-goal-t"><i></i>{{$.goalText}}</div></sc-if>
   <sc-if value="{{$.empty}}" hint-placeholder-val="{{false}}"><div class="ch-empty">[[ic:ICON.chart]]<span>{{$.emptyText}}</span></div></sc-if>
   <sc-if value="{{$.showCol}}" hint-placeholder-val="{{true}}">
     <div class="colchart {{$.colTall}}">
       <sc-for list="{{$.bars}}" as="b" hint-placeholder-count="5">
         <button type="button" class="cc {{b.cls}}" onClick="{{b.pick}}" aria-label="{{b.aria}}" aria-pressed="{{b.on}}" title="{{b.aria}}">
           <span class="cc-val">{{b.valueText}}</span>
-          <span class="cc-track"><span class="cc-bar" style="height: {{b.pct}}%; background: {{b.color}}"></span></span>
+          <span class="cc-track"><span class="cc-bar" style="height: {{b.pct}}%; background: {{b.color}}"></span><sc-if value="{{$.hasGoal}}" hint-placeholder-val="{{false}}"><span class="cc-goal" style="bottom: {{$.goalPct}}%"></span></sc-if></span>
           <span class="cc-lab">{{b.label}}</span>
         </button>
       </sc-for>
@@ -16,7 +17,7 @@
       <sc-for list="{{$.bars}}" as="b" hint-placeholder-count="5">
         <button type="button" class="hb {{b.cls}}" onClick="{{b.pick}}" aria-label="{{b.aria}}" aria-pressed="{{b.on}}" title="{{b.aria}}">
           <span class="hb-lab">{{b.label}}</span>
-          <span class="hb-track"><span class="hb-fill" style="width: {{b.pct}}%; background: {{b.color}}"></span></span>
+          <span class="hb-track"><span class="hb-fill" style="width: {{b.pct}}%; background: {{b.color}}"></span><sc-if value="{{$.hasGoal}}" hint-placeholder-val="{{false}}"><span class="hb-goal" style="left: {{$.goalPct}}%"></span></sc-if></span>
           <span class="hb-val">{{b.valueText}}</span>
         </button>
       </sc-for>
