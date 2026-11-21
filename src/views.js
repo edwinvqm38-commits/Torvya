@@ -372,7 +372,7 @@ Object.assign(Component.prototype, {
     vid = vw.id;
     var tLvl = this.lvl(s, tid, v.role);
     var canEdit = tLvl === 'edit' || tLvl === 'full';
-    var canStructure = tLvl === 'full';
+    var canStructure = tLvl === 'full' && !s.useMode;
     var locked = !!vw.locked;
     var ctxD = { tid: tid, vid: vid, where: where };
     var rprops = this.rprops(s, t, v.role);

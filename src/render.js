@@ -135,13 +135,13 @@ Object.assign(Component.prototype, {
     var self = this;
     var s = this.st();
     var v = this.viewer(s);
-    var isAdminView = v.role === 'admin';
+    var isAdminView = v.role === 'admin' && !s.useMode;
     var previewing = s.viewAs !== 'ana';
     var accent = s.accent || this.props.accent || 'tecsur';
     var mode = s.mode || (this.props.dark ? 'dark' : 'light');
     var screen = s.screen;
     if (!isAdminView && (screen === 'permisos' || screen === 'tema')) screen = 'page';
-    var canEditPage = v.role !== 'invitado';
+    var canEditPage = v.role !== 'invitado' && !s.useMode;
 
     /* barra lateral */
     var inbox = this.inboxFor(s, v);

@@ -9,14 +9,14 @@
       <sc-for list="{{$.viewTabs}}" as="vt" hint-placeholder-count="4">
         <button type="button" class="vtab {{vt.cls}}" onClick="{{vt.pick}}">[[ics:vt.icon]]<span>{{vt.name}}</span><sc-if value="{{vt.locked}}" hint-placeholder-val="{{false}}"><span class="lk" title="Vista bloqueada">[[icx:ICON.lock]]</span></sc-if></button>
       </sc-for>
-      <button type="button" class="icon-btn sm" onClick="{{$.toggleAddView}}" aria-label="Añadir vista" title="Añadir vista" aria-expanded="{{$.addViewOpen}}">[[ic:ICON.plus]]</button>
+      <button type="button" class="icon-btn sm cfg-only" onClick="{{$.toggleAddView}}" aria-label="Añadir vista" title="Añadir vista" aria-expanded="{{$.addViewOpen}}">[[ic:ICON.plus]]</button>
     </div>
     <div class="tools">
       <button type="button" class="tool {{$.filterOn}}" onClick="{{$.openFilter}}">[[ics:ICON.filter]]<span class="tool-txt">Filtrar</span><sc-if value="{{$.hasFilters}}" hint-placeholder-val="{{false}}"><span class="badge">{{$.filterCount}}</span></sc-if></button>
       <button type="button" class="tool {{$.sortOn}}" onClick="{{$.openSort}}">[[ics:ICON.sort]]<span class="tool-txt">Ordenar</span><sc-if value="{{$.hasSorts}}" hint-placeholder-val="{{false}}"><span class="badge">{{$.sortCount}}</span></sc-if></button>
       <sc-if value="{{$.showSearch}}" hint-placeholder-val="{{true}}"><label class="search">[[ics:ICON.search]]<input class="search-in" value="{{$.q}}" onChange="{{$.setQ}}" placeholder="{{$.searchPh}}" aria-label="{{$.searchPh}}"></label></sc-if>
-      <sc-if value="{{$.canStructureOpen}}" hint-placeholder-val="{{true}}"><button type="button" class="tool" onClick="{{$.openRelate}}" title="Añadir una relación con otra tabla">[[ics:ICON.relation]]<span class="tool-txt">Relacionar</span></button></sc-if>
-      <button type="button" class="tool" onClick="{{$.openSettings}}" aria-label="Configuración de la vista">[[ics:ICON.sliders]]<span class="tool-txt">Configuración</span></button>
+      <sc-if value="{{$.canStructureOpen}}" hint-placeholder-val="{{true}}"><button type="button" class="tool cfg-only" onClick="{{$.openRelate}}" title="Añadir una relación con otra tabla">[[ics:ICON.relation]]<span class="tool-txt">Relacionar</span></button></sc-if>
+      <button type="button" class="tool cfg-only" onClick="{{$.openSettings}}" aria-label="Configuración de la vista">[[ics:ICON.sliders]]<span class="tool-txt">Configuración</span></button>
       <sc-if value="{{$.canEdit}}" hint-placeholder-val="{{true}}"><span class="split pick-wrap"><button type="button" class="btn btn-primary btn-sm split-main" onClick="{{$.newRowBtn}}">[[ics:ICON.plus]]Nuevo</button><button type="button" class="btn btn-primary btn-sm split-arrow" onClick="{{$.toggleTpl}}" aria-label="Nuevo desde plantilla" title="Nuevo desde plantilla" aria-expanded="{{$.tplOpen}}">[[icx:ICON.chevdown]]</button>
         <sc-if value="{{$.tplOpen}}" hint-placeholder-val="{{false}}"><div class="menu tpl-menu">
           <button type="button" class="menu-item" onClick="{{$.newBlank}}">[[ics:ICON.plus]]<span>Registro vacío</span></button>
@@ -29,7 +29,7 @@
   </div>
 
   <sc-if value="{{$.addViewOpen}}" hint-placeholder-val="{{false}}">
-    <div class="addview">
+    <div class="addview cfg-only">
       <div class="addview-title">Nueva vista</div>
       <sc-for list="{{$.layoutsAdd}}" as="la" hint-placeholder-count="7"><button type="button" class="addview-btn" onClick="{{la.pick}}">[[ic:la.icon]]{{la.name}}</button></sc-for>
     </div>
@@ -47,9 +47,9 @@
       <button type="button" class="btn btn-xs" onClick="{{$.hm.asc}}">[[ics:ICON.up]]Ascendente</button>
       <button type="button" class="btn btn-xs" onClick="{{$.hm.desc}}">[[ics:ICON.down]]Descendente</button>
       <button type="button" class="btn btn-xs" onClick="{{$.hm.filter}}">[[ics:ICON.filter]]Filtrar</button>
-      <sc-if value="{{$.hm.canHide}}" hint-placeholder-val="{{true}}"><button type="button" class="btn btn-xs" onClick="{{$.hm.hide}}">[[ics:ICON.eyeoff]]Ocultar</button></sc-if>
-      <button type="button" class="btn btn-xs {{$.hm.wrapCls}}" onClick="{{$.hm.wrap}}" aria-pressed="{{$.hm.wrapOn}}">[[ics:ICON.wrap]]Ajustar texto</button>
-      <div class="seg seg-sm"><sc-for list="{{$.hm.widthOpts}}" as="wo" hint-placeholder-count="3"><button type="button" class="seg-btn {{wo.cls}}" onClick="{{wo.pick}}">{{wo.label}}</button></sc-for></div>
+      <sc-if value="{{$.hm.canHide}}" hint-placeholder-val="{{true}}"><button type="button" class="btn btn-xs cfg-only" onClick="{{$.hm.hide}}">[[ics:ICON.eyeoff]]Ocultar</button></sc-if>
+      <button type="button" class="btn btn-xs cfg-only {{$.hm.wrapCls}}" onClick="{{$.hm.wrap}}" aria-pressed="{{$.hm.wrapOn}}">[[ics:ICON.wrap]]Ajustar texto</button>
+      <div class="seg seg-sm cfg-only"><sc-for list="{{$.hm.widthOpts}}" as="wo" hint-placeholder-count="3"><button type="button" class="seg-btn {{wo.cls}}" onClick="{{wo.pick}}">{{wo.label}}</button></sc-for></div>
       <sc-if value="{{$.hm.canEditProp}}" hint-placeholder-val="{{true}}"><button type="button" class="btn btn-xs" onClick="{{$.hm.edit}}">[[ics:ICON.settings]]Configurar columna</button><button type="button" class="btn btn-xs" onClick="{{$.hm.insert}}">[[ics:ICON.plus]]Insertar columna</button></sc-if>
       <span class="hb-sp"></span>
       <button type="button" class="icon-btn sm" onClick="{{$.hm.close}}" aria-label="Cerrar opciones de columna">[[ics:ICON.x]]</button>

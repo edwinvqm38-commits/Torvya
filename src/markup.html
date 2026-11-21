@@ -1,4 +1,4 @@
-<div class="app theme-{{mode}} acc-{{accent}} dens-{{density}} rad-{{corners}} font-{{font}}">
+<div class="app {{useCls}} theme-{{mode}} acc-{{accent}} dens-{{density}} rad-{{corners}} font-{{font}}">
 
 <aside class="side {{navCls}}" aria-label="Navegación principal">
   <div class="side-top">
@@ -9,6 +9,7 @@
     <button type="button" class="icon-btn nav-toggle" onClick="{{toggleNav}}" aria-label="{{navAria}}" aria-expanded="{{navOpenB}}">[[ic:ICON.menu]]</button>
   </div>
   <div class="side-body">
+    <button type="button" class="use-sw {{useOnCls}}" onClick="{{toggleUse}}" role="switch" aria-checked="{{useOn}}" title="{{useHint}}"><span class="use-tr"><span class="use-kn"></span></span><span class="use-tx">{{useLabel}}</span></button>
     <sc-for list="{{sideHome}}" as="sp" hint-placeholder-count="1">
       <div class="nav-row {{sp.on}} {{sp.jl}}" style="--d: {{sp.depth}}" draggable="{{sp.canDrag}}" onDragStart="{{sp.dragStart}}" onDragOver="{{sp.dragOver}}" onDragLeave="{{sp.dragLeave}}" onDrop="{{sp.drop}}" onDragEnd="{{sp.dragEnd}}">
           <sc-if value="{{sp.hasKids}}" hint-placeholder-val="{{false}}"><button type="button" class="nav-fold {{sp.foldCls}}" onClick="{{sp.toggle}}" aria-label="{{sp.foldAria}}" aria-expanded="{{sp.open}}">[[icx:ICON.right]]</button></sc-if>
@@ -63,7 +64,7 @@
       <button type="button" class="nav-item {{navBiz}}" onClick="{{goBiz}}"><span class="nav-ic">[[ic:ICON.settings]]</span><span class="nav-txt">Tu negocio y módulos</span></button>
       <button type="button" class="nav-item {{navTheme}}" onClick="{{goTheme}}"><span class="nav-ic">[[ic:ICON.palette]]</span><span class="nav-txt">Personalizar</span></button>
     </sc-if>
-    <div class="side-foot">
+    <div class="side-foot cfg-only">
       <div class="nav-label"><span>Previsualizar como</span></div>
       <button type="button" class="viewas" onClick="{{toggleViewMenu}}" aria-expanded="{{viewMenu}}">
         <span class="av" style="background: {{viewer.color}}">{{viewer.initials}}</span>
@@ -1353,7 +1354,7 @@
       <span class="crumb-sm"><span class="tico xs" style="--c: {{rec.tcolor}}">[[icx:rec.ticon]]</span>{{rec.tname}}</span>
       <span class="rec-actions">
         <sc-if value="{{rec.notInTable}}" hint-placeholder-val="{{true}}"><button type="button" class="btn btn-xs" onClick="{{rec.openTable}}">[[icx:ICON.db]]Ver en su tabla</button></sc-if>
-        <div class="seg seg-sm rec-modes" role="group" aria-label="Cómo abrir el registro"><button type="button" class="seg-btn {{recSideCls}}" onClick="{{recAsSide}}" aria-pressed="{{recIsSide}}" title="Panel lateral">[[ics:ICON.sidebar]]<span>Panel</span></button><button type="button" class="seg-btn {{recFullCls}}" onClick="{{recAsFull}}" aria-pressed="{{recFullB}}" title="Ventana centrada amplia">[[ics:ICON.expand]]<span>Ventana</span></button></div><sc-if value="{{rec.canEdit}}" hint-placeholder-val="{{true}}"><span class="pick-wrap"><button type="button" class="icon-btn" onClick="{{rec.togglePal}}" aria-expanded="{{rec.palOpen}}" aria-label="Color de fondo de la tarjeta" title="Color de fondo de la tarjeta">[[ic:ICON.palette]]</button><sc-if value="{{rec.palOpen}}" hint-placeholder-val="{{false}}"><div class="tone-pop"><div class="pp-title">Fondo de la tarjeta</div><div class="tone-grid"><sc-for list="{{rec.pal}}" as="rp" hint-placeholder-count="9"><button type="button" class="tone-opt {{rp.cls}}" onClick="{{rp.pick}}" aria-label="{{rp.name}}" aria-pressed="{{rp.on}}" title="{{rp.name}}"></button></sc-for></div><p class="muted sm" style="margin: 0">Se ve en la tabla, el tablero y aquí. Las reglas de color de la vista tienen prioridad.</p></div></sc-if></span></sc-if>
+        <div class="seg seg-sm rec-modes" role="group" aria-label="Cómo abrir el registro"><button type="button" class="seg-btn {{recSideCls}}" onClick="{{recAsSide}}" aria-pressed="{{recIsSide}}" title="Panel lateral">[[ics:ICON.sidebar]]<span>Panel</span></button><button type="button" class="seg-btn {{recFullCls}}" onClick="{{recAsFull}}" aria-pressed="{{recFullB}}" title="Ventana centrada amplia">[[ics:ICON.expand]]<span>Ventana</span></button></div><sc-if value="{{rec.canEdit}}" hint-placeholder-val="{{true}}"><span class="pick-wrap cfg-only"><button type="button" class="icon-btn" onClick="{{rec.togglePal}}" aria-expanded="{{rec.palOpen}}" aria-label="Color de fondo de la tarjeta" title="Color de fondo de la tarjeta">[[ic:ICON.palette]]</button><sc-if value="{{rec.palOpen}}" hint-placeholder-val="{{false}}"><div class="tone-pop"><div class="pp-title">Fondo de la tarjeta</div><div class="tone-grid"><sc-for list="{{rec.pal}}" as="rp" hint-placeholder-count="9"><button type="button" class="tone-opt {{rp.cls}}" onClick="{{rp.pick}}" aria-label="{{rp.name}}" aria-pressed="{{rp.on}}" title="{{rp.name}}"></button></sc-for></div><p class="muted sm" style="margin: 0">Se ve en la tabla, el tablero y aquí. Las reglas de color de la vista tienen prioridad.</p></div></sc-if></span></sc-if>
         <sc-if value="{{rec.canTpl}}" hint-placeholder-val="{{true}}"><button type="button" class="icon-btn" onClick="{{rec.saveTpl}}" aria-label="Guardar como plantilla" title="Guardar como plantilla">[[ic:ICON.template]]</button></sc-if>
         <sc-if value="{{rec.canEdit}}" hint-placeholder-val="{{true}}"><button type="button" class="icon-btn" onClick="{{rec.del}}" aria-label="Eliminar registro" title="Eliminar registro">[[ic:ICON.trash]]</button></sc-if>
         <button type="button" class="icon-btn" onClick="{{closeRec}}" aria-label="Cerrar" title="Cerrar">[[ic:ICON.x]]</button>

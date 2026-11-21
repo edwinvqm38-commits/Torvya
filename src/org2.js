@@ -523,7 +523,7 @@ function fmtShort(iso) { var d = String(iso || '').slice(0, 10).split('-'); retu
 var _orgDataBase = Component.prototype.orgData;
 Object.assign(Component.prototype, {
   orgData(s, v) {
-    var self = this, d = _orgDataBase.call(this, s, v), isAdmin = v.role === 'admin';
+    var self = this, d = _orgDataBase.call(this, s, v), isAdmin = v.role === 'admin' && !s.useMode;
     d.boxes.forEach(function (b) {
       var c = b.raw, wl = c.person ? self.workload(s, c.person) : null;
       b.hasLoad = !!wl; b.load = wl ? (wl.n ? wl.h + ' h · ' + wl.n + (wl.n === 1 ? ' tarea' : ' tareas') : 'Sin tareas abiertas') : '';

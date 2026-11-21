@@ -1784,9 +1784,25 @@ body.td-active .board{scroll-snap-type:none!important}
 .theme-dark .blk.has-bg.rc-pink,.theme-dark .rec.rc-pink,.theme-dark .rec.rc-pink .rec-top{background:#2A1821}
 .blk.has-bg .tbl,.blk.has-bg .th-row{background:transparent}
 @media (max-width:812px){.tone-pop{position:fixed;left:12px;right:12px;bottom:calc(12px + env(safe-area-inset-bottom,0px));top:auto;width:auto;z-index:95;box-shadow:0 -6px 30px rgba(20,20,16,.22)}.tone-grid{gap:8px}}
+
+/* ===== Modo uso ===== */
+.use-sw{display:flex;align-items:center;gap:10px;width:100%;padding:8px 10px;margin:0 0 10px;border:1px solid var(--line);border-radius:10px;background:var(--soft);color:var(--ink);font:inherit;font-size:13px;cursor:pointer}
+.use-tr{position:relative;flex:none;width:30px;height:18px;border-radius:99px;background:var(--line);transition:background .2s}
+.use-kn{position:absolute;top:2px;left:2px;width:14px;height:14px;border-radius:50%;background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.25);transition:transform .2s}
+.use-sw.on .use-tr{background:var(--accent,#4F46E5)}
+.use-sw.on .use-kn{transform:translateX(12px)}
+.use-tx{font-weight:600}
+.usemode .cfg-only,.usemode .blk-tools,.usemode .blk-rz,.usemode .nav-add,.usemode .cover-tools,.usemode .nav-label .icon-btn{display:none !important}
+.usemode .blk{box-shadow:none}
+.usemode .nav-row{cursor:default}
+
+/* Suavidad al tocar */
+.nav-item,.btn,.tool,.icon-btn,.vtab,.seg-btn,.addblk-item,.menu-item{transition:background-color .16s ease,color .16s ease,border-color .16s ease,box-shadow .16s ease,transform .12s ease}
+.btn:active,.tool:active,.icon-btn:active,.nav-item:active{transform:scale(.97)}
+@media (prefers-reduced-motion:reduce){.nav-item,.btn,.tool,.icon-btn,.vtab,.seg-btn,.use-tr,.use-kn{transition:none}}
 </style>
 </helmet>
-<div class="app theme-{{mode}} acc-{{accent}} dens-{{density}} rad-{{corners}} font-{{font}}">
+<div class="app {{useCls}} theme-{{mode}} acc-{{accent}} dens-{{density}} rad-{{corners}} font-{{font}}">
 
 <aside class="side {{navCls}}" aria-label="Navegación principal">
   <div class="side-top">
@@ -1797,6 +1813,7 @@ body.td-active .board{scroll-snap-type:none!important}
     <button type="button" class="icon-btn nav-toggle" onClick="{{toggleNav}}" aria-label="{{navAria}}" aria-expanded="{{navOpenB}}"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.menu}}"></path></svg></button>
   </div>
   <div class="side-body">
+    <button type="button" class="use-sw {{useOnCls}}" onClick="{{toggleUse}}" role="switch" aria-checked="{{useOn}}" title="{{useHint}}"><span class="use-tr"><span class="use-kn"></span></span><span class="use-tx">{{useLabel}}</span></button>
     <sc-for list="{{sideHome}}" as="sp" hint-placeholder-count="1">
       <div class="nav-row {{sp.on}} {{sp.jl}}" style="--d: {{sp.depth}}" draggable="{{sp.canDrag}}" onDragStart="{{sp.dragStart}}" onDragOver="{{sp.dragOver}}" onDragLeave="{{sp.dragLeave}}" onDrop="{{sp.drop}}" onDragEnd="{{sp.dragEnd}}">
           <sc-if value="{{sp.hasKids}}" hint-placeholder-val="{{false}}"><button type="button" class="nav-fold {{sp.foldCls}}" onClick="{{sp.toggle}}" aria-label="{{sp.foldAria}}" aria-expanded="{{sp.open}}"><svg class="ic ic-xs" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.right}}"></path></svg></button></sc-if>
@@ -1851,7 +1868,7 @@ body.td-active .board{scroll-snap-type:none!important}
       <button type="button" class="nav-item {{navBiz}}" onClick="{{goBiz}}"><span class="nav-ic"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.settings}}"></path></svg></span><span class="nav-txt">Tu negocio y módulos</span></button>
       <button type="button" class="nav-item {{navTheme}}" onClick="{{goTheme}}"><span class="nav-ic"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.palette}}"></path></svg></span><span class="nav-txt">Personalizar</span></button>
     </sc-if>
-    <div class="side-foot">
+    <div class="side-foot cfg-only">
       <div class="nav-label"><span>Previsualizar como</span></div>
       <button type="button" class="viewas" onClick="{{toggleViewMenu}}" aria-expanded="{{viewMenu}}">
         <span class="av" style="background: {{viewer.color}}">{{viewer.initials}}</span>
@@ -2215,14 +2232,14 @@ body.td-active .board{scroll-snap-type:none!important}
       <sc-for list="{{bl.dv.viewTabs}}" as="vt" hint-placeholder-count="4">
         <button type="button" class="vtab {{vt.cls}}" onClick="{{vt.pick}}"><svg class="ic ic-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="{{vt.icon}}"></path></svg><span>{{vt.name}}</span><sc-if value="{{vt.locked}}" hint-placeholder-val="{{false}}"><span class="lk" title="Vista bloqueada"><svg class="ic ic-xs" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.lock}}"></path></svg></span></sc-if></button>
       </sc-for>
-      <button type="button" class="icon-btn sm" onClick="{{bl.dv.toggleAddView}}" aria-label="Añadir vista" title="Añadir vista" aria-expanded="{{bl.dv.addViewOpen}}"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.plus}}"></path></svg></button>
+      <button type="button" class="icon-btn sm cfg-only" onClick="{{bl.dv.toggleAddView}}" aria-label="Añadir vista" title="Añadir vista" aria-expanded="{{bl.dv.addViewOpen}}"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.plus}}"></path></svg></button>
     </div>
     <div class="tools">
       <button type="button" class="tool {{bl.dv.filterOn}}" onClick="{{bl.dv.openFilter}}"><svg class="ic ic-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.filter}}"></path></svg><span class="tool-txt">Filtrar</span><sc-if value="{{bl.dv.hasFilters}}" hint-placeholder-val="{{false}}"><span class="badge">{{bl.dv.filterCount}}</span></sc-if></button>
       <button type="button" class="tool {{bl.dv.sortOn}}" onClick="{{bl.dv.openSort}}"><svg class="ic ic-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.sort}}"></path></svg><span class="tool-txt">Ordenar</span><sc-if value="{{bl.dv.hasSorts}}" hint-placeholder-val="{{false}}"><span class="badge">{{bl.dv.sortCount}}</span></sc-if></button>
       <sc-if value="{{bl.dv.showSearch}}" hint-placeholder-val="{{true}}"><label class="search"><svg class="ic ic-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.search}}"></path></svg><input class="search-in" value="{{bl.dv.q}}" onChange="{{bl.dv.setQ}}" placeholder="{{bl.dv.searchPh}}" aria-label="{{bl.dv.searchPh}}"></label></sc-if>
-      <sc-if value="{{bl.dv.canStructureOpen}}" hint-placeholder-val="{{true}}"><button type="button" class="tool" onClick="{{bl.dv.openRelate}}" title="Añadir una relación con otra tabla"><svg class="ic ic-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.relation}}"></path></svg><span class="tool-txt">Relacionar</span></button></sc-if>
-      <button type="button" class="tool" onClick="{{bl.dv.openSettings}}" aria-label="Configuración de la vista"><svg class="ic ic-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.sliders}}"></path></svg><span class="tool-txt">Configuración</span></button>
+      <sc-if value="{{bl.dv.canStructureOpen}}" hint-placeholder-val="{{true}}"><button type="button" class="tool cfg-only" onClick="{{bl.dv.openRelate}}" title="Añadir una relación con otra tabla"><svg class="ic ic-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.relation}}"></path></svg><span class="tool-txt">Relacionar</span></button></sc-if>
+      <button type="button" class="tool cfg-only" onClick="{{bl.dv.openSettings}}" aria-label="Configuración de la vista"><svg class="ic ic-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.sliders}}"></path></svg><span class="tool-txt">Configuración</span></button>
       <sc-if value="{{bl.dv.canEdit}}" hint-placeholder-val="{{true}}"><span class="split pick-wrap"><button type="button" class="btn btn-primary btn-sm split-main" onClick="{{bl.dv.newRowBtn}}"><svg class="ic ic-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.plus}}"></path></svg>Nuevo</button><button type="button" class="btn btn-primary btn-sm split-arrow" onClick="{{bl.dv.toggleTpl}}" aria-label="Nuevo desde plantilla" title="Nuevo desde plantilla" aria-expanded="{{bl.dv.tplOpen}}"><svg class="ic ic-xs" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.chevdown}}"></path></svg></button>
         <sc-if value="{{bl.dv.tplOpen}}" hint-placeholder-val="{{false}}"><div class="menu tpl-menu">
           <button type="button" class="menu-item" onClick="{{bl.dv.newBlank}}"><svg class="ic ic-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.plus}}"></path></svg><span>Registro vacío</span></button>
@@ -2235,7 +2252,7 @@ body.td-active .board{scroll-snap-type:none!important}
   </div>
 
   <sc-if value="{{bl.dv.addViewOpen}}" hint-placeholder-val="{{false}}">
-    <div class="addview">
+    <div class="addview cfg-only">
       <div class="addview-title">Nueva vista</div>
       <sc-for list="{{bl.dv.layoutsAdd}}" as="la" hint-placeholder-count="7"><button type="button" class="addview-btn" onClick="{{la.pick}}"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="{{la.icon}}"></path></svg>{{la.name}}</button></sc-for>
     </div>
@@ -2253,9 +2270,9 @@ body.td-active .board{scroll-snap-type:none!important}
       <button type="button" class="btn btn-xs" onClick="{{bl.dv.hm.asc}}"><svg class="ic ic-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.up}}"></path></svg>Ascendente</button>
       <button type="button" class="btn btn-xs" onClick="{{bl.dv.hm.desc}}"><svg class="ic ic-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.down}}"></path></svg>Descendente</button>
       <button type="button" class="btn btn-xs" onClick="{{bl.dv.hm.filter}}"><svg class="ic ic-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.filter}}"></path></svg>Filtrar</button>
-      <sc-if value="{{bl.dv.hm.canHide}}" hint-placeholder-val="{{true}}"><button type="button" class="btn btn-xs" onClick="{{bl.dv.hm.hide}}"><svg class="ic ic-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.eyeoff}}"></path></svg>Ocultar</button></sc-if>
-      <button type="button" class="btn btn-xs {{bl.dv.hm.wrapCls}}" onClick="{{bl.dv.hm.wrap}}" aria-pressed="{{bl.dv.hm.wrapOn}}"><svg class="ic ic-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.wrap}}"></path></svg>Ajustar texto</button>
-      <div class="seg seg-sm"><sc-for list="{{bl.dv.hm.widthOpts}}" as="wo" hint-placeholder-count="3"><button type="button" class="seg-btn {{wo.cls}}" onClick="{{wo.pick}}">{{wo.label}}</button></sc-for></div>
+      <sc-if value="{{bl.dv.hm.canHide}}" hint-placeholder-val="{{true}}"><button type="button" class="btn btn-xs cfg-only" onClick="{{bl.dv.hm.hide}}"><svg class="ic ic-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.eyeoff}}"></path></svg>Ocultar</button></sc-if>
+      <button type="button" class="btn btn-xs cfg-only {{bl.dv.hm.wrapCls}}" onClick="{{bl.dv.hm.wrap}}" aria-pressed="{{bl.dv.hm.wrapOn}}"><svg class="ic ic-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.wrap}}"></path></svg>Ajustar texto</button>
+      <div class="seg seg-sm cfg-only"><sc-for list="{{bl.dv.hm.widthOpts}}" as="wo" hint-placeholder-count="3"><button type="button" class="seg-btn {{wo.cls}}" onClick="{{wo.pick}}">{{wo.label}}</button></sc-for></div>
       <sc-if value="{{bl.dv.hm.canEditProp}}" hint-placeholder-val="{{true}}"><button type="button" class="btn btn-xs" onClick="{{bl.dv.hm.edit}}"><svg class="ic ic-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.settings}}"></path></svg>Configurar columna</button><button type="button" class="btn btn-xs" onClick="{{bl.dv.hm.insert}}"><svg class="ic ic-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.plus}}"></path></svg>Insertar columna</button></sc-if>
       <span class="hb-sp"></span>
       <button type="button" class="icon-btn sm" onClick="{{bl.dv.hm.close}}" aria-label="Cerrar opciones de columna"><svg class="ic ic-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.x}}"></path></svg></button>
@@ -2643,14 +2660,14 @@ body.td-active .board{scroll-snap-type:none!important}
       <sc-for list="{{db.dv.viewTabs}}" as="vt" hint-placeholder-count="4">
         <button type="button" class="vtab {{vt.cls}}" onClick="{{vt.pick}}"><svg class="ic ic-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="{{vt.icon}}"></path></svg><span>{{vt.name}}</span><sc-if value="{{vt.locked}}" hint-placeholder-val="{{false}}"><span class="lk" title="Vista bloqueada"><svg class="ic ic-xs" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.lock}}"></path></svg></span></sc-if></button>
       </sc-for>
-      <button type="button" class="icon-btn sm" onClick="{{db.dv.toggleAddView}}" aria-label="Añadir vista" title="Añadir vista" aria-expanded="{{db.dv.addViewOpen}}"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.plus}}"></path></svg></button>
+      <button type="button" class="icon-btn sm cfg-only" onClick="{{db.dv.toggleAddView}}" aria-label="Añadir vista" title="Añadir vista" aria-expanded="{{db.dv.addViewOpen}}"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.plus}}"></path></svg></button>
     </div>
     <div class="tools">
       <button type="button" class="tool {{db.dv.filterOn}}" onClick="{{db.dv.openFilter}}"><svg class="ic ic-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.filter}}"></path></svg><span class="tool-txt">Filtrar</span><sc-if value="{{db.dv.hasFilters}}" hint-placeholder-val="{{false}}"><span class="badge">{{db.dv.filterCount}}</span></sc-if></button>
       <button type="button" class="tool {{db.dv.sortOn}}" onClick="{{db.dv.openSort}}"><svg class="ic ic-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.sort}}"></path></svg><span class="tool-txt">Ordenar</span><sc-if value="{{db.dv.hasSorts}}" hint-placeholder-val="{{false}}"><span class="badge">{{db.dv.sortCount}}</span></sc-if></button>
       <sc-if value="{{db.dv.showSearch}}" hint-placeholder-val="{{true}}"><label class="search"><svg class="ic ic-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.search}}"></path></svg><input class="search-in" value="{{db.dv.q}}" onChange="{{db.dv.setQ}}" placeholder="{{db.dv.searchPh}}" aria-label="{{db.dv.searchPh}}"></label></sc-if>
-      <sc-if value="{{db.dv.canStructureOpen}}" hint-placeholder-val="{{true}}"><button type="button" class="tool" onClick="{{db.dv.openRelate}}" title="Añadir una relación con otra tabla"><svg class="ic ic-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.relation}}"></path></svg><span class="tool-txt">Relacionar</span></button></sc-if>
-      <button type="button" class="tool" onClick="{{db.dv.openSettings}}" aria-label="Configuración de la vista"><svg class="ic ic-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.sliders}}"></path></svg><span class="tool-txt">Configuración</span></button>
+      <sc-if value="{{db.dv.canStructureOpen}}" hint-placeholder-val="{{true}}"><button type="button" class="tool cfg-only" onClick="{{db.dv.openRelate}}" title="Añadir una relación con otra tabla"><svg class="ic ic-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.relation}}"></path></svg><span class="tool-txt">Relacionar</span></button></sc-if>
+      <button type="button" class="tool cfg-only" onClick="{{db.dv.openSettings}}" aria-label="Configuración de la vista"><svg class="ic ic-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.sliders}}"></path></svg><span class="tool-txt">Configuración</span></button>
       <sc-if value="{{db.dv.canEdit}}" hint-placeholder-val="{{true}}"><span class="split pick-wrap"><button type="button" class="btn btn-primary btn-sm split-main" onClick="{{db.dv.newRowBtn}}"><svg class="ic ic-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.plus}}"></path></svg>Nuevo</button><button type="button" class="btn btn-primary btn-sm split-arrow" onClick="{{db.dv.toggleTpl}}" aria-label="Nuevo desde plantilla" title="Nuevo desde plantilla" aria-expanded="{{db.dv.tplOpen}}"><svg class="ic ic-xs" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.chevdown}}"></path></svg></button>
         <sc-if value="{{db.dv.tplOpen}}" hint-placeholder-val="{{false}}"><div class="menu tpl-menu">
           <button type="button" class="menu-item" onClick="{{db.dv.newBlank}}"><svg class="ic ic-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.plus}}"></path></svg><span>Registro vacío</span></button>
@@ -2663,7 +2680,7 @@ body.td-active .board{scroll-snap-type:none!important}
   </div>
 
   <sc-if value="{{db.dv.addViewOpen}}" hint-placeholder-val="{{false}}">
-    <div class="addview">
+    <div class="addview cfg-only">
       <div class="addview-title">Nueva vista</div>
       <sc-for list="{{db.dv.layoutsAdd}}" as="la" hint-placeholder-count="7"><button type="button" class="addview-btn" onClick="{{la.pick}}"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="{{la.icon}}"></path></svg>{{la.name}}</button></sc-for>
     </div>
@@ -2681,9 +2698,9 @@ body.td-active .board{scroll-snap-type:none!important}
       <button type="button" class="btn btn-xs" onClick="{{db.dv.hm.asc}}"><svg class="ic ic-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.up}}"></path></svg>Ascendente</button>
       <button type="button" class="btn btn-xs" onClick="{{db.dv.hm.desc}}"><svg class="ic ic-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.down}}"></path></svg>Descendente</button>
       <button type="button" class="btn btn-xs" onClick="{{db.dv.hm.filter}}"><svg class="ic ic-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.filter}}"></path></svg>Filtrar</button>
-      <sc-if value="{{db.dv.hm.canHide}}" hint-placeholder-val="{{true}}"><button type="button" class="btn btn-xs" onClick="{{db.dv.hm.hide}}"><svg class="ic ic-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.eyeoff}}"></path></svg>Ocultar</button></sc-if>
-      <button type="button" class="btn btn-xs {{db.dv.hm.wrapCls}}" onClick="{{db.dv.hm.wrap}}" aria-pressed="{{db.dv.hm.wrapOn}}"><svg class="ic ic-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.wrap}}"></path></svg>Ajustar texto</button>
-      <div class="seg seg-sm"><sc-for list="{{db.dv.hm.widthOpts}}" as="wo" hint-placeholder-count="3"><button type="button" class="seg-btn {{wo.cls}}" onClick="{{wo.pick}}">{{wo.label}}</button></sc-for></div>
+      <sc-if value="{{db.dv.hm.canHide}}" hint-placeholder-val="{{true}}"><button type="button" class="btn btn-xs cfg-only" onClick="{{db.dv.hm.hide}}"><svg class="ic ic-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.eyeoff}}"></path></svg>Ocultar</button></sc-if>
+      <button type="button" class="btn btn-xs cfg-only {{db.dv.hm.wrapCls}}" onClick="{{db.dv.hm.wrap}}" aria-pressed="{{db.dv.hm.wrapOn}}"><svg class="ic ic-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.wrap}}"></path></svg>Ajustar texto</button>
+      <div class="seg seg-sm cfg-only"><sc-for list="{{db.dv.hm.widthOpts}}" as="wo" hint-placeholder-count="3"><button type="button" class="seg-btn {{wo.cls}}" onClick="{{wo.pick}}">{{wo.label}}</button></sc-for></div>
       <sc-if value="{{db.dv.hm.canEditProp}}" hint-placeholder-val="{{true}}"><button type="button" class="btn btn-xs" onClick="{{db.dv.hm.edit}}"><svg class="ic ic-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.settings}}"></path></svg>Configurar columna</button><button type="button" class="btn btn-xs" onClick="{{db.dv.hm.insert}}"><svg class="ic ic-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.plus}}"></path></svg>Insertar columna</button></sc-if>
       <span class="hb-sp"></span>
       <button type="button" class="icon-btn sm" onClick="{{db.dv.hm.close}}" aria-label="Cerrar opciones de columna"><svg class="ic ic-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.x}}"></path></svg></button>
@@ -3978,7 +3995,7 @@ body.td-active .board{scroll-snap-type:none!important}
       <span class="crumb-sm"><span class="tico xs" style="--c: {{rec.tcolor}}"><svg class="ic ic-xs" viewBox="0 0 24 24" aria-hidden="true"><path d="{{rec.ticon}}"></path></svg></span>{{rec.tname}}</span>
       <span class="rec-actions">
         <sc-if value="{{rec.notInTable}}" hint-placeholder-val="{{true}}"><button type="button" class="btn btn-xs" onClick="{{rec.openTable}}"><svg class="ic ic-xs" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.db}}"></path></svg>Ver en su tabla</button></sc-if>
-        <div class="seg seg-sm rec-modes" role="group" aria-label="Cómo abrir el registro"><button type="button" class="seg-btn {{recSideCls}}" onClick="{{recAsSide}}" aria-pressed="{{recIsSide}}" title="Panel lateral"><svg class="ic ic-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.sidebar}}"></path></svg><span>Panel</span></button><button type="button" class="seg-btn {{recFullCls}}" onClick="{{recAsFull}}" aria-pressed="{{recFullB}}" title="Ventana centrada amplia"><svg class="ic ic-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.expand}}"></path></svg><span>Ventana</span></button></div><sc-if value="{{rec.canEdit}}" hint-placeholder-val="{{true}}"><span class="pick-wrap"><button type="button" class="icon-btn" onClick="{{rec.togglePal}}" aria-expanded="{{rec.palOpen}}" aria-label="Color de fondo de la tarjeta" title="Color de fondo de la tarjeta"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.palette}}"></path></svg></button><sc-if value="{{rec.palOpen}}" hint-placeholder-val="{{false}}"><div class="tone-pop"><div class="pp-title">Fondo de la tarjeta</div><div class="tone-grid"><sc-for list="{{rec.pal}}" as="rp" hint-placeholder-count="9"><button type="button" class="tone-opt {{rp.cls}}" onClick="{{rp.pick}}" aria-label="{{rp.name}}" aria-pressed="{{rp.on}}" title="{{rp.name}}"></button></sc-for></div><p class="muted sm" style="margin: 0">Se ve en la tabla, el tablero y aquí. Las reglas de color de la vista tienen prioridad.</p></div></sc-if></span></sc-if>
+        <div class="seg seg-sm rec-modes" role="group" aria-label="Cómo abrir el registro"><button type="button" class="seg-btn {{recSideCls}}" onClick="{{recAsSide}}" aria-pressed="{{recIsSide}}" title="Panel lateral"><svg class="ic ic-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.sidebar}}"></path></svg><span>Panel</span></button><button type="button" class="seg-btn {{recFullCls}}" onClick="{{recAsFull}}" aria-pressed="{{recFullB}}" title="Ventana centrada amplia"><svg class="ic ic-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.expand}}"></path></svg><span>Ventana</span></button></div><sc-if value="{{rec.canEdit}}" hint-placeholder-val="{{true}}"><span class="pick-wrap cfg-only"><button type="button" class="icon-btn" onClick="{{rec.togglePal}}" aria-expanded="{{rec.palOpen}}" aria-label="Color de fondo de la tarjeta" title="Color de fondo de la tarjeta"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.palette}}"></path></svg></button><sc-if value="{{rec.palOpen}}" hint-placeholder-val="{{false}}"><div class="tone-pop"><div class="pp-title">Fondo de la tarjeta</div><div class="tone-grid"><sc-for list="{{rec.pal}}" as="rp" hint-placeholder-count="9"><button type="button" class="tone-opt {{rp.cls}}" onClick="{{rp.pick}}" aria-label="{{rp.name}}" aria-pressed="{{rp.on}}" title="{{rp.name}}"></button></sc-for></div><p class="muted sm" style="margin: 0">Se ve en la tabla, el tablero y aquí. Las reglas de color de la vista tienen prioridad.</p></div></sc-if></span></sc-if>
         <sc-if value="{{rec.canTpl}}" hint-placeholder-val="{{true}}"><button type="button" class="icon-btn" onClick="{{rec.saveTpl}}" aria-label="Guardar como plantilla" title="Guardar como plantilla"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.template}}"></path></svg></button></sc-if>
         <sc-if value="{{rec.canEdit}}" hint-placeholder-val="{{true}}"><button type="button" class="icon-btn" onClick="{{rec.del}}" aria-label="Eliminar registro" title="Eliminar registro"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.trash}}"></path></svg></button></sc-if>
         <button type="button" class="icon-btn" onClick="{{closeRec}}" aria-label="Cerrar" title="Cerrar"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.x}}"></path></svg></button>
@@ -7380,7 +7397,7 @@ Object.assign(Component.prototype, {
     vid = vw.id;
     var tLvl = this.lvl(s, tid, v.role);
     var canEdit = tLvl === 'edit' || tLvl === 'full';
-    var canStructure = tLvl === 'full';
+    var canStructure = tLvl === 'full' && !s.useMode;
     var locked = !!vw.locked;
     var ctxD = { tid: tid, vid: vid, where: where };
     var rprops = this.rprops(s, t, v.role);
@@ -8181,13 +8198,13 @@ Object.assign(Component.prototype, {
     var self = this;
     var s = this.st();
     var v = this.viewer(s);
-    var isAdminView = v.role === 'admin';
+    var isAdminView = v.role === 'admin' && !s.useMode;
     var previewing = s.viewAs !== 'ana';
     var accent = s.accent || this.props.accent || 'tecsur';
     var mode = s.mode || (this.props.dark ? 'dark' : 'light');
     var screen = s.screen;
     if (!isAdminView && (screen === 'permisos' || screen === 'tema')) screen = 'page';
-    var canEditPage = v.role !== 'invitado';
+    var canEditPage = v.role !== 'invitado' && !s.useMode;
 
     /* barra lateral */
     var inbox = this.inboxFor(s, v);
@@ -8868,7 +8885,7 @@ Object.assign(Component.prototype, {
     if (sim && pos[dr.cid]) { var gp = pos[dr.cid]; ghost = { has: true, style: 'left: ' + gp.x + 'px; top: ' + gp.d * (H + GY) + 'px; width: ' + W + 'px; height: ' + H + 'px; --c: ' + this.orgLvlColor(s, gp.d) }; }
     var width = Math.max(nextX - GX, W), height = (depthMax + 1) * (H + GY) - GY;
     var sel = s.orgSel ? this.orgCargo(s, s.orgSel) : null;
-    var isAdmin = v.role === 'admin';
+    var isAdmin = v.role === 'admin' && !s.useMode;
     var panel = { has: !!sel };
     if (sel) {
       var sa = this.orgArea(s, sel.area);
@@ -9648,7 +9665,7 @@ function fmtShort(iso) { var d = String(iso || '').slice(0, 10).split('-'); retu
 var _orgDataBase = Component.prototype.orgData;
 Object.assign(Component.prototype, {
   orgData(s, v) {
-    var self = this, d = _orgDataBase.call(this, s, v), isAdmin = v.role === 'admin';
+    var self = this, d = _orgDataBase.call(this, s, v), isAdmin = v.role === 'admin' && !s.useMode;
     d.boxes.forEach(function (b) {
       var c = b.raw, wl = c.person ? self.workload(s, c.person) : null;
       b.hasLoad = !!wl; b.load = wl ? (wl.n ? wl.h + ' h · ' + wl.n + (wl.n === 1 ? ' tarea' : ' tareas') : 'Sin tareas abiertas') : '';
@@ -13088,6 +13105,20 @@ Object.assign(Component.prototype, {
     }
   }
 });
+
+/* Modo uso: vista limpia, sin botones de configuración, arrastre ni anchos. Registrar y actuar sigue igual. */
+(function () {
+  var baseRv = Component.prototype.renderVals;
+  Component.prototype.renderVals = function () {
+    var self = this, out = baseRv.call(this), s = this.st(), on = !!s.useMode;
+    out.useCls = on ? 'usemode' : '';
+    out.useOn = on; out.useOnCls = on ? 'on' : '';
+    out.useLabel = on ? 'Modo uso' : 'Modo edición';
+    out.useHint = on ? 'Vista limpia para trabajar. Toca para volver a editar la estructura.' : 'Activa el modo uso para ocultar la configuración.';
+    out.toggleUse = function () { self.setState({ useMode: !s.useMode, viewMenu: false, headMenu: null, drawer: null, bkPal: null }); };
+    return out;
+  };
+})();
 
 </script>
 </body>

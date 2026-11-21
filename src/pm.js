@@ -351,7 +351,7 @@ Object.assign(Component.prototype, {
     if (sim && pos[dr.cid]) { var gp = pos[dr.cid]; ghost = { has: true, style: 'left: ' + gp.x + 'px; top: ' + gp.d * (H + GY) + 'px; width: ' + W + 'px; height: ' + H + 'px; --c: ' + this.orgLvlColor(s, gp.d) }; }
     var width = Math.max(nextX - GX, W), height = (depthMax + 1) * (H + GY) - GY;
     var sel = s.orgSel ? this.orgCargo(s, s.orgSel) : null;
-    var isAdmin = v.role === 'admin';
+    var isAdmin = v.role === 'admin' && !s.useMode;
     var panel = { has: !!sel };
     if (sel) {
       var sa = this.orgArea(s, sel.area);

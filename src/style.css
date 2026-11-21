@@ -1770,3 +1770,19 @@ body.td-active .board{scroll-snap-type:none!important}
 .theme-dark .blk.has-bg.rc-pink,.theme-dark .rec.rc-pink,.theme-dark .rec.rc-pink .rec-top{background:#2A1821}
 .blk.has-bg .tbl,.blk.has-bg .th-row{background:transparent}
 @media (max-width:812px){.tone-pop{position:fixed;left:12px;right:12px;bottom:calc(12px + env(safe-area-inset-bottom,0px));top:auto;width:auto;z-index:95;box-shadow:0 -6px 30px rgba(20,20,16,.22)}.tone-grid{gap:8px}}
+
+/* ===== Modo uso ===== */
+.use-sw{display:flex;align-items:center;gap:10px;width:100%;padding:8px 10px;margin:0 0 10px;border:1px solid var(--line);border-radius:10px;background:var(--soft);color:var(--ink);font:inherit;font-size:13px;cursor:pointer}
+.use-tr{position:relative;flex:none;width:30px;height:18px;border-radius:99px;background:var(--line);transition:background .2s}
+.use-kn{position:absolute;top:2px;left:2px;width:14px;height:14px;border-radius:50%;background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.25);transition:transform .2s}
+.use-sw.on .use-tr{background:var(--accent,#4F46E5)}
+.use-sw.on .use-kn{transform:translateX(12px)}
+.use-tx{font-weight:600}
+.usemode .cfg-only,.usemode .blk-tools,.usemode .blk-rz,.usemode .nav-add,.usemode .cover-tools,.usemode .nav-label .icon-btn{display:none !important}
+.usemode .blk{box-shadow:none}
+.usemode .nav-row{cursor:default}
+
+/* Suavidad al tocar */
+.nav-item,.btn,.tool,.icon-btn,.vtab,.seg-btn,.addblk-item,.menu-item{transition:background-color .16s ease,color .16s ease,border-color .16s ease,box-shadow .16s ease,transform .12s ease}
+.btn:active,.tool:active,.icon-btn:active,.nav-item:active{transform:scale(.97)}
+@media (prefers-reduced-motion:reduce){.nav-item,.btn,.tool,.icon-btn,.vtab,.seg-btn,.use-tr,.use-kn{transition:none}}
