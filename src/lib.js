@@ -80,6 +80,7 @@ var BLOCK_TYPES = [
   { id: 'todo', n: 'Lista de tareas', d: 'Casillas para marcar', icon: 'i-checks' },
   { id: 'callout', n: 'Aviso', d: 'Nota destacada', icon: 'info' },
   { id: 'pm', n: 'Salud de proyectos (PMBOK)', d: 'Recomendaciones de buenas prácticas', icon: 'shield' },
+  { id: 'scurve', n: 'Curva S del proyecto', d: 'Programado, ejecutado y proyección', icon: 'chart' },
   { id: 'cols:2', n: '2 columnas', d: 'Divide la fila en dos', icon: 'half' },
   { id: 'cols:3', n: '3 columnas', d: 'Divide la fila en tres', icon: 'grid' }
 ];
@@ -677,6 +678,7 @@ function seedPages() {
         blk('e3', 'kpi', 3, { title: 'Costo real (AC)', table: 'proy', val: 'sum:costo', filters: [] }),
         blk('e4', 'kpi', 3, { title: 'Riesgos altos abiertos', table: 'rie', val: 'count', filters: [{ prop: 'nivel', op: 'contains', value: 'Alto' }, { prop: 'estado', op: 'is_not', value: 'Cerrado' }] }),
         blk('e5', 'pm', 12, { title: 'Salud de los proyectos', scope: 'all' }),
+        blk('e5s', 'scurve', 12, { title: 'Curva S del proyecto', proj: 'y1' }),
         blk('e6', 'chart', 6, { title: 'Tareas por estado', table: 'tar', kind: 'donut', by: 'estado', val: 'count', sort: 'label', limit: 0, filters: [] }),
         blk('e7', 'chart', 6, { title: 'Horas por responsable', table: 'tar', kind: 'bar', by: 'responsable', val: 'sum:horas', sort: 'desc', limit: 0, filters: [] }),
         blk('e8', 'db', 12, { table: 'proy', view: 'vy1' }),

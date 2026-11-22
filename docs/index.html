@@ -1800,9 +1800,33 @@ body.td-active .board{scroll-snap-type:none!important}
 .nav-item,.btn,.tool,.icon-btn,.vtab,.seg-btn,.addblk-item,.menu-item{transition:background-color .16s ease,color .16s ease,border-color .16s ease,box-shadow .16s ease,transform .12s ease}
 .btn:active,.tool:active,.icon-btn:active,.nav-item:active{transform:scale(.97)}
 @media (prefers-reduced-motion:reduce){.nav-item,.btn,.tool,.icon-btn,.vtab,.seg-btn,.use-tr,.use-kn{transition:none}}
+
+/* ===== Curva S (ECharts) ===== */
+.sc-sel{max-width:240px}
+.sc-metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:4px 0 10px}
+.sc-m{display:flex;flex-direction:column;gap:2px;padding:10px 12px;border:1px solid var(--line);border-radius:var(--r);background:var(--soft)}
+.sc-m-l{font-size:12px;color:var(--muted)}
+.sc-m-v{font-family:var(--hfont);font-size:22px;font-weight:600;letter-spacing:-.01em;font-variant-numeric:tabular-nums}
+.sc-m-c{font-size:12px;color:var(--muted)}
+.sc-m.warn .sc-m-v{color:#B45309}.sc-m.bad .sc-m-v{color:#B91C1C}.sc-m.ok .sc-m-v{color:#047857}
+.theme-dark .sc-m.warn .sc-m-v{color:#F3C67C}.theme-dark .sc-m.bad .sc-m-v{color:#F5A3A3}.theme-dark .sc-m.ok .sc-m-v{color:#6EE7B7}
+.sc-chart{position:relative;width:100%;height:320px;min-height:240px}
+.sc-chart[data-fail]::after{content:"No se pudo cargar el motor de gráficas. Las cifras de arriba siguen siendo válidas.";position:absolute;inset:0;display:flex;align-items:center;justify-content:center;text-align:center;padding:16px;font-size:13px;color:var(--muted)}
+.sc-note{margin:6px 0 0}
+@media (max-width:720px){.sc-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}.sc-chart{height:260px}.sc-sel{max-width:100%}}
+
+/* ===== Intensidad de animaciones y contraste ===== */
+.seg-wrap{flex-wrap:wrap}
+.mv-desactivado *,.mv-desactivado *::before,.mv-desactivado *::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}
+.mv-reducido .jelly,.mv-reducido .org-node.landed,.mv-reducido .td-ghost>*,.mv-reducido .frow.f-hi{animation:none!important}
+.mv-reducido *{transition-duration:.08s!important}
+.mvs-rapida *{transition-duration:.1s}
+.theme-light.hc{--line:#8E8E86;--line2:#A4A49C;--muted:#4A4A44}
+.theme-dark.hc{--line:#6E6E78;--line2:#55555E;--muted:#D2D2CC}
+.hc :focus-visible{outline:3px solid var(--acc);outline-offset:2px}
 </style>
 </helmet>
-<div class="app {{useCls}} theme-{{mode}} acc-{{accent}} dens-{{density}} rad-{{corners}} font-{{font}}">
+<div class="app {{useCls}} {{mvCls}} theme-{{mode}} acc-{{accent}} dens-{{density}} rad-{{corners}} font-{{font}}">
 
 <aside class="side {{navCls}}" aria-label="Navegación principal">
   <div class="side-top">
@@ -2088,6 +2112,24 @@ body.td-active .board{scroll-snap-type:none!important}
               <button type="button" class="link-btn" onClick="{{bl.td.add}}"><svg class="ic ic-xs" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.plus}}"></path></svg>Añadir pendiente</button>
             </sc-if>
 
+            <sc-if value="{{bl.isScurve}}" hint-placeholder-val="{{false}}">
+              <div class="blk-head pm-head">
+                <span class="tico sm" style="--c: #B45309"><svg class="ic ic-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.chart}}"></path></svg></span>
+                <div class="blk-titles"><strong class="blk-title">{{bl.title}}</strong><sc-if value="{{bl.sc.has}}" hint-placeholder-val="{{true}}"><span class="blk-sub">{{bl.sc.range}}</span></sc-if></div>
+                <sc-if value="{{bl.sc.has}}" hint-placeholder-val="{{true}}"><select class="select sc-sel" onChange="{{bl.sc.setProj}}" aria-label="Proyecto de la curva S"><sc-for list="{{bl.sc.projOpts}}" as="po" hint-placeholder-count="3"><option value="{{po.id}}" selected="{{po.sel}}">{{po.name}}</option></sc-for></select></sc-if>
+              </div>
+              <sc-if value="{{bl.sc.noAccess}}" hint-placeholder-val="{{false}}"><div class="pm-ok">Sin acceso a Proyectos. Este bloque está oculto para tu rol.</div></sc-if>
+              <sc-if value="{{bl.sc.noRows}}" hint-placeholder-val="{{false}}"><div class="pm-ok">Aún no hay proyectos para graficar.</div></sc-if>
+              <sc-if value="{{bl.sc.noDates}}" hint-placeholder-val="{{false}}"><div class="pm-ok">Para dibujar la curva S el proyecto necesita fecha de inicio, fecha de fin y avance.</div></sc-if>
+              <sc-if value="{{bl.sc.has}}" hint-placeholder-val="{{true}}">
+                <div class="sc-metrics">
+                  <sc-for list="{{bl.sc.metrics}}" as="m" hint-placeholder-count="4"><div class="sc-m {{m.cls}}"><span class="sc-m-l">{{m.label}}</span><span class="sc-m-v">{{m.value}}</span><span class="sc-m-c">{{m.cap}}</span></div></sc-for>
+                </div>
+                <div class="sc-chart" data-foreign="1" data-sc="{{bl.sc.json}}" role="img" aria-label="{{bl.sc.aria}}"></div>
+                <p class="muted sm sc-note">{{bl.sc.note}}</p>
+              </sc-if>
+            </sc-if>
+
             <sc-if value="{{bl.isPm}}" hint-placeholder-val="{{false}}">
               <div class="blk-head pm-head">
                 <span class="tico sm" style="--c: #B45309"><svg class="ic ic-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.shield}}"></path></svg></span>
@@ -2344,7 +2386,7 @@ body.td-active .board{scroll-snap-type:none!important}
           </sc-if>
           <sc-if value="{{gp.open}}" hint-placeholder-val="{{true}}">
             <sc-for list="{{gp.rows}}" as="r" hint-placeholder-count="6">
-              <div class="tr row {{r.sel}} {{r.rc}}" style="grid-template-columns: {{r.gc}}">
+              <div class="tr row {{r.sel}} {{r.rc}}" data-rk="{{r.key}}" style="grid-template-columns: {{r.gc}}">
                 <sc-for list="{{r.cells}}" as="cell" hint-placeholder-count="7">
                   <div class="td {{cell.align}} {{cell.wrapCls}} {{cell.selCls}}">
                     <sc-if value="{{cell.isTitle}}" hint-placeholder-val="{{false}}"><button type="button" class="title-btn" onClick="{{cell.open}}"><span class="title-txt">{{cell.title}}</span><span class="open-hint"><svg class="ic ic-xs" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.expand}}"></path></svg>Abrir</span></button></sc-if>
@@ -2772,7 +2814,7 @@ body.td-active .board{scroll-snap-type:none!important}
           </sc-if>
           <sc-if value="{{gp.open}}" hint-placeholder-val="{{true}}">
             <sc-for list="{{gp.rows}}" as="r" hint-placeholder-count="6">
-              <div class="tr row {{r.sel}} {{r.rc}}" style="grid-template-columns: {{r.gc}}">
+              <div class="tr row {{r.sel}} {{r.rc}}" data-rk="{{r.key}}" style="grid-template-columns: {{r.gc}}">
                 <sc-for list="{{r.cells}}" as="cell" hint-placeholder-count="7">
                   <div class="td {{cell.align}} {{cell.wrapCls}} {{cell.selCls}}">
                     <sc-if value="{{cell.isTitle}}" hint-placeholder-val="{{false}}"><button type="button" class="title-btn" onClick="{{cell.open}}"><span class="title-txt">{{cell.title}}</span><span class="open-hint"><svg class="ic ic-xs" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.expand}}"></path></svg>Abrir</span></button></sc-if>
@@ -3971,6 +4013,10 @@ body.td-active .board{scroll-snap-type:none!important}
           <div class="set"><span class="set-label">Densidad de las tablas</span><div class="seg"><sc-for list="{{densOpts}}" as="o" hint-placeholder-count="2"><button type="button" class="seg-btn {{o.cls}}" onClick="{{o.pick}}">{{o.label}}</button></sc-for></div></div>
           <div class="set"><span class="set-label">Esquinas</span><div class="seg"><sc-for list="{{cornerOpts}}" as="o" hint-placeholder-count="2"><button type="button" class="seg-btn {{o.cls}}" onClick="{{o.pick}}">{{o.label}}</button></sc-for></div></div>
           <div class="set"><span class="set-label">Tipografía</span><div class="seg"><sc-for list="{{fontOpts}}" as="o" hint-placeholder-count="3"><button type="button" class="seg-btn {{o.cls}}" onClick="{{o.pick}}">{{o.label}}</button></sc-for></div></div>
+          <div class="set"><span class="set-label">Contraste</span><div class="seg"><sc-for list="{{contrastOpts}}" as="o" hint-placeholder-count="2"><button type="button" class="seg-btn {{o.cls}}" aria-pressed="{{o.on}}" onClick="{{o.pick}}">{{o.label}}</button></sc-for></div></div>
+          <div class="set"><span class="set-label">Intensidad de las animaciones</span><div class="seg seg-wrap"><sc-for list="{{mvLevelOpts}}" as="o" hint-placeholder-count="4"><button type="button" class="seg-btn {{o.cls}}" aria-pressed="{{o.on}}" onClick="{{o.pick}}">{{o.label}}</button></sc-for></div><span class="muted sm">{{mvHint}}</span></div>
+          <div class="set"><span class="set-label">Animar</span><div class="seg seg-wrap"><sc-for list="{{mvToggles}}" as="o" hint-placeholder-count="4"><button type="button" class="seg-btn {{o.cls}}" aria-pressed="{{o.on}}" onClick="{{o.pick}}">{{o.label}}</button></sc-for></div></div>
+          <div class="set"><span class="set-label">Duración de las transiciones</span><div class="seg"><sc-for list="{{mvSpeedOpts}}" as="o" hint-placeholder-count="3"><button type="button" class="seg-btn {{o.cls}}" aria-pressed="{{o.on}}" onClick="{{o.pick}}">{{o.label}}</button></sc-for></div></div>
         </div>
         <div class="card prev">
           <div class="sec-label">Vista previa</div>
@@ -4850,6 +4896,7 @@ var BLOCK_TYPES = [
   { id: 'todo', n: 'Lista de tareas', d: 'Casillas para marcar', icon: 'i-checks' },
   { id: 'callout', n: 'Aviso', d: 'Nota destacada', icon: 'info' },
   { id: 'pm', n: 'Salud de proyectos (PMBOK)', d: 'Recomendaciones de buenas prácticas', icon: 'shield' },
+  { id: 'scurve', n: 'Curva S del proyecto', d: 'Programado, ejecutado y proyección', icon: 'chart' },
   { id: 'cols:2', n: '2 columnas', d: 'Divide la fila en dos', icon: 'half' },
   { id: 'cols:3', n: '3 columnas', d: 'Divide la fila en tres', icon: 'grid' }
 ];
@@ -5447,6 +5494,7 @@ function seedPages() {
         blk('e3', 'kpi', 3, { title: 'Costo real (AC)', table: 'proy', val: 'sum:costo', filters: [] }),
         blk('e4', 'kpi', 3, { title: 'Riesgos altos abiertos', table: 'rie', val: 'count', filters: [{ prop: 'nivel', op: 'contains', value: 'Alto' }, { prop: 'estado', op: 'is_not', value: 'Cerrado' }] }),
         blk('e5', 'pm', 12, { title: 'Salud de los proyectos', scope: 'all' }),
+        blk('e5s', 'scurve', 12, { title: 'Curva S del proyecto', proj: 'y1' }),
         blk('e6', 'chart', 6, { title: 'Tareas por estado', table: 'tar', kind: 'donut', by: 'estado', val: 'count', sort: 'label', limit: 0, filters: [] }),
         blk('e7', 'chart', 6, { title: 'Horas por responsable', table: 'tar', kind: 'bar', by: 'responsable', val: 'sum:horas', sort: 'desc', limit: 0, filters: [] }),
         blk('e8', 'db', 12, { table: 'proy', view: 'vy1' }),
@@ -6807,6 +6855,7 @@ Object.assign(Component.prototype, {
       case 'todo': b = blk(id, 'todo', 4, { title: 'Pendientes', items: [{ id: 'q' + id, text: '', done: false }] }); break;
       case 'callout': b = blk(id, 'callout', 12, { icon: 'info', text: '' }); break;
       case 'pm': b = blk(id, 'pm', 12, { title: 'Salud de los proyectos', scope: 'all' }); break;
+      case 'scurve': b = blk(id, 'scurve', 12, { title: 'Curva S del proyecto' }); break;
       case 'cols': this.slashPick(pid, spec, extra); return;
       default: return;
     }
@@ -7439,7 +7488,7 @@ Object.assign(Component.prototype, {
     var sel = s.selCell && s.selCell.where === where && s.selCell.tid === tid ? s.selCell : null;
     function rowView(r) {
       return {
-        gc: gridCols, sel: isOpenRec(r) ? 'is-sel' : '', rc: rowColor(r),
+        key: r.id, gc: gridCols, sel: isOpenRec(r) ? 'is-sel' : '', rc: rowColor(r),
         cells: vprops.map(function (p) {
           var wc = wraps[p.key] ? 'wrap' : '';
           if (p.type === 'title') return { isTitle: true, notTitle: false, title: r[p.key] || 'Sin título', open: openFn(r), align: '', wrapCls: wc, selCls: '', d: null, select: null, aria: '', lbl: '' };
@@ -8097,8 +8146,8 @@ Object.assign(Component.prototype, {
       xfTag: '', hasXfTag: false, xfTagCls: '',
       kpi: { value: '', caption: '', hasGoal: false, goalText: '', goalPct: '0', stateCls: '' }, sl: { opts: [], hasSel: false, clear: null, empty: false }, ch: null, dv: null, sh: null, mp: null
     };
-    bv.isTodo = b.type === 'todo'; bv.isCallout = b.type === 'callout'; bv.isPm = b.type === 'pm';
-    if (bv.isTodo || bv.isCallout || bv.isPm) bv.hasConfig = false;
+    bv.isTodo = b.type === 'todo'; bv.isCallout = b.type === 'callout'; bv.isPm = b.type === 'pm'; bv.isScurve = b.type === 'scurve';
+    if (bv.isTodo || bv.isCallout || bv.isPm || bv.isScurve) bv.hasConfig = false;
     bv.typeName = { todo: 'Lista de tareas', callout: 'Aviso', pm: 'Salud de proyectos' }[b.type] || bv.typeName;
     bv.dragStart = function (e) { self.blkDragStart(b.id, e); }; bv.dragEnd = function (e) { self.blkDragEnd(e); };
     bv.dragOver = function (e) { self.blkDragOver(e); }; bv.dragLeave = function (e) { self.blkDragLeave(e); }; bv.drop = function (e) { self.blkDrop(b.id, e); };
@@ -8125,6 +8174,7 @@ Object.assign(Component.prototype, {
       bv.co = { icon: ICON[b.icon] || ICON.info, tone: 'tone-' + CI.indexOf(b.icon || 'info'), cycle: function () { self.updBlock(b.id, function (x) { x.icon = CI[(CI.indexOf(x.icon || 'info') + 1) % CI.length]; }); } };
       return bv;
     }
+    if (bv.isScurve) { bv.sc = this.scurveBlock(s, v, b); bv.title = b.title || 'Curva S del proyecto'; return bv; }
     if (bv.isPm) { bv.pm = this.pmBlock(s, v, b); bv.title = b.title || 'Salud de los proyectos'; return bv; }
     if (bv.isSheet) { bv.sh = this.sheetData(s, b, v, ctx.canEditPage); return bv; }
     if (bv.isMap) { bv.mp = this.mapData(s, v); return bv; }
@@ -8201,7 +8251,7 @@ Object.assign(Component.prototype, {
     var isAdminView = v.role === 'admin' && !s.useMode;
     var previewing = s.viewAs !== 'ana';
     var accent = s.accent || this.props.accent || 'tecsur';
-    var mode = s.mode || (this.props.dark ? 'dark' : 'light');
+    var mode = s.mode === 'system' ? this.sysMode() : (s.mode || (this.props.dark ? 'dark' : 'light'));
     var screen = s.screen;
     if (!isAdminView && (screen === 'permisos' || screen === 'tema')) screen = 'page';
     var canEditPage = v.role !== 'invitado' && !s.useMode;
@@ -8259,7 +8309,7 @@ Object.assign(Component.prototype, {
       var groupsDef = [
         { title: 'Datos', ids: ['db', 'newdb'] },
         { title: 'Visualización tipo Power BI', ids: ['kpi', 'chart:column', 'chart:bar', 'chart:line', 'chart:donut', 'slicer'] },
-        { title: 'Proyectos (PMBOK)', ids: ['pm', 'todo', 'callout'] },
+        { title: 'Proyectos (PMBOK)', ids: ['pm', 'scurve', 'todo', 'callout'] },
         { title: 'Cálculo y estructura', ids: ['sheet', 'map', 'heading', 'text', 'cols:2', 'cols:3', 'divider'] }
       ];
       var bt = {};
@@ -8519,7 +8569,7 @@ Object.assign(Component.prototype, {
 
       setWs: function (e) { self.setState({ ws: e.target.value }); },
       swatches: swatches,
-      modeOpts: opts([{ id: 'light', label: 'Claro' }, { id: 'dark', label: 'Oscuro' }], mode, 'mode'),
+      modeOpts: opts([{ id: 'light', label: 'Claro' }, { id: 'dark', label: 'Oscuro' }, { id: 'system', label: 'Sistema' }], s.mode || mode, 'mode'),
       densOpts: opts([{ id: 'comfy', label: 'Cómoda' }, { id: 'compact', label: 'Compacta' }], s.density, 'density'),
       cornerOpts: opts([{ id: 'round', label: 'Redondeadas' }, { id: 'square', label: 'Rectas' }], s.corners, 'corners'),
       fontOpts: opts([{ id: 'calibri', label: 'Calibri (TECSUR)', ff: 'ff-calibri' }, { id: 'inter', label: 'Inter', ff: 'ff-inter' }, { id: 'grotesk', label: 'Space Grotesk', ff: 'ff-grotesk' }, { id: 'plex', label: 'IBM Plex Sans', ff: 'ff-plex' }], s.font, 'font'),
@@ -13119,6 +13169,334 @@ Object.assign(Component.prototype, {
     return out;
   };
 })();
+
+/* ================= movimiento, apariencia y preferencias =================
+   Un solo módulo controla todas las animaciones nuevas. Solo anima transform y opacity.
+   Niveles: completo · equilibrado · reducido · desactivado. Se guarda en el navegador. */
+var TRZ = (function () {
+  var W = typeof window !== 'undefined' ? window : null;
+  var LV = {
+    completo: { nav: 1, charts: 1, micro: 1, load: 1, spring: 1, move: 1 },
+    equilibrado: { nav: 1, charts: 1, micro: 1, load: 0, spring: 0, move: 1 },
+    reducido: { nav: 1, charts: 0, micro: 0, load: 0, spring: 0, move: 0 },
+    desactivado: { nav: 0, charts: 0, micro: 0, load: 0, spring: 0, move: 0 }
+  };
+  var SPEED = { rapida: 0.65, normal: 1, lenta: 1.6 };
+  var cfg = { level: 'equilibrado', nav: true, charts: true, micro: true, load: true, speed: 'normal' };
+  var T = {
+    cfg: cfg,
+    set: function (c) { if (!c) return; for (var k in c) if (c[k] !== undefined) cfg[k] = c[k]; if (!LV[cfg.level]) cfg.level = 'equilibrado'; },
+    on: function (kind) { var l = LV[cfg.level] || LV.equilibrado; if (!l[kind]) return false; return kind === 'spring' || kind === 'move' ? (cfg.micro || cfg.nav) : cfg[kind] !== false; },
+    moves: function () { return !!(LV[cfg.level] || LV.equilibrado).move; },
+    dur: function (ms) { return Math.round(ms * (SPEED[cfg.speed] || 1)); },
+    ease: 'cubic-bezier(.2,.7,.3,1)',
+    reduceDefault: function () { try { return !!(W && W.matchMedia && W.matchMedia('(prefers-reduced-motion: reduce)').matches); } catch (e) { return false; } },
+    defaults: function () { return { level: T.reduceDefault() ? 'reducido' : 'equilibrado', nav: true, charts: true, micro: true, load: true, speed: 'normal' }; },
+    /* carga de archivos propios (sin CDN), una sola vez */
+    _ld: {},
+    load: function (file, ready) {
+      if (!W) return;
+      var L = T._ld;
+      if (ready && ready()) return Promise.resolve(true);
+      if (L[file]) return L[file];
+      L[file] = new Promise(function (res) {
+        var sc = document.createElement('script');
+        sc.src = new URL('vendor/' + file, document.baseURI).href;
+        sc.onload = function () { res(true); };
+        sc.onerror = function () { L[file] = null; res(false); };
+        document.head.appendChild(sc);
+      });
+      return L[file];
+    },
+    /* aparición suave: movimiento corto si el nivel lo permite, solo fundido si es reducido */
+    enter: function (el, o) {
+      if (!el || !el.animate || !T.on('nav')) return;
+      o = o || {};
+      var dy = T.moves() ? (o.dy == null ? 8 : o.dy) : 0, dx = T.moves() ? (o.dx || 0) : 0, sc = T.moves() ? (o.scale || 1) : 1, pre = o.pre || '';
+      var from = pre + (dx || dy ? ' translate(' + dx + 'px,' + dy + 'px)' : '') + (sc !== 1 ? ' scale(' + sc + ')' : '');
+      try { el.animate([{ opacity: 0, transform: from.trim() || 'none' }, { opacity: 1, transform: (pre || 'none') }], { duration: T.dur(o.ms || 220), easing: T.ease, fill: 'backwards' }); } catch (e) { }
+    },
+    /* números que suben o bajan hasta el valor nuevo */
+    count: function (el, a, b, pre, suf, dec) {
+      var run = el._anim; if (run) { run.stop(); el._anim = null; }
+      var total = T.dur(T.on('spring') ? 800 : 520), t0 = null, fin = pre + T.fmt(b, dec) + suf, dead = false;
+      var raf = W.requestAnimationFrame || function (f) { return setTimeout(function () { f(Date.now()); }, 16); };
+      function ease(x) { return 1 - Math.pow(1 - x, 3); }
+      function frame(ts) {
+        if (dead) return;
+        if (t0 == null) t0 = ts;
+        var x = Math.min(1, (ts - t0) / total), val = a + (b - a) * ease(x);
+        el.textContent = x >= 1 ? fin : pre + T.fmt(val, dec) + suf;
+        if (x < 1) raf(frame); else el._anim = null;
+      }
+      el._anim = { stop: function () { dead = true; } };
+      el.textContent = pre + T.fmt(a, dec) + suf;
+      raf(frame);
+    },
+    fmt: function (n, d) { return Number(n).toLocaleString('en-US', { minimumFractionDigits: d, maximumFractionDigits: d }); }
+  };
+  return T;
+})();
+
+/* ---------- preferencias guardadas en el navegador ---------- */
+var PREF_KEYS = ['mode', 'accent', 'density', 'corners', 'font', 'contrast', 'mv'];
+function prefsLoad() { try { var j = JSON.parse(localStorage.getItem('trazya.prefs') || 'null'); return j && typeof j === 'object' ? j : null; } catch (e) { return null; } }
+function prefsSave(st) { try { var o = {}; PREF_KEYS.forEach(function (k) { if (st[k] !== undefined && st[k] !== null) o[k] = st[k]; }); localStorage.setItem('trazya.prefs', JSON.stringify(o)); } catch (e) { } }
+var _makeInitial0 = makeInitial;
+makeInitial = function () {
+  var o = _makeInitial0(), p = prefsLoad();
+  if (p) PREF_KEYS.forEach(function (k) { if (p[k] !== undefined) o[k] = p[k]; });
+  o.mv = Object.assign(TRZ.defaults(), o.mv || {});
+  if (o.mode === 'light' || o.mode === 'dark' || o.mode === 'system') { } else o.mode = null;
+  return o;
+};
+
+Object.assign(Component.prototype, {
+  setState(patch) {
+    DCLogic.prototype.setState.call(this, patch);
+    if (patch && typeof patch === 'object') { for (var i = 0; i < PREF_KEYS.length; i++) if (PREF_KEYS[i] in patch) { prefsSave(this.st()); break; } }
+  },
+  sysMode() { try { return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'; } catch (e) { return 'light'; } },
+  mvSet(p) { var s = this.st(); this.setState({ mv: Object.assign({}, s.mv, p) }); },
+
+  /* ---------- después de cada pintado ---------- */
+  afterRender() {
+    if (typeof document === 'undefined') return;
+    var self = this, s = this.st();
+    TRZ.set(s.mv);
+    if (!this._mq && window.matchMedia) {
+      try {
+        this._mq = window.matchMedia('(prefers-color-scheme: dark)');
+        this._mq.addEventListener('change', function () { if (self.st().mode === 'system') self.setState({ _sys: Date.now() }); });
+      } catch (e) { }
+    }
+    var first = this._pg === undefined;
+    var sig = [s.screen, s.page, s.table].join('|');
+    var navChanged = !first && sig !== this._pg;
+    this._pg = sig;
+    if (navChanged) {
+      var main = document.querySelector('.main');
+      if (main) for (var i = 0; i < main.children.length; i++) { var ch = main.children[i]; if (!ch.classList.contains('banner')) TRZ.enter(ch, { dy: 10, ms: 260 }); }
+      this._snap = {};
+    }
+    /* panel o ventana del registro */
+    var recOpen = !!s.rec;
+    if (recOpen && !this._recOpen) {
+      var rec = document.querySelector('.rec');
+      if (rec) {
+        if (rec.classList.contains('full')) TRZ.enter(rec, { dy: 0, scale: 0.97, pre: 'translateX(-50%)', ms: 260 });
+        else TRZ.enter(rec, { dx: 28, dy: 0, ms: 260 });
+        var sc = document.querySelector('.rec-scrim'); if (sc) TRZ.enter(sc, { dy: 0, ms: 200 });
+      }
+    }
+    this._recOpen = recOpen;
+    this.mvNumbers();
+    this.mvRows(navChanged || first);
+    if (typeof this.chartsSync === 'function') this.chartsSync();
+    if (!this._motionLib && TRZ.on('spring')) { this._motionLib = true; TRZ.load('trz-motion.js', function () { return !!window.TrzMotion; }); }
+  },
+
+  /* indicadores: el número recorre el camino hasta el valor nuevo */
+  mvNumbers() {
+    var els = document.querySelectorAll('.kpi-val, .sc-m-v');
+    for (var i = 0; i < els.length; i++) {
+      var el = els[i], txt = el.textContent;
+      if (el._anim && txt === el._t) { el._anim.stop(); el._anim = null; }
+      var prev = el._t; el._t = txt;
+      if (prev === undefined || prev === txt || !TRZ.on('micro')) continue;
+      var a = /^([^\d-]*)(-?[\d.,]+)(.*)$/.exec(prev), b = /^([^\d-]*)(-?[\d.,]+)(.*)$/.exec(txt);
+      if (!a || !b || a[1] !== b[1] || a[3] !== b[3]) continue;
+      var na = parseFloat(a[2].replace(/,/g, '')), nb = parseFloat(b[2].replace(/,/g, ''));
+      if (!isFinite(na) || !isFinite(nb)) continue;
+      var dec = (b[2].split('.')[1] || '').length;
+      TRZ.count(el, na, nb, b[1], b[3], dec);
+    }
+  },
+
+  /* tablas: reordenar con FLIP, aparición de filas nuevas y resaltado de lo que cambió */
+  mvRows(reset) {
+    var tbls = document.querySelectorAll('.tbl'), snap = this._snap = this._snap || {};
+    for (var t = 0; t < tbls.length; t++) {
+      var tb = tbls[t], blk = tb.closest('[data-bid]'), id = blk ? blk.getAttribute('data-bid') : 'main:' + t;
+      var top0 = tb.getBoundingClientRect().top, rows = tb.querySelectorAll('.tr.row[data-rk]'), now = {}, old = snap[id];
+      for (var i = 0; i < rows.length; i++) {
+        var r = rows[i], k = r.getAttribute('data-rk'), y = r.getBoundingClientRect().top - top0, sg = r.textContent;
+        now[k] = { y: y, sg: sg };
+        if (!old || !TRZ.on('micro') || reset) continue;
+        var o = old[k];
+        if (!o) { TRZ.enter(r, { dy: 6, ms: 220 }); continue; }
+        var dy = o.y - y;
+        if (Math.abs(dy) > 2 && TRZ.moves() && r.animate) { try { r.animate([{ transform: 'translateY(' + dy + 'px)' }, { transform: 'none' }], { duration: TRZ.dur(280), easing: TRZ.ease }); } catch (e) { } }
+        else if (o.sg !== sg && r.animate) { try { r.animate([{ backgroundColor: 'color-mix(in srgb, var(--acc) 18%, transparent)' }, { backgroundColor: 'transparent' }], { duration: TRZ.dur(1100), easing: 'ease-out' }); } catch (e) { } }
+      }
+      snap[id] = now;
+    }
+  },
+
+  /* ---------- ajustes de apariencia y movimiento (pantalla Personalizar) ---------- */
+  mvVals(s) {
+    var self = this, mv = s.mv || TRZ.defaults();
+    function seg(list, cur, fn) { return list.map(function (x) { return { label: x[1], cls: x[0] === cur ? 'on' : '', on: x[0] === cur, pick: function () { fn(x[0]); } }; }); }
+    return {
+      mvCls: 'mv-' + mv.level + ' mvs-' + mv.speed + (s.contrast ? ' hc' : ''),
+      contrastOpts: seg([[false, 'Normal'], [true, 'Alto']], !!s.contrast, function (v) { self.setState({ contrast: v }); }),
+      mvLevelOpts: seg([['completo', 'Completo'], ['equilibrado', 'Equilibrado'], ['reducido', 'Reducido'], ['desactivado', 'Desactivado']], mv.level, function (v) { self.mvSet({ level: v }); }),
+      mvSpeedOpts: seg([['rapida', 'Rápida'], ['normal', 'Normal'], ['lenta', 'Lenta']], mv.speed, function (v) { self.mvSet({ speed: v }); }),
+      mvToggles: [['nav', 'Navegación'], ['charts', 'Gráficos'], ['micro', 'Microinteracciones'], ['load', 'Efectos de carga']].map(function (x) {
+        var on = mv[x[0]] !== false;
+        return { label: x[1], cls: on ? 'on' : '', on: on, pick: function () { var p = {}; p[x[0]] = !on; self.mvSet(p); } };
+      }),
+      mvHint: mv.level === 'desactivado' ? 'Sin animaciones.' : mv.level === 'reducido' ? 'Solo fundidos cortos, sin desplazamientos.' : mv.level === 'equilibrado' ? 'Transiciones, números y gráficas animadas.' : 'Todos los efectos, con resortes y gráficas que crecen al entrar.'
+    };
+  }
+});
+
+(function () {
+  var baseRv = Component.prototype.renderVals;
+  Component.prototype.renderVals = function () {
+    var out = baseRv.call(this), s = this.st();
+    TRZ.set(s.mv);
+    return Object.assign(out, this.mvVals(s));
+  };
+})();
+
+/* ================= gráficas avanzadas (Apache ECharts, carga diferida) =================
+   Curva S del proyecto: programado, ejecutado y proyección. Las cifras salen de la tabla
+   Proyectos (avance, avance planificado, fechas, SPI y CPI con sus fórmulas actuales). */
+var SC_MES = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic'];
+function scMs(iso) { var m = /^(\d{4})-(\d{2})-(\d{2})/.exec(String(iso || '')); return m ? Date.UTC(+m[1], +m[2] - 1, +m[3]) : null; }
+function scFecha(ms) { var d = new Date(ms); return d.getUTCDate() + ' ' + SC_MES[d.getUTCMonth()] + ' ' + d.getUTCFullYear(); }
+function scR1(x) { return Math.round(x * 10) / 10; }
+/* Curva en S (logística normalizada a 0..1) con pendiente fija; se desplaza el centro "c" para pasar por el punto conocido. */
+var SC_K = 8;
+function scL(x, c) { var f = function (u) { return 1 / (1 + Math.exp(-SC_K * (u - c))); }, f0 = f(0), f1 = f(1); return (f(x) - f0) / (f1 - f0); }
+function scFit(x0, y0) {
+  if (!(x0 > 0 && x0 < 1) || y0 == null || !isFinite(y0)) return 0.5;
+  var y = Math.min(0.995, Math.max(0.005, y0)), lo = -1, hi = 2;
+  for (var i = 0; i < 50; i++) { var mid = (lo + hi) / 2; if (scL(x0, mid) > y) lo = mid; else hi = mid; }
+  return (lo + hi) / 2;
+}
+function scAlpha(c, a) { return /^#[0-9a-f]{6}$/i.test(c) ? c + a : c; }
+
+Object.assign(Component.prototype, {
+  scurveBlock(s, v, b) {
+    var self = this, t = s.tables.byId.proy;
+    var out = { has: false, noAccess: false, noRows: false };
+    if (!t || this.lvl(s, 'proy', v.role) === 'none') { out.noAccess = true; return out; }
+    var rows = this.rowsFor(s, 'proy', v);
+    if (!rows.length) { out.noRows = true; return out; }
+    var row = rows.filter(function (r) { return r.id === b.proj; })[0] || rows[0];
+    function g(key) { var p = propOf(t, key); return p ? self.fval(s, t, p, row) : null; }
+    function num(x) { return typeof x === 'number' && isFinite(x) ? x : null; }
+    var t0 = scMs(g('inicio')), t1 = scMs(g('fin')), now = scMs(todayIso());
+    var av = num(g('avance')), pl = num(g('plan')), spi = num(g('spi')), cpi = num(g('cpi'));
+    out.projOpts = rows.map(function (r) { return { id: r.id, name: self.titleOf(t, r), sel: r.id === row.id }; });
+    out.setProj = function (e) { var val = e.target.value; self.updBlock(b.id, function (bb) { bb.proj = val; }); };
+    out.projName = this.titleOf(t, row);
+    if (t0 == null || t1 == null || t1 <= t0 || av == null) { out.noDates = true; return out; }
+    var xT = Math.min(1, Math.max(0, (now - t0) / (t1 - t0)));
+    var tNow = t0 + xT * (t1 - t0);
+    var cP = scFit(xT, pl == null ? null : pl / 100), cE = scFit(xT, av / 100);
+    var N = 24, prog = [], ejec = [], i, x, tm;
+    for (i = 0; i <= N; i++) { x = i / N; tm = t0 + x * (t1 - t0); prog.push([tm, scR1(100 * scL(x, cP))]); if (x < xT) ejec.push([tm, scR1(100 * scL(x, cE))]); }
+    prog.push([tNow, pl == null ? scR1(100 * scL(xT, cP)) : pl]); prog.sort(function (p, q) { return p[0] - q[0]; });
+    ejec.push([tNow, av]);
+    var proy = [];
+    var rate = xT > 0 ? av / xT : null, fin = null;
+    if (rate && av < 100 && xT < 1) {
+      var x100 = xT + (100 - av) / rate, xe = Math.min(1, x100);
+      fin = scR1(Math.min(100, av + rate * (xe - xT)));
+      proy = [[tNow, av], [t0 + xe * (t1 - t0), fin]];
+    } else if (av >= 100) fin = 100;
+    var dpts = pl == null ? null : scR1(av - pl);
+    var d = { prog: prog, ejec: ejec, proy: proy, today: tNow, start: t0, end: t1, month: [Date.UTC(new Date(now).getUTCFullYear(), new Date(now).getUTCMonth(), 1), Date.UTC(new Date(now).getUTCFullYear(), new Date(now).getUTCMonth() + 1, 0)] };
+    function idx(x) { return x == null ? '—' : (Math.round(x * 100) / 100).toFixed(2); }
+    function tone(x) { return x == null ? '' : x < 0.9 ? 'bad' : x < 1 ? 'warn' : 'ok'; }
+    out.has = true;
+    out.json = JSON.stringify(d);
+    out.aria = 'Curva S de ' + out.projName + ': programado ' + (pl == null ? 'sin dato' : pl + ' %') + ', ejecutado ' + av + ' %' + (fin != null ? ', proyección a la fecha de fin ' + fin + ' %' : '') + '.';
+    out.range = scFecha(t0) + ' → ' + scFecha(t1);
+    out.metrics = [
+      { label: 'Avance real', value: av + ' %', cap: pl == null ? 'Sin avance planificado' : 'Programado ' + pl + ' % · ' + (dpts >= 0 ? '+' : '−') + Math.abs(dpts) + ' pts', cls: dpts == null ? '' : dpts < -10 ? 'bad' : dpts < 0 ? 'warn' : 'ok' },
+      { label: 'SPI (cronograma)', value: idx(spi), cap: spi == null ? 'Sin datos' : spi < 1 ? 'Atraso respecto al plan' : 'Al día o adelantado', cls: tone(spi) },
+      { label: 'CPI (costo)', value: idx(cpi), cap: cpi == null ? 'Sin costo real' : cpi < 1 ? 'Costo sobre lo ganado' : 'Dentro del presupuesto', cls: tone(cpi) },
+      { label: 'Proyección a fin', value: fin == null ? '—' : fin + ' %', cap: fin == null ? 'Sin ritmo medible' : fin >= 100 ? 'Termina a tiempo si sigue así' : 'Si se mantiene el ritmo', cls: fin == null ? '' : fin >= 100 ? 'ok' : fin < 90 ? 'bad' : 'warn' }
+    ];
+    out.note = 'Curva teórica en S entre el inicio y el fin, ajustada al avance programado y al ejecutado de hoy. Se reemplazará por los avances periódicos reales cuando existan.';
+    return out;
+  },
+
+  /* ---------- montaje de las gráficas en pantalla ---------- */
+  chartsColors(el) {
+    var host = el.closest('.app') || document.body, cs = getComputedStyle(host);
+    function c(n, d) { return (cs.getPropertyValue(n) || '').trim() || d; }
+    return { acc: c('--acc', '#4F46E5'), text: c('--text', '#222'), muted: c('--muted', '#777'), line: c('--line', '#ddd'), panel: c('--panel', '#fff'), font: cs.fontFamily };
+  },
+  chartsSync() {
+    if (typeof document === 'undefined') return;
+    var self = this, list = this._chs = this._chs || [], els = document.querySelectorAll('.sc-chart'), i;
+    for (i = list.length - 1; i >= 0; i--) if (!document.body.contains(list[i])) { try { if (list[i]._ro) list[i]._ro.disconnect(); if (list[i]._ch) list[i]._ch.dispose(); } catch (e) { } list.splice(i, 1); }
+    if (!els.length) return;
+    var need = false;
+    for (i = 0; i < els.length; i++) { var el = els[i], sig = el.getAttribute('data-sc') + '|' + JSON.stringify(this.chartsColors(el)) + '|' + TRZ.cfg.level + TRZ.cfg.charts + TRZ.cfg.speed; if (el._sig !== sig) { need = true; break; } }
+    if (!need) return;
+    if (!window.TrzEcharts) {
+      TRZ.load('trz-echarts.js', function () { return !!window.TrzEcharts; }).then(function (ok) {
+        if (ok) self.chartsSync();
+        else Array.prototype.forEach.call(document.querySelectorAll('.sc-chart'), function (e) { e.setAttribute('data-fail', '1'); });
+      });
+      return;
+    }
+    for (i = 0; i < els.length; i++) {
+      var e2 = els[i], col = this.chartsColors(e2), sg = e2.getAttribute('data-sc') + '|' + JSON.stringify(col) + '|' + TRZ.cfg.level + TRZ.cfg.charts + TRZ.cfg.speed;
+      if (e2._sig === sg) continue;
+      var data; try { data = JSON.parse(e2.getAttribute('data-sc')); } catch (er) { continue; }
+      var first = !e2._ch;
+      if (first) {
+        e2._ch = window.TrzEcharts.init(e2, null, { renderer: 'canvas' });
+        if (window.ResizeObserver) { e2._ro = new ResizeObserver(function (ent) { var t = ent[0].target; if (t._ch) t._ch.resize(); }); e2._ro.observe(e2); }
+        list.push(e2);
+        e2.removeAttribute('data-ld');
+      }
+      e2._sig = sg;
+      e2._ch.setOption(this.scOption(data, col, e2.clientWidth < 520), { replaceMerge: ['series'] });
+    }
+  },
+  scOption(d, c, narrow) {
+    var anim = TRZ.on('charts');
+    function pct(x) { return x == null ? '—' : (Math.round(x * 10) / 10) + ' %'; }
+    function dline(color, w, type) { return { width: w, color: color, type: type || 'solid' }; }
+    var series = [
+      { id: 'prog', name: 'Programado', type: 'line', smooth: true, showSymbol: false, data: d.prog, z: 2, lineStyle: dline(c.muted, 2, 'dashed'), itemStyle: { color: c.muted },
+        markArea: { silent: true, itemStyle: { color: c.acc, opacity: 0.07 }, data: [[{ xAxis: d.month[0] }, { xAxis: d.month[1] }]] },
+        markLine: { silent: true, symbol: 'none', lineStyle: { color: c.text, type: 'solid', width: 1, opacity: 0.55 }, label: { formatter: 'Hoy', color: c.text, position: 'insideEndTop', fontSize: 11 }, data: [{ xAxis: d.today }] } },
+      { id: 'ejec', name: 'Ejecutado', type: 'line', smooth: true, showSymbol: false, data: d.ejec, z: 4, lineStyle: dline(c.acc, 3), itemStyle: { color: c.acc },
+        areaStyle: { color: { type: 'linear', x: 0, y: 0, x2: 0, y2: 1, colorStops: [{ offset: 0, color: scAlpha(c.acc, '33') }, { offset: 1, color: scAlpha(c.acc, '00') }] } },
+        markPoint: { symbolSize: 46, itemStyle: { color: c.acc }, label: { color: '#fff', fontSize: 11, formatter: function (p) { return Math.round(p.value) + '%'; } }, data: [{ coord: d.ejec[d.ejec.length - 1], value: d.ejec[d.ejec.length - 1][1] }] } }
+    ];
+    if (d.proy && d.proy.length) series.push({ id: 'proy', name: 'Proyección', type: 'line', showSymbol: false, data: d.proy, z: 3, lineStyle: dline(c.acc, 2, 'dotted'), itemStyle: { color: c.acc } });
+    return {
+      aria: { enabled: true },
+      animation: anim, animationDuration: TRZ.dur(900), animationDurationUpdate: TRZ.dur(600), animationEasing: 'cubicOut', animationEasingUpdate: 'cubicInOut',
+      textStyle: { fontFamily: c.font, color: c.muted },
+      grid: { left: 44, right: 20, top: 44, bottom: 30 },
+      legend: { top: 4, left: 0, icon: 'roundRect', itemWidth: 18, itemHeight: 3, itemGap: 18, textStyle: { color: c.muted, fontSize: 12 } },
+      toolbox: { show: !narrow, top: 0, right: 0, itemSize: 14, iconStyle: { borderColor: c.muted }, emphasis: { iconStyle: { borderColor: c.acc } },
+        feature: { dataZoom: { yAxisIndex: 'none', title: { zoom: 'Zoom', back: 'Deshacer zoom' } }, restore: { title: 'Restablecer' }, saveAsImage: { title: 'Guardar imagen', name: 'curva-s', pixelRatio: 2, backgroundColor: c.panel } } },
+      tooltip: { trigger: 'axis', confine: true, backgroundColor: c.panel, borderColor: c.line, textStyle: { color: c.text, fontSize: 12 }, axisPointer: { type: 'line', lineStyle: { color: c.muted } },
+        formatter: function (ps) {
+          if (!ps || !ps.length) return '';
+          var h = scFecha(ps[0].value[0]), seen = {};
+          ps.forEach(function (p) { if (seen[p.seriesName]) return; seen[p.seriesName] = 1; h += '<br/><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:' + p.color + ';margin-right:6px">' + '<' + '/span>' + p.seriesName + ': <b>' + pct(p.value[1]) + '<' + '/b>'; });
+          return h;
+        } },
+      dataZoom: [{ type: 'inside', filterMode: 'none', zoomOnMouseWheel: 'ctrl', moveOnMouseMove: true }],
+      xAxis: { type: 'time', min: d.start, max: d.end, axisLine: { lineStyle: { color: c.line } }, axisTick: { show: false }, axisLabel: { color: c.muted, hideOverlap: true, formatter: function (v) { var x = new Date(v); return SC_MES[x.getUTCMonth()] + ' ' + String(x.getUTCFullYear()).slice(2); } }, splitLine: { show: false } },
+      yAxis: { type: 'value', min: 0, max: 100, interval: 25, axisLabel: { color: c.muted, formatter: '{value} %' }, splitLine: { lineStyle: { color: c.line, type: 'dashed' } } },
+      series: series
+    };
+  }
+});
 
 </script>
 </body>

@@ -1786,3 +1786,27 @@ body.td-active .board{scroll-snap-type:none!important}
 .nav-item,.btn,.tool,.icon-btn,.vtab,.seg-btn,.addblk-item,.menu-item{transition:background-color .16s ease,color .16s ease,border-color .16s ease,box-shadow .16s ease,transform .12s ease}
 .btn:active,.tool:active,.icon-btn:active,.nav-item:active{transform:scale(.97)}
 @media (prefers-reduced-motion:reduce){.nav-item,.btn,.tool,.icon-btn,.vtab,.seg-btn,.use-tr,.use-kn{transition:none}}
+
+/* ===== Curva S (ECharts) ===== */
+.sc-sel{max-width:240px}
+.sc-metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:4px 0 10px}
+.sc-m{display:flex;flex-direction:column;gap:2px;padding:10px 12px;border:1px solid var(--line);border-radius:var(--r);background:var(--soft)}
+.sc-m-l{font-size:12px;color:var(--muted)}
+.sc-m-v{font-family:var(--hfont);font-size:22px;font-weight:600;letter-spacing:-.01em;font-variant-numeric:tabular-nums}
+.sc-m-c{font-size:12px;color:var(--muted)}
+.sc-m.warn .sc-m-v{color:#B45309}.sc-m.bad .sc-m-v{color:#B91C1C}.sc-m.ok .sc-m-v{color:#047857}
+.theme-dark .sc-m.warn .sc-m-v{color:#F3C67C}.theme-dark .sc-m.bad .sc-m-v{color:#F5A3A3}.theme-dark .sc-m.ok .sc-m-v{color:#6EE7B7}
+.sc-chart{position:relative;width:100%;height:320px;min-height:240px}
+.sc-chart[data-fail]::after{content:"No se pudo cargar el motor de gráficas. Las cifras de arriba siguen siendo válidas.";position:absolute;inset:0;display:flex;align-items:center;justify-content:center;text-align:center;padding:16px;font-size:13px;color:var(--muted)}
+.sc-note{margin:6px 0 0}
+@media (max-width:720px){.sc-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}.sc-chart{height:260px}.sc-sel{max-width:100%}}
+
+/* ===== Intensidad de animaciones y contraste ===== */
+.seg-wrap{flex-wrap:wrap}
+.mv-desactivado *,.mv-desactivado *::before,.mv-desactivado *::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}
+.mv-reducido .jelly,.mv-reducido .org-node.landed,.mv-reducido .td-ghost>*,.mv-reducido .frow.f-hi{animation:none!important}
+.mv-reducido *{transition-duration:.08s!important}
+.mvs-rapida *{transition-duration:.1s}
+.theme-light.hc{--line:#8E8E86;--line2:#A4A49C;--muted:#4A4A44}
+.theme-dark.hc{--line:#6E6E78;--line2:#55555E;--muted:#D2D2CC}
+.hc :focus-visible{outline:3px solid var(--acc);outline-offset:2px}

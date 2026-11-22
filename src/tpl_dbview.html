@@ -93,7 +93,7 @@
           </sc-if>
           <sc-if value="{{gp.open}}" hint-placeholder-val="{{true}}">
             <sc-for list="{{gp.rows}}" as="r" hint-placeholder-count="6">
-              <div class="tr row {{r.sel}} {{r.rc}}" style="grid-template-columns: {{r.gc}}">
+              <div class="tr row {{r.sel}} {{r.rc}}" data-rk="{{r.key}}" style="grid-template-columns: {{r.gc}}">
                 <sc-for list="{{r.cells}}" as="cell" hint-placeholder-count="7">
                   <div class="td {{cell.align}} {{cell.wrapCls}} {{cell.selCls}}">
                     <sc-if value="{{cell.isTitle}}" hint-placeholder-val="{{false}}"><button type="button" class="title-btn" onClick="{{cell.open}}"><span class="title-txt">{{cell.title}}</span><span class="open-hint">[[icx:ICON.expand]]Abrir</span></button></sc-if>

@@ -414,7 +414,7 @@ Object.assign(Component.prototype, {
     var sel = s.selCell && s.selCell.where === where && s.selCell.tid === tid ? s.selCell : null;
     function rowView(r) {
       return {
-        gc: gridCols, sel: isOpenRec(r) ? 'is-sel' : '', rc: rowColor(r),
+        key: r.id, gc: gridCols, sel: isOpenRec(r) ? 'is-sel' : '', rc: rowColor(r),
         cells: vprops.map(function (p) {
           var wc = wraps[p.key] ? 'wrap' : '';
           if (p.type === 'title') return { isTitle: true, notTitle: false, title: r[p.key] || 'Sin título', open: openFn(r), align: '', wrapCls: wc, selCls: '', d: null, select: null, aria: '', lbl: '' };

@@ -34,8 +34,8 @@ Object.assign(Component.prototype, {
       xfTag: '', hasXfTag: false, xfTagCls: '',
       kpi: { value: '', caption: '', hasGoal: false, goalText: '', goalPct: '0', stateCls: '' }, sl: { opts: [], hasSel: false, clear: null, empty: false }, ch: null, dv: null, sh: null, mp: null
     };
-    bv.isTodo = b.type === 'todo'; bv.isCallout = b.type === 'callout'; bv.isPm = b.type === 'pm';
-    if (bv.isTodo || bv.isCallout || bv.isPm) bv.hasConfig = false;
+    bv.isTodo = b.type === 'todo'; bv.isCallout = b.type === 'callout'; bv.isPm = b.type === 'pm'; bv.isScurve = b.type === 'scurve';
+    if (bv.isTodo || bv.isCallout || bv.isPm || bv.isScurve) bv.hasConfig = false;
     bv.typeName = { todo: 'Lista de tareas', callout: 'Aviso', pm: 'Salud de proyectos' }[b.type] || bv.typeName;
     bv.dragStart = function (e) { self.blkDragStart(b.id, e); }; bv.dragEnd = function (e) { self.blkDragEnd(e); };
     bv.dragOver = function (e) { self.blkDragOver(e); }; bv.dragLeave = function (e) { self.blkDragLeave(e); }; bv.drop = function (e) { self.blkDrop(b.id, e); };
@@ -62,6 +62,7 @@ Object.assign(Component.prototype, {
       bv.co = { icon: ICON[b.icon] || ICON.info, tone: 'tone-' + CI.indexOf(b.icon || 'info'), cycle: function () { self.updBlock(b.id, function (x) { x.icon = CI[(CI.indexOf(x.icon || 'info') + 1) % CI.length]; }); } };
       return bv;
     }
+    if (bv.isScurve) { bv.sc = this.scurveBlock(s, v, b); bv.title = b.title || 'Curva S del proyecto'; return bv; }
     if (bv.isPm) { bv.pm = this.pmBlock(s, v, b); bv.title = b.title || 'Salud de los proyectos'; return bv; }
     if (bv.isSheet) { bv.sh = this.sheetData(s, b, v, ctx.canEditPage); return bv; }
     if (bv.isMap) { bv.mp = this.mapData(s, v); return bv; }
@@ -138,7 +139,7 @@ Object.assign(Component.prototype, {
     var isAdminView = v.role === 'admin' && !s.useMode;
     var previewing = s.viewAs !== 'ana';
     var accent = s.accent || this.props.accent || 'tecsur';
-    var mode = s.mode || (this.props.dark ? 'dark' : 'light');
+    var mode = s.mode === 'system' ? this.sysMode() : (s.mode || (this.props.dark ? 'dark' : 'light'));
     var screen = s.screen;
     if (!isAdminView && (screen === 'permisos' || screen === 'tema')) screen = 'page';
     var canEditPage = v.role !== 'invitado' && !s.useMode;
@@ -196,7 +197,7 @@ Object.assign(Component.prototype, {
       var groupsDef = [
         { title: 'Datos', ids: ['db', 'newdb'] },
         { title: 'Visualización tipo Power BI', ids: ['kpi', 'chart:column', 'chart:bar', 'chart:line', 'chart:donut', 'slicer'] },
-        { title: 'Proyectos (PMBOK)', ids: ['pm', 'todo', 'callout'] },
+        { title: 'Proyectos (PMBOK)', ids: ['pm', 'scurve', 'todo', 'callout'] },
         { title: 'Cálculo y estructura', ids: ['sheet', 'map', 'heading', 'text', 'cols:2', 'cols:3', 'divider'] }
       ];
       var bt = {};
@@ -456,7 +457,7 @@ Object.assign(Component.prototype, {
 
       setWs: function (e) { self.setState({ ws: e.target.value }); },
       swatches: swatches,
-      modeOpts: opts([{ id: 'light', label: 'Claro' }, { id: 'dark', label: 'Oscuro' }], mode, 'mode'),
+      modeOpts: opts([{ id: 'light', label: 'Claro' }, { id: 'dark', label: 'Oscuro' }, { id: 'system', label: 'Sistema' }], s.mode || mode, 'mode'),
       densOpts: opts([{ id: 'comfy', label: 'Cómoda' }, { id: 'compact', label: 'Compacta' }], s.density, 'density'),
       cornerOpts: opts([{ id: 'round', label: 'Redondeadas' }, { id: 'square', label: 'Rectas' }], s.corners, 'corners'),
       fontOpts: opts([{ id: 'calibri', label: 'Calibri (TECSUR)', ff: 'ff-calibri' }, { id: 'inter', label: 'Inter', ff: 'ff-inter' }, { id: 'grotesk', label: 'Space Grotesk', ff: 'ff-grotesk' }, { id: 'plex', label: 'IBM Plex Sans', ff: 'ff-plex' }], s.font, 'font'),

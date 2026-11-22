@@ -125,6 +125,7 @@
     for (i = parent.childNodes.length - 1; i >= 0; i--) { n = parent.childNodes[i]; if (n._u !== pass) parent.removeChild(n); }
   }
   function patch(parent, vnodes) {
+    if (parent._a && parent._a['data-foreign'] != null) return; /* contenido gestionado por otra librería (gráficas) */
     var kids, i, keyed = vnodes.length > 0, vs = [];
     for (i = 0; i < vnodes.length; i++) {
       var q = vnodes[i];
@@ -186,6 +187,7 @@
           var scope = Object.create(vals || {});
           for (var i = 0; i < tpl.childNodes.length; i++) build(tpl.childNodes[i], scope, out);
           patch(root, out);
+          if (typeof comp.afterRender === 'function') { try { comp.afterRender(); } catch (e2) { console.error('Trazya: afterRender', e2); } }
         } catch (e) { console.error('Trazya: error al pintar', e); throw e; }
       }
     };

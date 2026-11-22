@@ -696,6 +696,7 @@ Object.assign(Component.prototype, {
       case 'todo': b = blk(id, 'todo', 4, { title: 'Pendientes', items: [{ id: 'q' + id, text: '', done: false }] }); break;
       case 'callout': b = blk(id, 'callout', 12, { icon: 'info', text: '' }); break;
       case 'pm': b = blk(id, 'pm', 12, { title: 'Salud de los proyectos', scope: 'all' }); break;
+      case 'scurve': b = blk(id, 'scurve', 12, { title: 'Curva S del proyecto' }); break;
       case 'cols': this.slashPick(pid, spec, extra); return;
       default: return;
     }
