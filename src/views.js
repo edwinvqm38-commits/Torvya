@@ -585,6 +585,7 @@ Object.assign(Component.prototype, {
       openFilter: function () { self.openDrawer('filter', { dCtx: ctxD }); }, openSort: function () { self.openDrawer('sort', { dCtx: ctxD }); }, openSettings: function () { self.openDrawer('root', { dCtx: ctxD }); },
       openNewProp: function () { self.openDrawer('newProp', { dCtx: ctxD }); }, openRelate: function () { self.openDrawer('newProp', { dCtx: ctxD, newPropSearch: 'Relación' }); },
       showSearch: where === 'scr', q: s.q || '', setQ: function (e) { self.setState({ q: e.target.value }); }, searchPh: 'Buscar en ' + t.name,
+      vsig: [vw.id, layout, JSON.stringify(vw.filters || []), JSON.stringify(vw.sorts || []), JSON.stringify(vw.group || ''), JSON.stringify(opts && opts.xfSets ? opts.xfSets : '')].join('|'),
       canEdit: canEdit, canStructureOpen: canStructure && !locked, newRowBtn: function () { self.newRow(tid, self.viewPreset(s, t, vw, v)); },
       viewLocked: locked, hasXf: !!xfNote, xfText: xfNote,
       activeChips: activeChips, hasActiveChips: activeChips.length > 0, clearFilters: function () { self.updView(tid, vid, function (x) { x.filters = []; }); },

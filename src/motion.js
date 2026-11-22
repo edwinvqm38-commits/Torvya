@@ -42,7 +42,12 @@ var TRZ = (function () {
       o = o || {};
       var dy = T.moves() ? (o.dy == null ? 8 : o.dy) : 0, dx = T.moves() ? (o.dx || 0) : 0, sc = T.moves() ? (o.scale || 1) : 1, pre = o.pre || '';
       var from = pre + (dx || dy ? ' translate(' + dx + 'px,' + dy + 'px)' : '') + (sc !== 1 ? ' scale(' + sc + ')' : '');
-      try { el.animate([{ opacity: 0, transform: from.trim() || 'none' }, { opacity: 1, transform: (pre || 'none') }], { duration: T.dur(o.ms || 220), easing: T.ease, fill: 'backwards' }); } catch (e) { }
+      try { el.animate([{ opacity: 0, transform: from.trim() || 'none' }, { opacity: 1, transform: (pre || 'none') }], { duration: T.dur(o.ms || 220), delay: o.delay || 0, easing: T.ease, fill: 'backwards' }); } catch (e) { }
+    },
+    /* varios elementos uno tras otro (máx. ~0,35 s de escalonado); en Reducido solo fundido y sin espera */
+    stagger: function (list, o) {
+      o = o || {}; var n = Math.min(list.length, 14), step = T.moves() ? Math.min(o.step || 45, 340 / Math.max(1, n)) : 0;
+      for (var i = 0; i < list.length; i++) T.enter(list[i], { dy: o.dy == null ? 10 : o.dy, ms: o.ms || 280, delay: Math.round(Math.min(i, 13) * step) });
     },
     /* números que suben o bajan hasta el valor nuevo */
     count: function (el, a, b, pre, suf, dec) {
@@ -103,8 +108,13 @@ Object.assign(Component.prototype, {
     var navChanged = !first && sig !== this._pg;
     this._pg = sig;
     if (navChanged) {
-      var main = document.querySelector('.main');
-      if (main) for (var i = 0; i < main.children.length; i++) { var ch = main.children[i]; if (!ch.classList.contains('banner')) TRZ.enter(ch, { dy: 10, ms: 260 }); }
+      var main = document.querySelector('.main'), items = [];
+      if (main) for (var i = 0; i < main.children.length; i++) {
+        var ch = main.children[i]; if (ch.classList.contains('banner')) continue;
+        var kids = ch.classList.contains('pg') || ch.classList.contains('page') ? ch.children : [ch];
+        for (var j = 0; j < kids.length; j++) { var k = kids[j]; if (k.classList.contains('pg-grid')) { for (var q = 0; q < k.children.length; q++) items.push(k.children[q]); } else items.push(k); }
+      }
+      TRZ.stagger(items, { dy: 10, ms: 300 });
       this._snap = {};
     }
     /* panel o ventana del registro */
@@ -118,26 +128,41 @@ Object.assign(Component.prototype, {
       }
     }
     this._recOpen = recOpen;
-    this.mvNumbers();
+    this.mvNumbers(navChanged);
+    this.mvViews();
     this.mvRows(navChanged || first);
     if (typeof this.chartsSync === 'function') this.chartsSync();
     if (!this._motionLib && TRZ.on('spring')) { this._motionLib = true; TRZ.load('trz-motion.js', function () { return !!window.TrzMotion; }); }
   },
 
   /* indicadores: el número recorre el camino hasta el valor nuevo */
-  mvNumbers() {
+  mvNumbers(zero) {
     var els = document.querySelectorAll('.kpi-val, .sc-m-v');
     for (var i = 0; i < els.length; i++) {
       var el = els[i], txt = el.textContent;
       if (el._anim && txt === el._t) { el._anim.stop(); el._anim = null; }
       var prev = el._t; el._t = txt;
-      if (prev === undefined || prev === txt || !TRZ.on('micro')) continue;
+      if (!TRZ.on('micro') || prev === txt) continue;
+      if (zero && /\d/.test(txt)) prev = txt.replace(/\d/g, '0');
+      else if (prev === undefined) continue;
       var a = /^([^\d-]*)(-?[\d.,]+)(.*)$/.exec(prev), b = /^([^\d-]*)(-?[\d.,]+)(.*)$/.exec(txt);
       if (!a || !b || a[1] !== b[1] || a[3] !== b[3]) continue;
       var na = parseFloat(a[2].replace(/,/g, '')), nb = parseFloat(b[2].replace(/,/g, ''));
       if (!isFinite(na) || !isFinite(nb)) continue;
       var dec = (b[2].split('.')[1] || '').length;
       TRZ.count(el, na, nb, b[1], b[3], dec);
+    }
+  },
+
+  /* tablas y vistas: al cambiar de vista, diseño o filtros el contenido reaparece suavemente */
+  mvViews() {
+    var vs = document.querySelectorAll('.dbv[data-vsig]'), skip = /(^|\s)(toolbar|dbv-head|addview|fchips|xf-note|headbar|cellbar)(\s|$)/;
+    for (var i = 0; i < vs.length; i++) {
+      var el = vs[i], sg = el.getAttribute('data-vsig'), prev = el._vs;
+      el._vs = sg;
+      if (prev === undefined || prev === sg || !TRZ.on('nav')) continue;
+      var list = []; for (var j = 0; j < el.children.length; j++) if (!skip.test(el.children[j].className || '')) list.push(el.children[j]);
+      TRZ.stagger(list, { dy: 8, ms: 240, step: 30 });
     }
   },
 

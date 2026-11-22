@@ -1824,6 +1824,30 @@ body.td-active .board{scroll-snap-type:none!important}
 .theme-light.hc{--line:#8E8E86;--line2:#A4A49C;--muted:#4A4A44}
 .theme-dark.hc{--line:#6E6E78;--line2:#55555E;--muted:#D2D2CC}
 .hc :focus-visible{outline:3px solid var(--acc);outline-offset:2px}
+
+/* ===== Etapa 1 · tarjetas y tablas limpias (estilo Notion) ===== */
+.blk-kpi,.blk-slicer,.blk-chart,.blk-sheet,.blk-map,.blk-todo,.blk-pm{border-color:var(--line2);box-shadow:none;transition:border-color .18s ease,background-color .18s ease}
+.blk-kpi:hover,.blk-chart:hover,.blk-sheet:hover,.blk-map:hover,.blk-pm:hover{border-color:var(--line)}
+.blk-kpi{padding:16px 18px 14px}
+.kpi-title{font-size:12.5px;letter-spacing:.01em}
+.kpi-val{font-size:32px;font-weight:600;margin-top:6px}
+.blk-head{margin-bottom:12px}
+.blk-title{font-size:14px}
+/* tablas: sin caja exterior, encabezado discreto, filas con separador suave */
+.tbl-wrap{border:0;border-top:1px solid var(--line2);border-bottom:1px solid var(--line2);border-radius:0;background:transparent}
+.th-row{border-bottom:1px solid var(--line2);background:transparent}
+.th-btn{font-size:12px;font-weight:500;letter-spacing:.01em;color:var(--muted)}
+.tr{border-bottom-color:color-mix(in srgb,var(--line2) 70%,transparent)}
+.tr.row{transition:background-color .12s ease}
+.tr.row:hover{background:color-mix(in srgb,var(--hover) 85%,transparent)}
+.calc-row{background:transparent}
+.toolbar{border-bottom-color:var(--line2)}
+.vtab{height:38px;font-size:13.5px}
+/* tarjetas de tablero y galería */
+.kcard,.gcard{border-color:var(--line2);box-shadow:none;transition:border-color .15s ease,transform .15s ease,box-shadow .15s ease}
+.kcard:hover,.gcard:hover{border-color:var(--line);box-shadow:0 2px 10px rgba(20,20,16,.06)}
+.theme-dark .kcard:hover,.theme-dark .gcard:hover{box-shadow:0 2px 12px rgba(0,0,0,.35)}
+.card{border-color:var(--line2)}
 </style>
 </helmet>
 <div class="app {{useCls}} {{mvCls}} theme-{{mode}} acc-{{accent}} dens-{{density}} rad-{{corners}} font-{{font}}">
@@ -2263,7 +2287,7 @@ body.td-active .board{scroll-snap-type:none!important}
 
             </sc-if>
 
-            <sc-if value="{{bl.isDb}}" hint-placeholder-val="{{false}}"><div class="dbv">
+            <sc-if value="{{bl.isDb}}" hint-placeholder-val="{{false}}"><div class="dbv" data-vsig="{{bl.dv.vsig}}">
   <sc-if value="{{bl.dv.compact}}" hint-placeholder-val="{{false}}">
     <div class="dbv-head">
       <button type="button" class="dbv-name" onClick="{{bl.dv.goFull}}" title="Abrir {{bl.dv.name}} a pantalla completa"><span class="tico sm" style="--c: {{bl.dv.color}}"><svg class="ic ic-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="{{bl.dv.icon}}"></path></svg></span><span class="dbv-nametxt">{{bl.dv.name}}</span><span class="dbv-open"><svg class="ic ic-xs" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.arrowr}}"></path></svg></span></button>
@@ -2691,7 +2715,7 @@ body.td-active .board{scroll-snap-type:none!important}
           <sc-if value="{{isAdminView}}" hint-placeholder-val="{{true}}"><button type="button" class="btn btn-sm" onClick="{{db.share}}"><svg class="ic ic-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.shield}}"></path></svg>Compartir</button></sc-if>
         </div>
       </div>
-      <div class="dbv">
+      <div class="dbv" data-vsig="{{db.dv.vsig}}">
   <sc-if value="{{db.dv.compact}}" hint-placeholder-val="{{false}}">
     <div class="dbv-head">
       <button type="button" class="dbv-name" onClick="{{db.dv.goFull}}" title="Abrir {{db.dv.name}} a pantalla completa"><span class="tico sm" style="--c: {{db.dv.color}}"><svg class="ic ic-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="{{db.dv.icon}}"></path></svg></span><span class="dbv-nametxt">{{db.dv.name}}</span><span class="dbv-open"><svg class="ic ic-xs" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.arrowr}}"></path></svg></span></button>
@@ -7659,6 +7683,7 @@ Object.assign(Component.prototype, {
       openFilter: function () { self.openDrawer('filter', { dCtx: ctxD }); }, openSort: function () { self.openDrawer('sort', { dCtx: ctxD }); }, openSettings: function () { self.openDrawer('root', { dCtx: ctxD }); },
       openNewProp: function () { self.openDrawer('newProp', { dCtx: ctxD }); }, openRelate: function () { self.openDrawer('newProp', { dCtx: ctxD, newPropSearch: 'Relación' }); },
       showSearch: where === 'scr', q: s.q || '', setQ: function (e) { self.setState({ q: e.target.value }); }, searchPh: 'Buscar en ' + t.name,
+      vsig: [vw.id, layout, JSON.stringify(vw.filters || []), JSON.stringify(vw.sorts || []), JSON.stringify(vw.group || ''), JSON.stringify(opts && opts.xfSets ? opts.xfSets : '')].join('|'),
       canEdit: canEdit, canStructureOpen: canStructure && !locked, newRowBtn: function () { self.newRow(tid, self.viewPreset(s, t, vw, v)); },
       viewLocked: locked, hasXf: !!xfNote, xfText: xfNote,
       activeChips: activeChips, hasActiveChips: activeChips.length > 0, clearFilters: function () { self.updView(tid, vid, function (x) { x.filters = []; }); },
@@ -13214,7 +13239,12 @@ var TRZ = (function () {
       o = o || {};
       var dy = T.moves() ? (o.dy == null ? 8 : o.dy) : 0, dx = T.moves() ? (o.dx || 0) : 0, sc = T.moves() ? (o.scale || 1) : 1, pre = o.pre || '';
       var from = pre + (dx || dy ? ' translate(' + dx + 'px,' + dy + 'px)' : '') + (sc !== 1 ? ' scale(' + sc + ')' : '');
-      try { el.animate([{ opacity: 0, transform: from.trim() || 'none' }, { opacity: 1, transform: (pre || 'none') }], { duration: T.dur(o.ms || 220), easing: T.ease, fill: 'backwards' }); } catch (e) { }
+      try { el.animate([{ opacity: 0, transform: from.trim() || 'none' }, { opacity: 1, transform: (pre || 'none') }], { duration: T.dur(o.ms || 220), delay: o.delay || 0, easing: T.ease, fill: 'backwards' }); } catch (e) { }
+    },
+    /* varios elementos uno tras otro (máx. ~0,35 s de escalonado); en Reducido solo fundido y sin espera */
+    stagger: function (list, o) {
+      o = o || {}; var n = Math.min(list.length, 14), step = T.moves() ? Math.min(o.step || 45, 340 / Math.max(1, n)) : 0;
+      for (var i = 0; i < list.length; i++) T.enter(list[i], { dy: o.dy == null ? 10 : o.dy, ms: o.ms || 280, delay: Math.round(Math.min(i, 13) * step) });
     },
     /* números que suben o bajan hasta el valor nuevo */
     count: function (el, a, b, pre, suf, dec) {
@@ -13275,8 +13305,13 @@ Object.assign(Component.prototype, {
     var navChanged = !first && sig !== this._pg;
     this._pg = sig;
     if (navChanged) {
-      var main = document.querySelector('.main');
-      if (main) for (var i = 0; i < main.children.length; i++) { var ch = main.children[i]; if (!ch.classList.contains('banner')) TRZ.enter(ch, { dy: 10, ms: 260 }); }
+      var main = document.querySelector('.main'), items = [];
+      if (main) for (var i = 0; i < main.children.length; i++) {
+        var ch = main.children[i]; if (ch.classList.contains('banner')) continue;
+        var kids = ch.classList.contains('pg') || ch.classList.contains('page') ? ch.children : [ch];
+        for (var j = 0; j < kids.length; j++) { var k = kids[j]; if (k.classList.contains('pg-grid')) { for (var q = 0; q < k.children.length; q++) items.push(k.children[q]); } else items.push(k); }
+      }
+      TRZ.stagger(items, { dy: 10, ms: 300 });
       this._snap = {};
     }
     /* panel o ventana del registro */
@@ -13290,26 +13325,41 @@ Object.assign(Component.prototype, {
       }
     }
     this._recOpen = recOpen;
-    this.mvNumbers();
+    this.mvNumbers(navChanged);
+    this.mvViews();
     this.mvRows(navChanged || first);
     if (typeof this.chartsSync === 'function') this.chartsSync();
     if (!this._motionLib && TRZ.on('spring')) { this._motionLib = true; TRZ.load('trz-motion.js', function () { return !!window.TrzMotion; }); }
   },
 
   /* indicadores: el número recorre el camino hasta el valor nuevo */
-  mvNumbers() {
+  mvNumbers(zero) {
     var els = document.querySelectorAll('.kpi-val, .sc-m-v');
     for (var i = 0; i < els.length; i++) {
       var el = els[i], txt = el.textContent;
       if (el._anim && txt === el._t) { el._anim.stop(); el._anim = null; }
       var prev = el._t; el._t = txt;
-      if (prev === undefined || prev === txt || !TRZ.on('micro')) continue;
+      if (!TRZ.on('micro') || prev === txt) continue;
+      if (zero && /\d/.test(txt)) prev = txt.replace(/\d/g, '0');
+      else if (prev === undefined) continue;
       var a = /^([^\d-]*)(-?[\d.,]+)(.*)$/.exec(prev), b = /^([^\d-]*)(-?[\d.,]+)(.*)$/.exec(txt);
       if (!a || !b || a[1] !== b[1] || a[3] !== b[3]) continue;
       var na = parseFloat(a[2].replace(/,/g, '')), nb = parseFloat(b[2].replace(/,/g, ''));
       if (!isFinite(na) || !isFinite(nb)) continue;
       var dec = (b[2].split('.')[1] || '').length;
       TRZ.count(el, na, nb, b[1], b[3], dec);
+    }
+  },
+
+  /* tablas y vistas: al cambiar de vista, diseño o filtros el contenido reaparece suavemente */
+  mvViews() {
+    var vs = document.querySelectorAll('.dbv[data-vsig]'), skip = /(^|\s)(toolbar|dbv-head|addview|fchips|xf-note|headbar|cellbar)(\s|$)/;
+    for (var i = 0; i < vs.length; i++) {
+      var el = vs[i], sg = el.getAttribute('data-vsig'), prev = el._vs;
+      el._vs = sg;
+      if (prev === undefined || prev === sg || !TRZ.on('nav')) continue;
+      var list = []; for (var j = 0; j < el.children.length; j++) if (!skip.test(el.children[j].className || '')) list.push(el.children[j]);
+      TRZ.stagger(list, { dy: 8, ms: 240, step: 30 });
     }
   },
 
