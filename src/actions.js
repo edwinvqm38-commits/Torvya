@@ -719,7 +719,7 @@ Object.assign(Component.prototype, {
     var s = this.st();
     var cur = (s.xf || {})[pid];
     var nx = clone(s.xf || {});
-    if (cur && xf && cur.table === xf.table && cur.prop === xf.prop && String(cur.key) === String(xf.key)) delete nx[pid];
+    if (cur && xf && cur.table === xf.table && cur.prop === xf.prop && String(cur.key) === String(xf.key) && cur.kpi === xf.kpi) delete nx[pid];
     else if (xf) nx[pid] = xf; else delete nx[pid];
     this.setState({ xf: nx });
   },

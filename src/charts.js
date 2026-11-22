@@ -14,6 +14,11 @@ function scFit(x0, y0) {
   for (var i = 0; i < 50; i++) { var mid = (lo + hi) / 2; if (scL(x0, mid) > y) lo = mid; else hi = mid; }
   return (lo + hi) / 2;
 }
+function scAt(arr, ms) {
+  if (!arr || !arr.length || ms < arr[0][0] || ms > arr[arr.length - 1][0]) return null;
+  for (var i = 1; i < arr.length; i++) if (ms <= arr[i][0]) { var a = arr[i - 1], b = arr[i], u = b[0] === a[0] ? 1 : (ms - a[0]) / (b[0] - a[0]); return scR1(a[1] + (b[1] - a[1]) * u); }
+  return arr[arr.length - 1][1];
+}
 function scAlpha(c, a) { return /^#[0-9a-f]{6}$/i.test(c) ? c + a : c; }
 
 Object.assign(Component.prototype, {
@@ -29,7 +34,7 @@ Object.assign(Component.prototype, {
     var t0 = scMs(g('inicio')), t1 = scMs(g('fin')), now = scMs(todayIso());
     var av = num(g('avance')), pl = num(g('plan')), spi = num(g('spi')), cpi = num(g('cpi'));
     out.projOpts = rows.map(function (r) { return { id: r.id, name: self.titleOf(t, r), sel: r.id === row.id }; });
-    out.setProj = function (e) { var val = e.target.value; self.updBlock(b.id, function (bb) { bb.proj = val; }); };
+    out.setProj = function (e) { var val = e.target.value; var ss = Object.assign({}, self.st().scSel || {}); delete ss[b.id]; self.setState({ scSel: ss }); self.updBlock(b.id, function (bb) { bb.proj = val; }); };
     out.projName = this.titleOf(t, row);
     if (t0 == null || t1 == null || t1 <= t0 || av == null) { out.noDates = true; return out; }
     var xT = Math.min(1, Math.max(0, (now - t0) / (t1 - t0)));
@@ -46,8 +51,26 @@ Object.assign(Component.prototype, {
       fin = scR1(Math.min(100, av + rate * (xe - xT)));
       proy = [[tNow, av], [t0 + xe * (t1 - t0), fin]];
     } else if (av >= 100) fin = 100;
+    var selS = (s.scSel || {})[b.id], selD = null;
+    if (selS && selS.ms >= t0 && selS.ms <= t1) {
+      var ii = 0, bd = Infinity;
+      prog.forEach(function (p, k) { var dd = Math.abs(p[0] - selS.ms); if (dd < bd) { bd = dd; ii = k; } });
+      if (ii === 0) ii = 1;
+      var pA = prog[ii - 1], pB = prog[ii], eA = scAt(ejec, pA[0]), eB = scAt(ejec, pB[0]);
+      var gap = eB == null ? null : scR1(eB - pB[1]);
+      selD = pB[0];
+      out.sel = { title: 'Período ' + scFecha(pA[0]) + ' → ' + scFecha(pB[0]), rows: [
+        { l: 'Programado acumulado', v: pB[1] + ' %' },
+        { l: 'Programado en el período', v: '+' + scR1(pB[1] - pA[1]) + ' pts' },
+        { l: 'Ejecutado acumulado', v: eB == null ? 'Aún no ocurre' : eB + ' %' },
+        { l: 'Ejecutado en el período', v: eB == null || eA == null ? '—' : '+' + scR1(eB - eA) + ' pts' },
+        { l: 'Brecha frente al plan', v: gap == null ? '—' : (gap >= 0 ? '+' : '−') + Math.abs(gap) + ' pts' }
+      ], clear: function () { var ss = Object.assign({}, self.st().scSel || {}); delete ss[b.id]; self.setState({ scSel: ss }); } };
+      out.hasSel = true;
+    }
+    out.noSel = !out.hasSel;
     var dpts = pl == null ? null : scR1(av - pl);
-    var d = { prog: prog, ejec: ejec, proy: proy, today: tNow, start: t0, end: t1, month: [Date.UTC(new Date(now).getUTCFullYear(), new Date(now).getUTCMonth(), 1), Date.UTC(new Date(now).getUTCFullYear(), new Date(now).getUTCMonth() + 1, 0)] };
+    var d = { sel: selD, prog: prog, ejec: ejec, proy: proy, today: tNow, start: t0, end: t1, month: [Date.UTC(new Date(now).getUTCFullYear(), new Date(now).getUTCMonth(), 1), Date.UTC(new Date(now).getUTCFullYear(), new Date(now).getUTCMonth() + 1, 0)] };
     function idx(x) { return x == null ? '—' : (Math.round(x * 100) / 100).toFixed(2); }
     function tone(x) { return x == null ? '' : x < 0.9 ? 'bad' : x < 1 ? 'warn' : 'ok'; }
     out.has = true;
@@ -94,6 +117,16 @@ Object.assign(Component.prototype, {
         e2._ch = window.TrzEcharts.init(e2, null, { renderer: 'canvas' });
         if (window.ResizeObserver) { e2._ro = new ResizeObserver(function (ent) { var t = ent[0].target; if (t._ch) t._ch.resize(); }); e2._ro.observe(e2); }
         list.push(e2);
+        (function (el) {
+          el._ch.getZr().on('click', function (p) {
+            try {
+              var pt = [p.offsetX, p.offsetY];
+              if (!el._ch.containPixel('grid', pt)) return;
+              var cv = el._ch.convertFromPixel({ gridIndex: 0 }, pt), ms = Array.isArray(cv) ? cv[0] : cv, bid = el.getAttribute('data-bid');
+              if (bid && isFinite(ms)) { var ss = Object.assign({}, self.st().scSel || {}); ss[bid] = { ms: ms }; self.setState({ scSel: ss }); TRZ.sound('click'); }
+            } catch (er) { }
+          });
+        })(e2);
         e2.removeAttribute('data-ld');
       }
       e2._sig = sg;
@@ -113,6 +146,7 @@ Object.assign(Component.prototype, {
         markPoint: { symbolSize: 46, itemStyle: { color: c.acc }, label: { color: '#fff', fontSize: 11, formatter: function (p) { return Math.round(p.value) + '%'; } }, data: [{ coord: d.ejec[d.ejec.length - 1], value: d.ejec[d.ejec.length - 1][1] }] } }
     ];
     if (d.proy && d.proy.length) series.push({ id: 'proy', name: 'Proyección', type: 'line', showSymbol: false, data: d.proy, z: 3, lineStyle: dline(c.acc, 2, 'dotted'), itemStyle: { color: c.acc } });
+    if (d.sel != null) series[1].markLine = { silent: true, symbol: 'none', lineStyle: { color: c.acc, type: 'dashed', width: 1.5 }, label: { show: false }, data: [{ xAxis: d.sel }] };
     return {
       aria: { enabled: true },
       animation: anim, animationDuration: TRZ.dur(900), animationDurationUpdate: TRZ.dur(600), animationEasing: 'cubicOut', animationEasingUpdate: 'cubicInOut',

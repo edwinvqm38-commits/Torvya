@@ -290,7 +290,14 @@
                 <div class="sc-metrics">
                   <sc-for list="{{bl.sc.metrics}}" as="m" hint-placeholder-count="4"><div class="sc-m {{m.cls}}"><span class="sc-m-l">{{m.label}}</span><span class="sc-m-v">{{m.value}}</span><span class="sc-m-c">{{m.cap}}</span></div></sc-for>
                 </div>
-                <div class="sc-chart" data-foreign="1" data-sc="{{bl.sc.json}}" role="img" aria-label="{{bl.sc.aria}}"></div>
+                <div class="sc-chart" data-foreign="1" data-bid="{{bl.id}}" data-sc="{{bl.sc.json}}" role="img" aria-label="{{bl.sc.aria}}"></div>
+                <sc-if value="{{bl.sc.hasSel}}" hint-placeholder-val="{{false}}">
+                  <div class="sc-sel-card">
+                    <div class="sc-sel-h"><strong>{{bl.sc.sel.title}}</strong><button type="button" class="link-btn" onClick="{{bl.sc.sel.clear}}">[[icx:ICON.x]]Quitar</button></div>
+                    <div class="sc-sel-g"><sc-for list="{{bl.sc.sel.rows}}" as="sr" hint-placeholder-count="5"><div class="sc-sel-r"><span>{{sr.l}}</span><strong>{{sr.v}}</strong></div></sc-for></div>
+                  </div>
+                </sc-if>
+                <sc-if value="{{bl.sc.noSel}}" hint-placeholder-val="{{true}}"><p class="muted sm sc-hint">Toca la curva para ver el detalle de un período.</p></sc-if>
                 <p class="muted sm sc-note">{{bl.sc.note}}</p>
               </sc-if>
             </sc-if>
@@ -324,7 +331,8 @@
               </sc-if>
               <div class="pm-list">
                 <sc-for list="{{bl.pm.issues}}" as="pi" hint-placeholder-count="4">
-                  <div class="pm-item {{pi.sevCls}}">
+                  <div class="pm-item pm-click {{pi.sevCls}}">
+                    <button type="button" class="pm-hit clk" onClick="{{pi.open}}" aria-label="Abrir el registro: {{pi.title}}"></button>
                     <span class="pm-sev">{{pi.sevName}}</span>
                     <div class="pm-body">
                       <strong class="pm-msg">{{pi.title}}</strong>
@@ -343,7 +351,9 @@
             <sc-if value="{{bl.isLocked}}" hint-placeholder-val="{{false}}"><div class="blk-locked">[[ic:ICON.lock]]<span>{{bl.lockText}}</span></div></sc-if>
 
             <sc-if value="{{bl.isKpi}}" hint-placeholder-val="{{false}}">
-              <div class="kpi {{bl.kpi.stateCls}}">
+              <div class="kpi kpi-click {{bl.kpi.stateCls}} {{bl.kpi.onCls}}">
+                <button type="button" class="kpi-hit clk" onClick="{{bl.kpi.press}}" aria-pressed="{{bl.kpi.on}}" aria-label="{{bl.kpi.aria}}"></button>
+                <button type="button" class="icon-btn sm kpi-exp" onClick="{{bl.expand}}" aria-label="{{bl.expandAria}}" title="Ver detalle">[[ics:ICON.expand]]</button>
                 <div class="kpi-top"><span class="tico sm" style="--c: {{bl.srcColor}}">[[ics:bl.srcIcon]]</span><span class="kpi-title">{{bl.title}}</span><sc-if value="{{bl.hasXfTag}}" hint-placeholder-val="{{false}}"><span class="tag tag-sm {{bl.xfTagCls}}">{{bl.xfTag}}</span></sc-if></div>
                 <div class="kpi-val">{{bl.kpi.value}}</div>
                 <div class="kpi-cap">{{bl.kpi.caption}}</div>
@@ -375,6 +385,7 @@
                 <span class="tico sm" style="--c: {{bl.srcColor}}">[[ics:bl.srcIcon]]</span>
                 <div class="blk-titles"><strong class="blk-title">{{bl.title}}</strong><span class="blk-sub">{{bl.ch.sub}} · {{bl.srcName}}</span></div>
                 <sc-if value="{{bl.hasXfTag}}" hint-placeholder-val="{{false}}"><span class="tag tag-sm {{bl.xfTagCls}}">{{bl.xfTag}}</span></sc-if>
+                <button type="button" class="icon-btn sm" onClick="{{bl.expand}}" aria-label="{{bl.expandAria}}" title="Ver detalle">[[ics:ICON.expand]]</button>
               </div>
               [[chart:bl.ch]]
             </sc-if>
@@ -1352,6 +1363,9 @@
           <div class="set"><span class="set-label">Intensidad de las animaciones</span><div class="seg seg-wrap"><sc-for list="{{mvLevelOpts}}" as="o" hint-placeholder-count="4"><button type="button" class="seg-btn {{o.cls}}" aria-pressed="{{o.on}}" onClick="{{o.pick}}">{{o.label}}</button></sc-for></div><span class="muted sm">{{mvHint}}</span></div>
           <div class="set"><span class="set-label">Animar</span><div class="seg seg-wrap"><sc-for list="{{mvToggles}}" as="o" hint-placeholder-count="4"><button type="button" class="seg-btn {{o.cls}}" aria-pressed="{{o.on}}" onClick="{{o.pick}}">{{o.label}}</button></sc-for></div></div>
           <div class="set"><span class="set-label">Duración de las transiciones</span><div class="seg"><sc-for list="{{mvSpeedOpts}}" as="o" hint-placeholder-count="3"><button type="button" class="seg-btn {{o.cls}}" aria-pressed="{{o.on}}" onClick="{{o.pick}}">{{o.label}}</button></sc-for></div></div>
+          <div class="set"><span class="set-label">Sonidos sutiles</span><div class="seg"><sc-for list="{{sndOn}}" as="o" hint-placeholder-count="2"><button type="button" class="seg-btn {{o.cls}}" aria-pressed="{{o.on}}" onClick="{{o.pick}}">{{o.label}}</button></sc-for></div></div>
+          <div class="set"><span class="set-label">Volumen</span><div class="seg"><sc-for list="{{sndVol}}" as="o" hint-placeholder-count="3"><button type="button" class="seg-btn {{o.cls}}" aria-pressed="{{o.on}}" onClick="{{o.pick}}">{{o.label}}</button></sc-for></div></div>
+          <div class="set"><span class="set-label">Sonar en</span><div class="seg seg-wrap"><sc-for list="{{sndToggles}}" as="o" hint-placeholder-count="4"><button type="button" class="seg-btn {{o.cls}}" aria-pressed="{{o.on}}" onClick="{{o.pick}}">{{o.label}}</button></sc-for></div></div>
         </div>
         <div class="card prev">
           <div class="sec-label">Vista previa</div>
@@ -1519,6 +1533,34 @@
 
 <sc-if value="{{hasToast}}" hint-placeholder-val="{{false}}">
   <div class="toast" role="status"><span>{{toast}}</span><button type="button" class="icon-btn sm" onClick="{{closeToast}}" aria-label="Cerrar aviso">[[ics:ICON.x]]</button></div>
+</sc-if>
+
+<sc-if value="{{hasKd}}" hint-placeholder-val="{{false}}">
+  <div class="kd-wrap">
+    <div class="kd-scrim"></div>
+    <div class="kd" role="dialog" aria-modal="true" aria-label="{{kd.title}}" tabindex="-1">
+      <div class="kd-head">
+        <span class="tico sm" style="--c: {{kd.srcColor}}">[[ics:kd.srcIcon]]</span>
+        <div class="kd-titles"><strong class="kd-title">{{kd.title}}</strong><span class="kd-sub">{{kd.sub}}</span></div>
+        <button type="button" class="icon-btn kd-x" onClick="{{kd.close}}" aria-label="Cerrar detalle" title="Cerrar (Esc)">[[ics:ICON.x]]</button>
+      </div>
+      <div class="kd-body">
+        <sc-if value="{{kd.isKpi}}" hint-placeholder-val="{{false}}"><div class="kd-kpi {{kd.kpi.stateCls}}"><div class="kpi-val">{{kd.kpi.value}}</div><div class="kpi-cap">{{kd.kpi.caption}}</div><sc-if value="{{kd.kpi.hasGoal}}" hint-placeholder-val="{{false}}"><div class="kpi-goal"><span class="kg-track"><span class="kg-fill" style="width: {{kd.kpi.goalPct}}%"></span></span><span class="kg-t">{{kd.kpi.goalText}}</span></div></sc-if></div></sc-if>
+        <sc-if value="{{kd.isChart}}" hint-placeholder-val="{{false}}">[[chart:kd.ch]]</sc-if>
+        <sc-if value="{{kd.hasRows}}" hint-placeholder-val="{{true}}">
+          <div class="kd-list" role="group" aria-label="Registros incluidos">
+            <div class="kd-row kd-rh" style="{{kd.gridStyle}}"><sc-for list="{{kd.cols}}" as="kc" hint-placeholder-count="4"><span>{{kc.name}}</span></sc-for></div>
+            <sc-for list="{{kd.rows}}" as="kr" hint-placeholder-count="6">
+              <button type="button" class="kd-row clk" style="{{kd.gridStyle}}" onClick="{{kr.open}}" title="Abrir el registro"><sc-for list="{{kr.cells}}" as="kcl" hint-placeholder-count="4"><span>{{kcl.t}}</span></sc-for></button>
+            </sc-for>
+          </div>
+        </sc-if>
+        <sc-if value="{{kd.noRows}}" hint-placeholder-val="{{false}}"><p class="muted">No hay registros con los filtros actuales.</p></sc-if>
+        <sc-if value="{{kd.hasMore}}" hint-placeholder-val="{{false}}"><p class="muted sm">{{kd.moreText}}</p></sc-if>
+      </div>
+      <div class="kd-foot"><button type="button" class="btn btn-sm" onClick="{{kd.openTable}}">Abrir tabla completa</button><button type="button" class="btn btn-primary btn-sm" onClick="{{kd.close}}">Cerrar</button></div>
+    </div>
+  </div>
 </sc-if>
 
 <sc-if value="{{drawerOpen}}" hint-placeholder-val="{{false}}">

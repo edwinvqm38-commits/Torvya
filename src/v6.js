@@ -415,9 +415,9 @@ Object.assign(Component.prototype, {
 })();
 
 /* ================= cerrar al tocar fuera ================= */
-var OUT_FLOAT = '.oppop,.op-scrim,.tone-pop,.fmt-bar,.fmt-pal,.menu,.picker,.picker-pop,.cover-pop,.slash-menu,.addview,.headbar,.addblk,.org-lvedit,.modal,.drawer,.scrim,.toast,[role="dialog"],[role="menu"],[role="listbox"]';
+var OUT_FLOAT = '.oppop,.op-scrim,.tone-pop,.fmt-bar,.fmt-pal,.menu,.picker,.picker-pop,.cover-pop,.slash-menu,.addview,.headbar,.addblk,.org-lvedit,.modal,.drawer,.scrim,.kd,.toast,[role="dialog"],[role="menu"],[role="listbox"]';
 var OUT_TOGGLE = '[aria-expanded],[aria-haspopup]';
-var OUT_KEYS = ['bkPal', 'recPal', 'fmtCol', 'viewMenu', 'tplMenu', 'picker', 'parentPick', 'coverPick', 'areaPick', 'iconPick', 'addViewOpen', 'fmAddOpen', 'fmNewOpen', 'headMenu', 'orgLvlOpen', 'mention', 'fxOpen', 'addBlockOpen', 'dAdding', 'dTypeChange'];
+var OUT_KEYS = ['bkPal', 'recPal', 'fmtCol', 'viewMenu', 'tplMenu', 'picker', 'parentPick', 'coverPick', 'areaPick', 'iconPick', 'addViewOpen', 'fmAddOpen', 'fmNewOpen', 'headMenu', 'orgLvlOpen', 'mention', 'fxOpen', 'addBlockOpen', 'dAdding', 'dTypeChange', 'kd'];
 Object.assign(Component.prototype, {
   outsideDown(e) {
     var t = e && e.target;

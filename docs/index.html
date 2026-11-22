@@ -1848,6 +1848,63 @@ body.td-active .board{scroll-snap-type:none!important}
 .kcard:hover,.gcard:hover{border-color:var(--line);box-shadow:0 2px 10px rgba(20,20,16,.06)}
 .theme-dark .kcard:hover,.theme-dark .gcard:hover{box-shadow:0 2px 12px rgba(0,0,0,.35)}
 .card{border-color:var(--line2)}
+
+/* ====== esqueleto de carga, toque y tarjetas clicleables ====== */
+.skl{position:relative;pointer-events:none}
+.skl>*{opacity:0;transition:none}
+.skl::before{content:"";position:absolute;inset:0;border-radius:var(--r,10px);background:linear-gradient(100deg,var(--line) 20%,color-mix(in srgb,var(--line) 40%,transparent) 40%,var(--line) 60%);background-size:220% 100%;animation:sklsh 1.1s linear infinite;opacity:.55;z-index:2}
+@keyframes sklsh{from{background-position:120% 0}to{background-position:-120% 0}}
+.mv-desactivado .skl::before,.mv-reducido .skl::before{animation:none}
+.rip{position:absolute;border-radius:50%;background:currentColor;opacity:0;pointer-events:none;z-index:0}
+.btn,.seg-btn,.slc,.nav-item,.vtab,.menu-item,.icon-btn,.tool,.kcard,.gcard,.clk{transition:transform .12s ease,background-color .15s ease,box-shadow .15s ease}
+.btn:active,.seg-btn:active,.slc:active,.nav-item:active,.vtab:active,.menu-item:active,.icon-btn:active,.tool:active{transform:scale(.97)}
+.mv-desactivado .btn:active,.mv-desactivado .seg-btn:active,.mv-desactivado .slc:active,.mv-desactivado .nav-item:active,.mv-desactivado .icon-btn:active{transform:none}
+.btn,.seg-btn,.slc,.nav-item,.vtab,.icon-btn,.tool,.clk{overflow:hidden}
+.nav-item .rip,.seg-btn .rip{z-index:0}
+/* indicador clicleable */
+.kpi-click{position:relative;border-radius:var(--r,10px);transition:transform .12s ease,box-shadow .15s ease}
+.kpi-hit{position:absolute;inset:-8px;border:0;background:transparent;border-radius:var(--r,10px);cursor:pointer;z-index:1;padding:0}
+.kpi-hit:hover{background:color-mix(in srgb,var(--acc) 5%,transparent)}
+.kpi-hit:focus-visible{outline:2px solid var(--acc);outline-offset:-2px}
+.kpi-click:has(.kpi-hit:active){transform:scale(.985)}
+.kpi-click>.kpi-top,.kpi-click>.kpi-val,.kpi-click>.kpi-cap,.kpi-click>.kpi-goal{position:relative;pointer-events:none}
+.kpi-exp{position:absolute;top:-4px;right:-4px;z-index:2;opacity:0;transition:opacity .15s}
+.kpi-click:hover .kpi-exp,.kpi-exp:focus-visible,.kpi-click.kpi-on .kpi-exp{opacity:1}
+@media (hover:none){.kpi-exp{opacity:.7}}
+.kpi-on .kpi-hit{box-shadow:inset 0 0 0 2px var(--acc);background:color-mix(in srgb,var(--acc) 7%,transparent)}
+/* tarjeta de recomendación clicleable */
+.pm-click{position:relative}
+.pm-hit{position:absolute;inset:0;border:0;background:transparent;border-radius:inherit;cursor:pointer;z-index:0;padding:0}
+.pm-hit:hover{background:color-mix(in srgb,var(--acc) 4%,transparent)}
+.pm-hit:focus-visible{outline:2px solid var(--acc);outline-offset:-2px}
+.pm-click .pm-body,.pm-click .pm-sev{pointer-events:none}
+.pm-click .pm-acts{position:relative;z-index:1}
+/* curva S: detalle de periodo */
+.sc-sel-card{margin:8px 0 0;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:color-mix(in srgb,var(--acc) 4%,var(--panel))}
+.sc-sel-h{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:6px;font-size:13px}
+.sc-sel-g{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:6px 16px}
+.sc-sel-r{display:flex;justify-content:space-between;gap:8px;font-size:12.5px;color:var(--muted)}
+.sc-sel-r strong{color:var(--text);font-variant-numeric:tabular-nums}
+.sc-hint{margin:4px 0 0}
+/* ventana de detalle */
+.kd-wrap{position:fixed;inset:0;z-index:70;display:flex;align-items:center;justify-content:center;padding:16px}
+.kd-scrim{position:absolute;inset:0;background:rgba(10,10,10,.42)}
+.kd{position:relative;display:flex;flex-direction:column;width:min(860px,100%);max-height:min(86vh,100%);background:var(--panel);color:var(--text);border:1px solid var(--line);border-radius:14px;box-shadow:0 24px 70px rgba(0,0,0,.28);outline:none;overflow:hidden}
+.kd-head{display:flex;align-items:center;gap:10px;padding:14px 16px;border-bottom:1px solid var(--line)}
+.kd-titles{flex:1;min-width:0;display:flex;flex-direction:column}
+.kd-title{font-size:15px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.kd-sub{font-size:12px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.kd-body{padding:14px 16px;overflow:auto;display:flex;flex-direction:column;gap:14px;min-height:0}
+.kd-kpi .kpi-val{margin-top:0;font-size:36px}
+.kd-list{display:flex;flex-direction:column;border:1px solid var(--line);border-radius:10px;overflow:auto}
+.kd-row{display:grid;gap:12px;align-items:center;padding:9px 12px;border:0;border-bottom:1px solid var(--line);background:transparent;color:inherit;text-align:left;font:inherit;font-size:13px;min-width:max-content;width:100%}
+.kd-row>span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+button.kd-row{cursor:pointer}
+button.kd-row:hover{background:color-mix(in srgb,var(--acc) 6%,transparent)}
+button.kd-row:last-child{border-bottom:0}
+.kd-rh{position:sticky;top:0;background:var(--panel);font-size:11.5px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.03em}
+.kd-foot{display:flex;justify-content:flex-end;gap:8px;padding:12px 16px;border-top:1px solid var(--line)}
+@media (max-width:600px){.kd-wrap{padding:0;align-items:flex-end}.kd{width:100%;max-height:92vh;border-radius:14px 14px 0 0}}
 </style>
 </helmet>
 <div class="app {{useCls}} {{mvCls}} theme-{{mode}} acc-{{accent}} dens-{{density}} rad-{{corners}} font-{{font}}">
@@ -2149,7 +2206,14 @@ body.td-active .board{scroll-snap-type:none!important}
                 <div class="sc-metrics">
                   <sc-for list="{{bl.sc.metrics}}" as="m" hint-placeholder-count="4"><div class="sc-m {{m.cls}}"><span class="sc-m-l">{{m.label}}</span><span class="sc-m-v">{{m.value}}</span><span class="sc-m-c">{{m.cap}}</span></div></sc-for>
                 </div>
-                <div class="sc-chart" data-foreign="1" data-sc="{{bl.sc.json}}" role="img" aria-label="{{bl.sc.aria}}"></div>
+                <div class="sc-chart" data-foreign="1" data-bid="{{bl.id}}" data-sc="{{bl.sc.json}}" role="img" aria-label="{{bl.sc.aria}}"></div>
+                <sc-if value="{{bl.sc.hasSel}}" hint-placeholder-val="{{false}}">
+                  <div class="sc-sel-card">
+                    <div class="sc-sel-h"><strong>{{bl.sc.sel.title}}</strong><button type="button" class="link-btn" onClick="{{bl.sc.sel.clear}}"><svg class="ic ic-xs" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.x}}"></path></svg>Quitar</button></div>
+                    <div class="sc-sel-g"><sc-for list="{{bl.sc.sel.rows}}" as="sr" hint-placeholder-count="5"><div class="sc-sel-r"><span>{{sr.l}}</span><strong>{{sr.v}}</strong></div></sc-for></div>
+                  </div>
+                </sc-if>
+                <sc-if value="{{bl.sc.noSel}}" hint-placeholder-val="{{true}}"><p class="muted sm sc-hint">Toca la curva para ver el detalle de un período.</p></sc-if>
                 <p class="muted sm sc-note">{{bl.sc.note}}</p>
               </sc-if>
             </sc-if>
@@ -2183,7 +2247,8 @@ body.td-active .board{scroll-snap-type:none!important}
               </sc-if>
               <div class="pm-list">
                 <sc-for list="{{bl.pm.issues}}" as="pi" hint-placeholder-count="4">
-                  <div class="pm-item {{pi.sevCls}}">
+                  <div class="pm-item pm-click {{pi.sevCls}}">
+                    <button type="button" class="pm-hit clk" onClick="{{pi.open}}" aria-label="Abrir el registro: {{pi.title}}"></button>
                     <span class="pm-sev">{{pi.sevName}}</span>
                     <div class="pm-body">
                       <strong class="pm-msg">{{pi.title}}</strong>
@@ -2202,7 +2267,9 @@ body.td-active .board{scroll-snap-type:none!important}
             <sc-if value="{{bl.isLocked}}" hint-placeholder-val="{{false}}"><div class="blk-locked"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.lock}}"></path></svg><span>{{bl.lockText}}</span></div></sc-if>
 
             <sc-if value="{{bl.isKpi}}" hint-placeholder-val="{{false}}">
-              <div class="kpi {{bl.kpi.stateCls}}">
+              <div class="kpi kpi-click {{bl.kpi.stateCls}} {{bl.kpi.onCls}}">
+                <button type="button" class="kpi-hit clk" onClick="{{bl.kpi.press}}" aria-pressed="{{bl.kpi.on}}" aria-label="{{bl.kpi.aria}}"></button>
+                <button type="button" class="icon-btn sm kpi-exp" onClick="{{bl.expand}}" aria-label="{{bl.expandAria}}" title="Ver detalle"><svg class="ic ic-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.expand}}"></path></svg></button>
                 <div class="kpi-top"><span class="tico sm" style="--c: {{bl.srcColor}}"><svg class="ic ic-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="{{bl.srcIcon}}"></path></svg></span><span class="kpi-title">{{bl.title}}</span><sc-if value="{{bl.hasXfTag}}" hint-placeholder-val="{{false}}"><span class="tag tag-sm {{bl.xfTagCls}}">{{bl.xfTag}}</span></sc-if></div>
                 <div class="kpi-val">{{bl.kpi.value}}</div>
                 <div class="kpi-cap">{{bl.kpi.caption}}</div>
@@ -2234,6 +2301,7 @@ body.td-active .board{scroll-snap-type:none!important}
                 <span class="tico sm" style="--c: {{bl.srcColor}}"><svg class="ic ic-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="{{bl.srcIcon}}"></path></svg></span>
                 <div class="blk-titles"><strong class="blk-title">{{bl.title}}</strong><span class="blk-sub">{{bl.ch.sub}} · {{bl.srcName}}</span></div>
                 <sc-if value="{{bl.hasXfTag}}" hint-placeholder-val="{{false}}"><span class="tag tag-sm {{bl.xfTagCls}}">{{bl.xfTag}}</span></sc-if>
+                <button type="button" class="icon-btn sm" onClick="{{bl.expand}}" aria-label="{{bl.expandAria}}" title="Ver detalle"><svg class="ic ic-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.expand}}"></path></svg></button>
               </div>
               <div class="chart-box {{bl.ch.boxCls}}">
   <sc-if value="{{bl.ch.hasGoal}}" hint-placeholder-val="{{false}}"><div class="ch-goal-t"><i></i>{{bl.ch.goalText}}</div></sc-if>
@@ -4041,6 +4109,9 @@ body.td-active .board{scroll-snap-type:none!important}
           <div class="set"><span class="set-label">Intensidad de las animaciones</span><div class="seg seg-wrap"><sc-for list="{{mvLevelOpts}}" as="o" hint-placeholder-count="4"><button type="button" class="seg-btn {{o.cls}}" aria-pressed="{{o.on}}" onClick="{{o.pick}}">{{o.label}}</button></sc-for></div><span class="muted sm">{{mvHint}}</span></div>
           <div class="set"><span class="set-label">Animar</span><div class="seg seg-wrap"><sc-for list="{{mvToggles}}" as="o" hint-placeholder-count="4"><button type="button" class="seg-btn {{o.cls}}" aria-pressed="{{o.on}}" onClick="{{o.pick}}">{{o.label}}</button></sc-for></div></div>
           <div class="set"><span class="set-label">Duración de las transiciones</span><div class="seg"><sc-for list="{{mvSpeedOpts}}" as="o" hint-placeholder-count="3"><button type="button" class="seg-btn {{o.cls}}" aria-pressed="{{o.on}}" onClick="{{o.pick}}">{{o.label}}</button></sc-for></div></div>
+          <div class="set"><span class="set-label">Sonidos sutiles</span><div class="seg"><sc-for list="{{sndOn}}" as="o" hint-placeholder-count="2"><button type="button" class="seg-btn {{o.cls}}" aria-pressed="{{o.on}}" onClick="{{o.pick}}">{{o.label}}</button></sc-for></div></div>
+          <div class="set"><span class="set-label">Volumen</span><div class="seg"><sc-for list="{{sndVol}}" as="o" hint-placeholder-count="3"><button type="button" class="seg-btn {{o.cls}}" aria-pressed="{{o.on}}" onClick="{{o.pick}}">{{o.label}}</button></sc-for></div></div>
+          <div class="set"><span class="set-label">Sonar en</span><div class="seg seg-wrap"><sc-for list="{{sndToggles}}" as="o" hint-placeholder-count="4"><button type="button" class="seg-btn {{o.cls}}" aria-pressed="{{o.on}}" onClick="{{o.pick}}">{{o.label}}</button></sc-for></div></div>
         </div>
         <div class="card prev">
           <div class="sec-label">Vista previa</div>
@@ -4236,6 +4307,83 @@ body.td-active .board{scroll-snap-type:none!important}
 
 <sc-if value="{{hasToast}}" hint-placeholder-val="{{false}}">
   <div class="toast" role="status"><span>{{toast}}</span><button type="button" class="icon-btn sm" onClick="{{closeToast}}" aria-label="Cerrar aviso"><svg class="ic ic-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.x}}"></path></svg></button></div>
+</sc-if>
+
+<sc-if value="{{hasKd}}" hint-placeholder-val="{{false}}">
+  <div class="kd-wrap">
+    <div class="kd-scrim"></div>
+    <div class="kd" role="dialog" aria-modal="true" aria-label="{{kd.title}}" tabindex="-1">
+      <div class="kd-head">
+        <span class="tico sm" style="--c: {{kd.srcColor}}"><svg class="ic ic-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="{{kd.srcIcon}}"></path></svg></span>
+        <div class="kd-titles"><strong class="kd-title">{{kd.title}}</strong><span class="kd-sub">{{kd.sub}}</span></div>
+        <button type="button" class="icon-btn kd-x" onClick="{{kd.close}}" aria-label="Cerrar detalle" title="Cerrar (Esc)"><svg class="ic ic-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.x}}"></path></svg></button>
+      </div>
+      <div class="kd-body">
+        <sc-if value="{{kd.isKpi}}" hint-placeholder-val="{{false}}"><div class="kd-kpi {{kd.kpi.stateCls}}"><div class="kpi-val">{{kd.kpi.value}}</div><div class="kpi-cap">{{kd.kpi.caption}}</div><sc-if value="{{kd.kpi.hasGoal}}" hint-placeholder-val="{{false}}"><div class="kpi-goal"><span class="kg-track"><span class="kg-fill" style="width: {{kd.kpi.goalPct}}%"></span></span><span class="kg-t">{{kd.kpi.goalText}}</span></div></sc-if></div></sc-if>
+        <sc-if value="{{kd.isChart}}" hint-placeholder-val="{{false}}"><div class="chart-box {{kd.ch.boxCls}}">
+  <sc-if value="{{kd.ch.hasGoal}}" hint-placeholder-val="{{false}}"><div class="ch-goal-t"><i></i>{{kd.ch.goalText}}</div></sc-if>
+  <sc-if value="{{kd.ch.empty}}" hint-placeholder-val="{{false}}"><div class="ch-empty"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ICON.chart}}"></path></svg><span>{{kd.ch.emptyText}}</span></div></sc-if>
+  <sc-if value="{{kd.ch.showCol}}" hint-placeholder-val="{{true}}">
+    <div class="colchart {{kd.ch.colTall}}">
+      <sc-for list="{{kd.ch.bars}}" as="b" hint-placeholder-count="5">
+        <button type="button" class="cc {{b.cls}}" onClick="{{b.pick}}" aria-label="{{b.aria}}" aria-pressed="{{b.on}}" title="{{b.aria}}">
+          <span class="cc-val">{{b.valueText}}</span>
+          <span class="cc-track"><span class="cc-bar" style="height: {{b.pct}}%; background: {{b.color}}"></span><sc-if value="{{kd.ch.hasGoal}}" hint-placeholder-val="{{false}}"><span class="cc-goal" style="bottom: {{kd.ch.goalPct}}%"></span></sc-if></span>
+          <span class="cc-lab">{{b.label}}</span>
+        </button>
+      </sc-for>
+    </div>
+  </sc-if>
+  <sc-if value="{{kd.ch.showBar}}" hint-placeholder-val="{{false}}">
+    <div class="hbars">
+      <sc-for list="{{kd.ch.bars}}" as="b" hint-placeholder-count="5">
+        <button type="button" class="hb {{b.cls}}" onClick="{{b.pick}}" aria-label="{{b.aria}}" aria-pressed="{{b.on}}" title="{{b.aria}}">
+          <span class="hb-lab">{{b.label}}</span>
+          <span class="hb-track"><span class="hb-fill" style="width: {{b.pct}}%; background: {{b.color}}"></span><sc-if value="{{kd.ch.hasGoal}}" hint-placeholder-val="{{false}}"><span class="hb-goal" style="left: {{kd.ch.goalPct}}%"></span></sc-if></span>
+          <span class="hb-val">{{b.valueText}}</span>
+        </button>
+      </sc-for>
+    </div>
+  </sc-if>
+  <sc-if value="{{kd.ch.showLine}}" hint-placeholder-val="{{false}}">
+    <div class="lnchart">
+      <div class="ln-plot">
+        <sc-for list="{{kd.ch.lgrid}}" as="lg" hint-placeholder-count="4"><div class="ln-grid" style="top: {{lg.top}}%"><span>{{lg.label}}</span></div></sc-for>
+        <svg class="ln-svg" viewBox="0 0 640 200" aria-hidden="true"><path class="ln-area" d="{{kd.ch.area}}"></path><path class="ln-line" d="{{kd.ch.path}}"></path></svg>
+        <sc-for list="{{kd.ch.ldots}}" as="ld" hint-placeholder-count="6"><button type="button" class="ln-dot {{ld.cls}}" style="left: {{ld.left}}%; top: {{ld.top}}%" onClick="{{ld.pick}}" aria-label="{{ld.aria}}" aria-pressed="{{ld.on}}" title="{{ld.tip}}"></button></sc-for>
+      </div>
+      <div class="ln-x"><sc-for list="{{kd.ch.lxl}}" as="lx" hint-placeholder-count="6"><span class="ln-xl" style="left: {{lx.left}}%">{{lx.label}}</span></sc-for></div>
+    </div>
+  </sc-if>
+  <sc-if value="{{kd.ch.showDonut}}" hint-placeholder-val="{{false}}">
+    <div class="donut-wrap">
+      <div class="donut">
+        <sc-for list="{{kd.ch.segs}}" as="sg" hint-placeholder-count="4"><svg class="dn-svg" viewBox="0 0 120 120" aria-hidden="true"><circle class="dn-seg {{sg.cls}}" cx="60" cy="60" r="44" style="stroke: {{sg.color}}; stroke-dasharray: {{sg.dash}}; stroke-dashoffset: {{sg.off}}"></circle></svg></sc-for>
+        <div class="dn-center"><strong>{{kd.ch.total}}</strong><span>{{kd.ch.totalCaption}}</span></div>
+      </div>
+      <sc-if value="{{kd.ch.showLegend}}" hint-placeholder-val="{{true}}"><div class="dn-legend">
+        <sc-for list="{{kd.ch.bars}}" as="b" hint-placeholder-count="4">
+          <button type="button" class="dl {{b.cls}}" onClick="{{b.pick}}" aria-label="{{b.aria}}" aria-pressed="{{b.on}}"><span class="dl-dot" style="background: {{b.color}}"></span><span class="dl-lab">{{b.label}}</span><span class="dl-val">{{b.valueText}}</span><span class="dl-share">{{b.share}}</span></button>
+        </sc-for>
+      </div></sc-if>
+    </div>
+  </sc-if>
+</div>
+</sc-if>
+        <sc-if value="{{kd.hasRows}}" hint-placeholder-val="{{true}}">
+          <div class="kd-list" role="group" aria-label="Registros incluidos">
+            <div class="kd-row kd-rh" style="{{kd.gridStyle}}"><sc-for list="{{kd.cols}}" as="kc" hint-placeholder-count="4"><span>{{kc.name}}</span></sc-for></div>
+            <sc-for list="{{kd.rows}}" as="kr" hint-placeholder-count="6">
+              <button type="button" class="kd-row clk" style="{{kd.gridStyle}}" onClick="{{kr.open}}" title="Abrir el registro"><sc-for list="{{kr.cells}}" as="kcl" hint-placeholder-count="4"><span>{{kcl.t}}</span></sc-for></button>
+            </sc-for>
+          </div>
+        </sc-if>
+        <sc-if value="{{kd.noRows}}" hint-placeholder-val="{{false}}"><p class="muted">No hay registros con los filtros actuales.</p></sc-if>
+        <sc-if value="{{kd.hasMore}}" hint-placeholder-val="{{false}}"><p class="muted sm">{{kd.moreText}}</p></sc-if>
+      </div>
+      <div class="kd-foot"><button type="button" class="btn btn-sm" onClick="{{kd.openTable}}">Abrir tabla completa</button><button type="button" class="btn btn-primary btn-sm" onClick="{{kd.close}}">Cerrar</button></div>
+    </div>
+  </div>
 </sc-if>
 
 <sc-if value="{{drawerOpen}}" hint-placeholder-val="{{false}}">
@@ -6154,10 +6302,12 @@ Object.assign(Component.prototype, {
     var self = this;
     if (!xf) return null;
     var T0 = s.tables.byId[xf.table];
-    var P0 = propOf(T0, xf.prop);
-    if (!T0 || !P0) return null;
+    if (!T0) return null;
+    var P0 = xf.kpi ? null : propOf(T0, xf.prop);
+    if (!xf.kpi && !P0) return null;
     var sets = {};
-    var base = this.rowsFor(s, T0.id, v).filter(function (r) { return self.groupKeys(s, T0, P0, r, xf.bucket).some(function (k) { return String(k) === String(xf.key); }); });
+    var base = xf.kpi ? this.applyFilters(s, T0, this.rowsFor(s, T0.id, v), xf.filters || [], v)
+      : this.rowsFor(s, T0.id, v).filter(function (r) { return self.groupKeys(s, T0, P0, r, xf.bucket).some(function (k) { return String(k) === String(xf.key); }); });
     sets[T0.id] = {};
     base.forEach(function (r) { sets[T0.id][r.id] = 1; });
     var frontier = [T0.id];
@@ -6902,7 +7052,7 @@ Object.assign(Component.prototype, {
     var s = this.st();
     var cur = (s.xf || {})[pid];
     var nx = clone(s.xf || {});
-    if (cur && xf && cur.table === xf.table && cur.prop === xf.prop && String(cur.key) === String(xf.key)) delete nx[pid];
+    if (cur && xf && cur.table === xf.table && cur.prop === xf.prop && String(cur.key) === String(xf.key) && cur.kpi === xf.kpi) delete nx[pid];
     else if (xf) nx[pid] = xf; else delete nx[pid];
     this.setState({ xf: nx });
   },
@@ -8225,10 +8375,16 @@ Object.assign(Component.prototype, {
     }
     if (b.type === 'kpi') {
       bv.isKpi = true;
-      var rk = rowsFor(false);
-      tag(rk.st);
+      var isSrcK = !!(xf && xf.kpi === b.id);
+      var rk = rowsFor(isSrcK);
+      tag(rk.st === 'source' ? 'none' : rk.st);
       bv.kpi = this.kpiData(s, T, this.applyFilters(s, T, rk.rows, b.filters, v), b);
       if ((b.filters || []).length) bv.kpi.caption += ' · ' + b.filters.length + (b.filters.length === 1 ? ' condición' : ' condiciones');
+      var hasKf = (b.filters || []).length > 0, kName = b.title || 'Indicador';
+      bv.kpi.on = isSrcK; bv.kpi.onCls = isSrcK ? 'kpi-on' : '';
+      bv.kpi.press = function () { if (hasKf) self.setXf(pid, { table: T.id, kpi: b.id, filters: clone(b.filters), label: 'Indicador: ' + kName }); else self.openKd(pid, b.id); };
+      bv.kpi.aria = hasKf ? (isSrcK ? kName + ': filtro activo. Pulsa para quitarlo.' : kName + ': pulsa para filtrar el resto del panel con este indicador.') : kName + ': pulsa para ver los registros.';
+      bv.expand = function () { self.openKd(pid, b.id); }; bv.expandAria = 'Ver detalle de ' + kName;
       return bv;
     }
     if (b.type === 'slicer') {
@@ -8253,6 +8409,7 @@ Object.assign(Component.prototype, {
     }
     if (b.type === 'chart') {
       bv.isChart = true;
+      bv.expand = function () { self.openKd(pid, b.id); }; bv.expandAria = 'Ver detalle de ' + (b.title || 'el gráfico');
       var isSrcC = !!(xf && xf.table === T.id && xf.prop === b.by);
       var rc = rowsFor(isSrcC);
       tag(rc.st);
@@ -13078,9 +13235,9 @@ Object.assign(Component.prototype, {
 })();
 
 /* ================= cerrar al tocar fuera ================= */
-var OUT_FLOAT = '.oppop,.op-scrim,.tone-pop,.fmt-bar,.fmt-pal,.menu,.picker,.picker-pop,.cover-pop,.slash-menu,.addview,.headbar,.addblk,.org-lvedit,.modal,.drawer,.scrim,.toast,[role="dialog"],[role="menu"],[role="listbox"]';
+var OUT_FLOAT = '.oppop,.op-scrim,.tone-pop,.fmt-bar,.fmt-pal,.menu,.picker,.picker-pop,.cover-pop,.slash-menu,.addview,.headbar,.addblk,.org-lvedit,.modal,.drawer,.scrim,.kd,.toast,[role="dialog"],[role="menu"],[role="listbox"]';
 var OUT_TOGGLE = '[aria-expanded],[aria-haspopup]';
-var OUT_KEYS = ['bkPal', 'recPal', 'fmtCol', 'viewMenu', 'tplMenu', 'picker', 'parentPick', 'coverPick', 'areaPick', 'iconPick', 'addViewOpen', 'fmAddOpen', 'fmNewOpen', 'headMenu', 'orgLvlOpen', 'mention', 'fxOpen', 'addBlockOpen', 'dAdding', 'dTypeChange'];
+var OUT_KEYS = ['bkPal', 'recPal', 'fmtCol', 'viewMenu', 'tplMenu', 'picker', 'parentPick', 'coverPick', 'areaPick', 'iconPick', 'addViewOpen', 'fmAddOpen', 'fmNewOpen', 'headMenu', 'orgLvlOpen', 'mention', 'fxOpen', 'addBlockOpen', 'dAdding', 'dTypeChange', 'kd'];
 Object.assign(Component.prototype, {
   outsideDown(e) {
     var t = e && e.target;
@@ -13195,6 +13352,59 @@ Object.assign(Component.prototype, {
   };
 })();
 
+/* ====== tarjetas clicleables: ventana de detalle central ====== */
+Object.assign(Component.prototype, {
+  openKd(pid, bid) { this.setState({ kd: { pid: pid, bid: bid } }); },
+  closeKd() { this.setState({ kd: null }); },
+  kdData(s, v) {
+    var self = this;
+    if (!s.kd) return null;
+    var pg = s.pages.byId[s.kd.pid];
+    if (!pg) return null;
+    var b = pg.blocks.filter(function (x) { return x.id === s.kd.bid; })[0];
+    if (!b || ['kpi', 'chart'].indexOf(b.type) < 0) return null;
+    var xf = (s.xf || {})[pg.id] || null, xfSets = xf ? this.xfSets(s, xf, v) : null;
+    if (xf && !xfSets) xf = null;
+    var bv = this.blockView(s, v, pg, b, { xf: xf, xfSets: xfSets, canEditPage: false, cfgBid: null, index: 0, count: 1 });
+    var T = s.tables.byId[b.table];
+    if (!T || bv.isLocked) return null;
+    var rows = this.rowsFor(s, T.id, v);
+    if (xfSets && xfSets[T.id]) { var ok = xfSets[T.id]; rows = rows.filter(function (r) { return ok[r.id]; }); }
+    rows = this.applyFilters(s, T, rows, b.filters, v);
+    var props = this.rprops(s, T, v.role);
+    var tp = props.filter(function (p) { return p.type === 'title'; });
+    var op = props.filter(function (p) { return p.type !== 'title' && ['relation', 'rollup', 'button', 'files'].indexOf(p.type) < 0; });
+    var cols = tp.concat(op).slice(0, 5);
+    var LIM = 100, shown = rows.slice(0, LIM);
+    var out = {
+      title: bv.title || b.title || T.name, isKpi: b.type === 'kpi', isChart: b.type === 'chart', kpi: bv.kpi, ch: bv.ch,
+      sub: T.name + ' · ' + rows.length + (rows.length === 1 ? ' registro' : ' registros') + (xf ? ' · ' + xf.label : ''),
+      srcColor: T.color, srcIcon: bv.srcIcon,
+      cols: cols.map(function (p) { return { name: p.name }; }),
+      gridStyle: 'grid-template-columns: ' + cols.map(function (p, i) { return i === 0 ? 'minmax(150px,2fr)' : 'minmax(90px,1fr)'; }).join(' '),
+      rows: shown.map(function (r) {
+        var cells = cols.map(function (p) { var t = ''; try { t = dispText(self.dispOf(s, T, p, r, v, false)) || ''; } catch (e) { t = ''; } return { t: t || '—' }; });
+        return { cells: cells, aria: 'Abrir registro ' + (cells[0] ? cells[0].t : ''), open: function () { self.setState({ kd: null }); self.openRec(T.id, r.id); } };
+      }),
+      hasRows: shown.length > 0, noRows: shown.length === 0, hasMore: rows.length > LIM, moreText: 'Se muestran los primeros ' + LIM + ' de ' + rows.length + '. Abre la tabla completa para ver el resto.',
+      close: function () { self.closeKd(); },
+      openTable: function () { self.setState({ kd: null }); self.go(T.id, null); },
+      tableName: T.name
+    };
+    return out;
+  },
+  scPickClear() { }
+});
+(function () {
+  var baseRv = Component.prototype.renderVals;
+  Component.prototype.renderVals = function () {
+    var o = baseRv.call(this), s = this.st(), v = this.viewer(s), kd = null;
+    try { kd = this.kdData(s, v); } catch (e) { kd = null; }
+    o.hasKd = !!kd; o.kd = kd || { title: '', sub: '', cols: [], rows: [], kpi: {}, ch: null };
+    return o;
+  };
+})();
+
 /* ================= movimiento, apariencia y preferencias =================
    Un solo módulo controla todas las animaciones nuevas. Solo anima transform y opacity.
    Niveles: completo · equilibrado · reducido · desactivado. Se guarda en el navegador. */
@@ -13202,7 +13412,7 @@ var TRZ = (function () {
   var W = typeof window !== 'undefined' ? window : null;
   var LV = {
     completo: { nav: 1, charts: 1, micro: 1, load: 1, spring: 1, move: 1 },
-    equilibrado: { nav: 1, charts: 1, micro: 1, load: 0, spring: 0, move: 1 },
+    equilibrado: { nav: 1, charts: 1, micro: 1, load: 1, spring: 0, move: 1 },
     reducido: { nav: 1, charts: 0, micro: 0, load: 0, spring: 0, move: 0 },
     desactivado: { nav: 0, charts: 0, micro: 0, load: 0, spring: 0, move: 0 }
   };
@@ -13216,7 +13426,7 @@ var TRZ = (function () {
     dur: function (ms) { return Math.round(ms * (SPEED[cfg.speed] || 1)); },
     ease: 'cubic-bezier(.2,.7,.3,1)',
     reduceDefault: function () { try { return !!(W && W.matchMedia && W.matchMedia('(prefers-reduced-motion: reduce)').matches); } catch (e) { return false; } },
-    defaults: function () { return { level: T.reduceDefault() ? 'reducido' : 'equilibrado', nav: true, charts: true, micro: true, load: true, speed: 'normal' }; },
+    defaults: function () { var r = T.reduceDefault(); return { level: r ? 'reducido' : 'equilibrado', nav: true, charts: true, micro: true, load: true, speed: 'normal', snd: { on: !r, vol: 'bajo', click: true, ok: true, panel: true, alert: true } }; },
     /* carga de archivos propios (sin CDN), una sola vez */
     _ld: {},
     load: function (file, ready) {
@@ -13245,6 +13455,69 @@ var TRZ = (function () {
     stagger: function (list, o) {
       o = o || {}; var n = Math.min(list.length, 14), step = T.moves() ? Math.min(o.step || 45, 340 / Math.max(1, n)) : 0;
       for (var i = 0; i < list.length; i++) T.enter(list[i], { dy: o.dy == null ? 10 : o.dy, ms: o.ms || 280, delay: Math.round(Math.min(i, 13) * step) });
+    },
+
+    /* esqueleto de carga breve (0,3 s) antes de mostrar los datos */
+    skelRe: /(^|\s)(blk-kpi|blk-chart|blk-db|blk-slicer|blk-pm|blk-scurve|blk-sheet|blk-map|blk-todo)(\s|$)/,
+    skeleton: function (comp, items, force, after) {
+      if (!T.on('load')) return [];
+      var shown = [];
+      for (var i = 0; i < items.length; i++) { var el = items[i]; if (force || T.skelRe.test(el.className || '')) { el.classList.add('skl'); shown.push(el); } }
+      if (!shown.length) return shown;
+      comp._skEls = (comp._skEls || []).concat(shown);
+      if (comp._skT) clearTimeout(comp._skT);
+      comp._skT = setTimeout(function () {
+        var els = comp._skEls || []; comp._skEls = [];
+        for (var k = 0; k < els.length; k++) els[k].classList.remove('skl');
+        if (after) after(els);
+      }, T.dur(300));
+      return shown;
+    },
+    /* sonidos sutiles (Web Audio, sin archivos) */
+    _ac: null, _last: 0,
+    sound: function (kind) {
+      var sn = cfg.snd; if (!W || !sn || !sn.on || cfg.level === 'desactivado') return;
+      var grp = { click: 'click', ok: 'ok', err: 'alert', notice: 'alert', open: 'panel', close: 'panel' }[kind];
+      if (!grp || sn[grp] === false) return;
+      var now = Date.now(); if (now - T._last < 35) return; T._last = now;
+      try {
+        var AC = W.AudioContext || W.webkitAudioContext; if (!AC) return;
+        var ac = T._ac || (T._ac = new AC()); if (ac.state === 'suspended') ac.resume();
+        var vol = { bajo: 0.05, medio: 0.1, alto: 0.18 }[sn.vol] || 0.05, t0 = ac.currentTime;
+        function tone(f1, f2, dur, type, g, at) {
+          var o = ac.createOscillator(), gn = ac.createGain(), st = t0 + (at || 0);
+          o.type = type; o.frequency.setValueAtTime(f1, st); o.frequency.exponentialRampToValueAtTime(Math.max(30, f2), st + dur);
+          gn.gain.setValueAtTime(0.0001, st); gn.gain.exponentialRampToValueAtTime(vol * g, st + 0.004); gn.gain.exponentialRampToValueAtTime(0.0001, st + dur);
+          o.connect(gn); gn.connect(ac.destination); o.start(st); o.stop(st + dur + 0.02);
+        }
+        if (kind === 'click') tone(300, 150, 0.035, 'triangle', 1);
+        else if (kind === 'ok') { tone(520, 540, 0.09, 'sine', 0.9, 0); tone(780, 800, 0.12, 'sine', 0.8, 0.08); }
+        else if (kind === 'err') { tone(330, 320, 0.1, 'triangle', 1, 0); tone(247, 240, 0.14, 'triangle', 1, 0.09); }
+        else if (kind === 'notice') { tone(660, 650, 0.12, 'sine', 0.9, 0); tone(880, 870, 0.1, 'sine', 0.5, 0.1); }
+        else if (kind === 'open') tone(200, 420, 0.09, 'sine', 0.7);
+        else if (kind === 'close') tone(420, 200, 0.09, 'sine', 0.6);
+      } catch (e) { }
+    },
+    /* toque: onda suave desde el punto tocado y sonido de clic */
+    ripSel: '.btn,.tool,.seg-btn,.slc,.nav-item,.vtab,.addblk-item,.menu-item,.kcard,.gcard,.clk,.pmp-row,.icon-btn',
+    clickSel: 'button,a[href],[role="button"],[role="switch"],.nav-item,.vtab,.seg-btn,.slc,.kcard,.gcard,.clk,.pmp-row,.cc,.hb,summary,input[type="checkbox"],input[type="radio"],select',
+    initTouch: function () {
+      if (T._ti || !W) return; T._ti = true;
+      document.addEventListener('pointerdown', function (e) {
+        if (!T.on('micro') || !e.target.closest) return;
+        var t = e.target.closest(T.ripSel); if (!t || t.disabled || t.closest('.blk-tools')) return;
+        var r = t.getBoundingClientRect(), sz = Math.max(r.width, r.height) * 2.2, sp = document.createElement('span');
+        if (getComputedStyle(t).position === 'static') t.style.position = 'relative';
+        sp.className = 'rip'; sp.style.cssText = 'left:' + (e.clientX - r.left - sz / 2) + 'px;top:' + (e.clientY - r.top - sz / 2) + 'px;width:' + sz + 'px;height:' + sz + 'px';
+        t.appendChild(sp);
+        if (sp.animate) { var a = sp.animate([{ transform: 'scale(0)', opacity: 0.2 }, { transform: 'scale(1)', opacity: 0 }], { duration: T.dur(520), easing: 'ease-out' }); a.onfinish = function () { sp.remove(); }; } else sp.remove();
+      }, true);
+      document.addEventListener('click', function (e) {
+        if (!e.target.closest) return;
+        var t = e.target.closest(T.clickSel); if (!t || t.disabled || t.getAttribute('aria-disabled') === 'true') return;
+        if (t.closest('.scrim') || t.classList.contains('scrim')) { T.sound('close'); return; }
+        T.sound('click');
+      }, true);
     },
     /* números que suben o bajan hasta el valor nuevo */
     count: function (el, a, b, pre, suf, dec) {
@@ -13286,7 +13559,15 @@ Object.assign(Component.prototype, {
     DCLogic.prototype.setState.call(this, patch);
     if (patch && typeof patch === 'object') { for (var i = 0; i < PREF_KEYS.length; i++) if (PREF_KEYS[i] in patch) { prefsSave(this.st()); break; } }
   },
+  toastMsg(text) {
+    var bad = /error|no se pudo|sin acceso|falta|obligatori|no puedes|solo .* pueden|no existe|inv[aá]lid|incompleta|circular|no hay/i.test(String(text || ''));
+    TRZ.sound(bad ? 'err' : 'ok');
+    var self = this, id = (this.st().toastId || 0) + 1;
+    this.setState({ toast: text, toastId: id });
+    setTimeout(function () { if (self.st().toastId === id) self.setState({ toast: null }); }, 4200);
+  },
   sysMode() { try { return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'; } catch (e) { return 'light'; } },
+  sndSet(p) { var mv = this.st().mv || {}; this.mvSet({ snd: Object.assign({}, TRZ.defaults().snd, mv.snd || {}, p) }); },
   mvSet(p) { var s = this.st(); this.setState({ mv: Object.assign({}, s.mv, p) }); },
 
   /* ---------- después de cada pintado ---------- */
@@ -13311,9 +13592,12 @@ Object.assign(Component.prototype, {
         var kids = ch.classList.contains('pg') || ch.classList.contains('page') ? ch.children : [ch];
         for (var j = 0; j < kids.length; j++) { var k = kids[j]; if (k.classList.contains('pg-grid')) { for (var q = 0; q < k.children.length; q++) items.push(k.children[q]); } else items.push(k); }
       }
-      TRZ.stagger(items, { dy: 10, ms: 300 });
+      var sk = TRZ.skeleton(this, items, false, function (els) { TRZ.stagger(els, { dy: 10, ms: 300 }); self.mvNumbers(true); self.chartsSync(); });
+      var rest = items.filter(function (x) { return sk.indexOf(x) < 0; });
+      TRZ.stagger(rest, { dy: 10, ms: 300 });
+      this._skNav = sk.length > 0;
       this._snap = {};
-    }
+    } else this._skNav = false;
     /* panel o ventana del registro */
     var recOpen = !!s.rec;
     if (recOpen && !this._recOpen) {
@@ -13325,7 +13609,16 @@ Object.assign(Component.prototype, {
       }
     }
     this._recOpen = recOpen;
-    this.mvNumbers(navChanged);
+    var kdOpen = !!s.kd;
+    if (kdOpen && !this._kdOpen) { var kdEl = document.querySelector('.kd'); if (kdEl) TRZ.enter(kdEl, { dy: 0, scale: 0.97, ms: 240 }); var ks = document.querySelector('.kd-scrim'); if (ks) TRZ.enter(ks, { dy: 0, ms: 200 }); }
+    var panelNow = recOpen || kdOpen || !!s.drawer;
+    if (this._panel !== undefined && panelNow !== this._panel) TRZ.sound(panelNow ? 'open' : 'close');
+    this._panel = panelNow; this._kdOpen = kdOpen;
+    var un = (s.notifs || []).filter(function (n) { return !n.read; }).length;
+    if (this._un !== undefined && un > this._un) TRZ.sound('notice');
+    this._un = un;
+    TRZ.initTouch();
+    this.mvNumbers(navChanged && !this._skNav);
     this.mvViews();
     this.mvRows(navChanged || first);
     if (typeof this.chartsSync === 'function') this.chartsSync();
@@ -13359,7 +13652,8 @@ Object.assign(Component.prototype, {
       el._vs = sg;
       if (prev === undefined || prev === sg || !TRZ.on('nav')) continue;
       var list = []; for (var j = 0; j < el.children.length; j++) if (!skip.test(el.children[j].className || '')) list.push(el.children[j]);
-      TRZ.stagger(list, { dy: 8, ms: 240, step: 30 });
+      var self2 = this, sk2 = TRZ.skeleton(this, list, true, function (els) { TRZ.stagger(els, { dy: 8, ms: 240, step: 30 }); self2.chartsSync(); });
+      if (!sk2.length) TRZ.stagger(list, { dy: 8, ms: 240, step: 30 });
     }
   },
 
@@ -13396,6 +13690,12 @@ Object.assign(Component.prototype, {
         var on = mv[x[0]] !== false;
         return { label: x[1], cls: on ? 'on' : '', on: on, pick: function () { var p = {}; p[x[0]] = !on; self.mvSet(p); } };
       }),
+      sndOn: seg([[true, 'Activado'], [false, 'Silencio']], !!(mv.snd && mv.snd.on), function (v) { self.sndSet({ on: v }); }),
+      sndVol: seg([['bajo', 'Bajo'], ['medio', 'Medio'], ['alto', 'Alto']], (mv.snd && mv.snd.vol) || 'bajo', function (v) { self.sndSet({ vol: v }); setTimeout(function () { TRZ.sound('click'); }, 30); }),
+      sndToggles: [['click', 'Botones y pestañas'], ['ok', 'Guardar y completar'], ['panel', 'Abrir y cerrar paneles'], ['alert', 'Avisos y errores']].map(function (x) {
+        var on = !(mv.snd && mv.snd[x[0]] === false);
+        return { label: x[1], cls: on ? 'on' : '', on: on, pick: function () { var p = {}; p[x[0]] = !on; self.sndSet(p); } };
+      }),
       mvHint: mv.level === 'desactivado' ? 'Sin animaciones.' : mv.level === 'reducido' ? 'Solo fundidos cortos, sin desplazamientos.' : mv.level === 'equilibrado' ? 'Transiciones, números y gráficas animadas.' : 'Todos los efectos, con resortes y gráficas que crecen al entrar.'
     };
   }
@@ -13426,6 +13726,11 @@ function scFit(x0, y0) {
   for (var i = 0; i < 50; i++) { var mid = (lo + hi) / 2; if (scL(x0, mid) > y) lo = mid; else hi = mid; }
   return (lo + hi) / 2;
 }
+function scAt(arr, ms) {
+  if (!arr || !arr.length || ms < arr[0][0] || ms > arr[arr.length - 1][0]) return null;
+  for (var i = 1; i < arr.length; i++) if (ms <= arr[i][0]) { var a = arr[i - 1], b = arr[i], u = b[0] === a[0] ? 1 : (ms - a[0]) / (b[0] - a[0]); return scR1(a[1] + (b[1] - a[1]) * u); }
+  return arr[arr.length - 1][1];
+}
 function scAlpha(c, a) { return /^#[0-9a-f]{6}$/i.test(c) ? c + a : c; }
 
 Object.assign(Component.prototype, {
@@ -13441,7 +13746,7 @@ Object.assign(Component.prototype, {
     var t0 = scMs(g('inicio')), t1 = scMs(g('fin')), now = scMs(todayIso());
     var av = num(g('avance')), pl = num(g('plan')), spi = num(g('spi')), cpi = num(g('cpi'));
     out.projOpts = rows.map(function (r) { return { id: r.id, name: self.titleOf(t, r), sel: r.id === row.id }; });
-    out.setProj = function (e) { var val = e.target.value; self.updBlock(b.id, function (bb) { bb.proj = val; }); };
+    out.setProj = function (e) { var val = e.target.value; var ss = Object.assign({}, self.st().scSel || {}); delete ss[b.id]; self.setState({ scSel: ss }); self.updBlock(b.id, function (bb) { bb.proj = val; }); };
     out.projName = this.titleOf(t, row);
     if (t0 == null || t1 == null || t1 <= t0 || av == null) { out.noDates = true; return out; }
     var xT = Math.min(1, Math.max(0, (now - t0) / (t1 - t0)));
@@ -13458,8 +13763,26 @@ Object.assign(Component.prototype, {
       fin = scR1(Math.min(100, av + rate * (xe - xT)));
       proy = [[tNow, av], [t0 + xe * (t1 - t0), fin]];
     } else if (av >= 100) fin = 100;
+    var selS = (s.scSel || {})[b.id], selD = null;
+    if (selS && selS.ms >= t0 && selS.ms <= t1) {
+      var ii = 0, bd = Infinity;
+      prog.forEach(function (p, k) { var dd = Math.abs(p[0] - selS.ms); if (dd < bd) { bd = dd; ii = k; } });
+      if (ii === 0) ii = 1;
+      var pA = prog[ii - 1], pB = prog[ii], eA = scAt(ejec, pA[0]), eB = scAt(ejec, pB[0]);
+      var gap = eB == null ? null : scR1(eB - pB[1]);
+      selD = pB[0];
+      out.sel = { title: 'Período ' + scFecha(pA[0]) + ' → ' + scFecha(pB[0]), rows: [
+        { l: 'Programado acumulado', v: pB[1] + ' %' },
+        { l: 'Programado en el período', v: '+' + scR1(pB[1] - pA[1]) + ' pts' },
+        { l: 'Ejecutado acumulado', v: eB == null ? 'Aún no ocurre' : eB + ' %' },
+        { l: 'Ejecutado en el período', v: eB == null || eA == null ? '—' : '+' + scR1(eB - eA) + ' pts' },
+        { l: 'Brecha frente al plan', v: gap == null ? '—' : (gap >= 0 ? '+' : '−') + Math.abs(gap) + ' pts' }
+      ], clear: function () { var ss = Object.assign({}, self.st().scSel || {}); delete ss[b.id]; self.setState({ scSel: ss }); } };
+      out.hasSel = true;
+    }
+    out.noSel = !out.hasSel;
     var dpts = pl == null ? null : scR1(av - pl);
-    var d = { prog: prog, ejec: ejec, proy: proy, today: tNow, start: t0, end: t1, month: [Date.UTC(new Date(now).getUTCFullYear(), new Date(now).getUTCMonth(), 1), Date.UTC(new Date(now).getUTCFullYear(), new Date(now).getUTCMonth() + 1, 0)] };
+    var d = { sel: selD, prog: prog, ejec: ejec, proy: proy, today: tNow, start: t0, end: t1, month: [Date.UTC(new Date(now).getUTCFullYear(), new Date(now).getUTCMonth(), 1), Date.UTC(new Date(now).getUTCFullYear(), new Date(now).getUTCMonth() + 1, 0)] };
     function idx(x) { return x == null ? '—' : (Math.round(x * 100) / 100).toFixed(2); }
     function tone(x) { return x == null ? '' : x < 0.9 ? 'bad' : x < 1 ? 'warn' : 'ok'; }
     out.has = true;
@@ -13506,6 +13829,16 @@ Object.assign(Component.prototype, {
         e2._ch = window.TrzEcharts.init(e2, null, { renderer: 'canvas' });
         if (window.ResizeObserver) { e2._ro = new ResizeObserver(function (ent) { var t = ent[0].target; if (t._ch) t._ch.resize(); }); e2._ro.observe(e2); }
         list.push(e2);
+        (function (el) {
+          el._ch.getZr().on('click', function (p) {
+            try {
+              var pt = [p.offsetX, p.offsetY];
+              if (!el._ch.containPixel('grid', pt)) return;
+              var cv = el._ch.convertFromPixel({ gridIndex: 0 }, pt), ms = Array.isArray(cv) ? cv[0] : cv, bid = el.getAttribute('data-bid');
+              if (bid && isFinite(ms)) { var ss = Object.assign({}, self.st().scSel || {}); ss[bid] = { ms: ms }; self.setState({ scSel: ss }); TRZ.sound('click'); }
+            } catch (er) { }
+          });
+        })(e2);
         e2.removeAttribute('data-ld');
       }
       e2._sig = sg;
@@ -13525,6 +13858,7 @@ Object.assign(Component.prototype, {
         markPoint: { symbolSize: 46, itemStyle: { color: c.acc }, label: { color: '#fff', fontSize: 11, formatter: function (p) { return Math.round(p.value) + '%'; } }, data: [{ coord: d.ejec[d.ejec.length - 1], value: d.ejec[d.ejec.length - 1][1] }] } }
     ];
     if (d.proy && d.proy.length) series.push({ id: 'proy', name: 'Proyección', type: 'line', showSymbol: false, data: d.proy, z: 3, lineStyle: dline(c.acc, 2, 'dotted'), itemStyle: { color: c.acc } });
+    if (d.sel != null) series[1].markLine = { silent: true, symbol: 'none', lineStyle: { color: c.acc, type: 'dashed', width: 1.5 }, label: { show: false }, data: [{ xAxis: d.sel }] };
     return {
       aria: { enabled: true },
       animation: anim, animationDuration: TRZ.dur(900), animationDurationUpdate: TRZ.dur(600), animationEasing: 'cubicOut', animationEasingUpdate: 'cubicInOut',

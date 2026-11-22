@@ -454,10 +454,12 @@ Object.assign(Component.prototype, {
     var self = this;
     if (!xf) return null;
     var T0 = s.tables.byId[xf.table];
-    var P0 = propOf(T0, xf.prop);
-    if (!T0 || !P0) return null;
+    if (!T0) return null;
+    var P0 = xf.kpi ? null : propOf(T0, xf.prop);
+    if (!xf.kpi && !P0) return null;
     var sets = {};
-    var base = this.rowsFor(s, T0.id, v).filter(function (r) { return self.groupKeys(s, T0, P0, r, xf.bucket).some(function (k) { return String(k) === String(xf.key); }); });
+    var base = xf.kpi ? this.applyFilters(s, T0, this.rowsFor(s, T0.id, v), xf.filters || [], v)
+      : this.rowsFor(s, T0.id, v).filter(function (r) { return self.groupKeys(s, T0, P0, r, xf.bucket).some(function (k) { return String(k) === String(xf.key); }); });
     sets[T0.id] = {};
     base.forEach(function (r) { sets[T0.id][r.id] = 1; });
     var frontier = [T0.id];

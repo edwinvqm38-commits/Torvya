@@ -5,7 +5,7 @@ var TRZ = (function () {
   var W = typeof window !== 'undefined' ? window : null;
   var LV = {
     completo: { nav: 1, charts: 1, micro: 1, load: 1, spring: 1, move: 1 },
-    equilibrado: { nav: 1, charts: 1, micro: 1, load: 0, spring: 0, move: 1 },
+    equilibrado: { nav: 1, charts: 1, micro: 1, load: 1, spring: 0, move: 1 },
     reducido: { nav: 1, charts: 0, micro: 0, load: 0, spring: 0, move: 0 },
     desactivado: { nav: 0, charts: 0, micro: 0, load: 0, spring: 0, move: 0 }
   };
@@ -19,7 +19,7 @@ var TRZ = (function () {
     dur: function (ms) { return Math.round(ms * (SPEED[cfg.speed] || 1)); },
     ease: 'cubic-bezier(.2,.7,.3,1)',
     reduceDefault: function () { try { return !!(W && W.matchMedia && W.matchMedia('(prefers-reduced-motion: reduce)').matches); } catch (e) { return false; } },
-    defaults: function () { return { level: T.reduceDefault() ? 'reducido' : 'equilibrado', nav: true, charts: true, micro: true, load: true, speed: 'normal' }; },
+    defaults: function () { var r = T.reduceDefault(); return { level: r ? 'reducido' : 'equilibrado', nav: true, charts: true, micro: true, load: true, speed: 'normal', snd: { on: !r, vol: 'bajo', click: true, ok: true, panel: true, alert: true } }; },
     /* carga de archivos propios (sin CDN), una sola vez */
     _ld: {},
     load: function (file, ready) {
@@ -48,6 +48,69 @@ var TRZ = (function () {
     stagger: function (list, o) {
       o = o || {}; var n = Math.min(list.length, 14), step = T.moves() ? Math.min(o.step || 45, 340 / Math.max(1, n)) : 0;
       for (var i = 0; i < list.length; i++) T.enter(list[i], { dy: o.dy == null ? 10 : o.dy, ms: o.ms || 280, delay: Math.round(Math.min(i, 13) * step) });
+    },
+
+    /* esqueleto de carga breve (0,3 s) antes de mostrar los datos */
+    skelRe: /(^|\s)(blk-kpi|blk-chart|blk-db|blk-slicer|blk-pm|blk-scurve|blk-sheet|blk-map|blk-todo)(\s|$)/,
+    skeleton: function (comp, items, force, after) {
+      if (!T.on('load')) return [];
+      var shown = [];
+      for (var i = 0; i < items.length; i++) { var el = items[i]; if (force || T.skelRe.test(el.className || '')) { el.classList.add('skl'); shown.push(el); } }
+      if (!shown.length) return shown;
+      comp._skEls = (comp._skEls || []).concat(shown);
+      if (comp._skT) clearTimeout(comp._skT);
+      comp._skT = setTimeout(function () {
+        var els = comp._skEls || []; comp._skEls = [];
+        for (var k = 0; k < els.length; k++) els[k].classList.remove('skl');
+        if (after) after(els);
+      }, T.dur(300));
+      return shown;
+    },
+    /* sonidos sutiles (Web Audio, sin archivos) */
+    _ac: null, _last: 0,
+    sound: function (kind) {
+      var sn = cfg.snd; if (!W || !sn || !sn.on || cfg.level === 'desactivado') return;
+      var grp = { click: 'click', ok: 'ok', err: 'alert', notice: 'alert', open: 'panel', close: 'panel' }[kind];
+      if (!grp || sn[grp] === false) return;
+      var now = Date.now(); if (now - T._last < 35) return; T._last = now;
+      try {
+        var AC = W.AudioContext || W.webkitAudioContext; if (!AC) return;
+        var ac = T._ac || (T._ac = new AC()); if (ac.state === 'suspended') ac.resume();
+        var vol = { bajo: 0.05, medio: 0.1, alto: 0.18 }[sn.vol] || 0.05, t0 = ac.currentTime;
+        function tone(f1, f2, dur, type, g, at) {
+          var o = ac.createOscillator(), gn = ac.createGain(), st = t0 + (at || 0);
+          o.type = type; o.frequency.setValueAtTime(f1, st); o.frequency.exponentialRampToValueAtTime(Math.max(30, f2), st + dur);
+          gn.gain.setValueAtTime(0.0001, st); gn.gain.exponentialRampToValueAtTime(vol * g, st + 0.004); gn.gain.exponentialRampToValueAtTime(0.0001, st + dur);
+          o.connect(gn); gn.connect(ac.destination); o.start(st); o.stop(st + dur + 0.02);
+        }
+        if (kind === 'click') tone(300, 150, 0.035, 'triangle', 1);
+        else if (kind === 'ok') { tone(520, 540, 0.09, 'sine', 0.9, 0); tone(780, 800, 0.12, 'sine', 0.8, 0.08); }
+        else if (kind === 'err') { tone(330, 320, 0.1, 'triangle', 1, 0); tone(247, 240, 0.14, 'triangle', 1, 0.09); }
+        else if (kind === 'notice') { tone(660, 650, 0.12, 'sine', 0.9, 0); tone(880, 870, 0.1, 'sine', 0.5, 0.1); }
+        else if (kind === 'open') tone(200, 420, 0.09, 'sine', 0.7);
+        else if (kind === 'close') tone(420, 200, 0.09, 'sine', 0.6);
+      } catch (e) { }
+    },
+    /* toque: onda suave desde el punto tocado y sonido de clic */
+    ripSel: '.btn,.tool,.seg-btn,.slc,.nav-item,.vtab,.addblk-item,.menu-item,.kcard,.gcard,.clk,.pmp-row,.icon-btn',
+    clickSel: 'button,a[href],[role="button"],[role="switch"],.nav-item,.vtab,.seg-btn,.slc,.kcard,.gcard,.clk,.pmp-row,.cc,.hb,summary,input[type="checkbox"],input[type="radio"],select',
+    initTouch: function () {
+      if (T._ti || !W) return; T._ti = true;
+      document.addEventListener('pointerdown', function (e) {
+        if (!T.on('micro') || !e.target.closest) return;
+        var t = e.target.closest(T.ripSel); if (!t || t.disabled || t.closest('.blk-tools')) return;
+        var r = t.getBoundingClientRect(), sz = Math.max(r.width, r.height) * 2.2, sp = document.createElement('span');
+        if (getComputedStyle(t).position === 'static') t.style.position = 'relative';
+        sp.className = 'rip'; sp.style.cssText = 'left:' + (e.clientX - r.left - sz / 2) + 'px;top:' + (e.clientY - r.top - sz / 2) + 'px;width:' + sz + 'px;height:' + sz + 'px';
+        t.appendChild(sp);
+        if (sp.animate) { var a = sp.animate([{ transform: 'scale(0)', opacity: 0.2 }, { transform: 'scale(1)', opacity: 0 }], { duration: T.dur(520), easing: 'ease-out' }); a.onfinish = function () { sp.remove(); }; } else sp.remove();
+      }, true);
+      document.addEventListener('click', function (e) {
+        if (!e.target.closest) return;
+        var t = e.target.closest(T.clickSel); if (!t || t.disabled || t.getAttribute('aria-disabled') === 'true') return;
+        if (t.closest('.scrim') || t.classList.contains('scrim')) { T.sound('close'); return; }
+        T.sound('click');
+      }, true);
     },
     /* números que suben o bajan hasta el valor nuevo */
     count: function (el, a, b, pre, suf, dec) {
@@ -89,7 +152,15 @@ Object.assign(Component.prototype, {
     DCLogic.prototype.setState.call(this, patch);
     if (patch && typeof patch === 'object') { for (var i = 0; i < PREF_KEYS.length; i++) if (PREF_KEYS[i] in patch) { prefsSave(this.st()); break; } }
   },
+  toastMsg(text) {
+    var bad = /error|no se pudo|sin acceso|falta|obligatori|no puedes|solo .* pueden|no existe|inv[aá]lid|incompleta|circular|no hay/i.test(String(text || ''));
+    TRZ.sound(bad ? 'err' : 'ok');
+    var self = this, id = (this.st().toastId || 0) + 1;
+    this.setState({ toast: text, toastId: id });
+    setTimeout(function () { if (self.st().toastId === id) self.setState({ toast: null }); }, 4200);
+  },
   sysMode() { try { return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'; } catch (e) { return 'light'; } },
+  sndSet(p) { var mv = this.st().mv || {}; this.mvSet({ snd: Object.assign({}, TRZ.defaults().snd, mv.snd || {}, p) }); },
   mvSet(p) { var s = this.st(); this.setState({ mv: Object.assign({}, s.mv, p) }); },
 
   /* ---------- después de cada pintado ---------- */
@@ -114,9 +185,12 @@ Object.assign(Component.prototype, {
         var kids = ch.classList.contains('pg') || ch.classList.contains('page') ? ch.children : [ch];
         for (var j = 0; j < kids.length; j++) { var k = kids[j]; if (k.classList.contains('pg-grid')) { for (var q = 0; q < k.children.length; q++) items.push(k.children[q]); } else items.push(k); }
       }
-      TRZ.stagger(items, { dy: 10, ms: 300 });
+      var sk = TRZ.skeleton(this, items, false, function (els) { TRZ.stagger(els, { dy: 10, ms: 300 }); self.mvNumbers(true); self.chartsSync(); });
+      var rest = items.filter(function (x) { return sk.indexOf(x) < 0; });
+      TRZ.stagger(rest, { dy: 10, ms: 300 });
+      this._skNav = sk.length > 0;
       this._snap = {};
-    }
+    } else this._skNav = false;
     /* panel o ventana del registro */
     var recOpen = !!s.rec;
     if (recOpen && !this._recOpen) {
@@ -128,7 +202,16 @@ Object.assign(Component.prototype, {
       }
     }
     this._recOpen = recOpen;
-    this.mvNumbers(navChanged);
+    var kdOpen = !!s.kd;
+    if (kdOpen && !this._kdOpen) { var kdEl = document.querySelector('.kd'); if (kdEl) TRZ.enter(kdEl, { dy: 0, scale: 0.97, ms: 240 }); var ks = document.querySelector('.kd-scrim'); if (ks) TRZ.enter(ks, { dy: 0, ms: 200 }); }
+    var panelNow = recOpen || kdOpen || !!s.drawer;
+    if (this._panel !== undefined && panelNow !== this._panel) TRZ.sound(panelNow ? 'open' : 'close');
+    this._panel = panelNow; this._kdOpen = kdOpen;
+    var un = (s.notifs || []).filter(function (n) { return !n.read; }).length;
+    if (this._un !== undefined && un > this._un) TRZ.sound('notice');
+    this._un = un;
+    TRZ.initTouch();
+    this.mvNumbers(navChanged && !this._skNav);
     this.mvViews();
     this.mvRows(navChanged || first);
     if (typeof this.chartsSync === 'function') this.chartsSync();
@@ -162,7 +245,8 @@ Object.assign(Component.prototype, {
       el._vs = sg;
       if (prev === undefined || prev === sg || !TRZ.on('nav')) continue;
       var list = []; for (var j = 0; j < el.children.length; j++) if (!skip.test(el.children[j].className || '')) list.push(el.children[j]);
-      TRZ.stagger(list, { dy: 8, ms: 240, step: 30 });
+      var self2 = this, sk2 = TRZ.skeleton(this, list, true, function (els) { TRZ.stagger(els, { dy: 8, ms: 240, step: 30 }); self2.chartsSync(); });
+      if (!sk2.length) TRZ.stagger(list, { dy: 8, ms: 240, step: 30 });
     }
   },
 
@@ -198,6 +282,12 @@ Object.assign(Component.prototype, {
       mvToggles: [['nav', 'Navegación'], ['charts', 'Gráficos'], ['micro', 'Microinteracciones'], ['load', 'Efectos de carga']].map(function (x) {
         var on = mv[x[0]] !== false;
         return { label: x[1], cls: on ? 'on' : '', on: on, pick: function () { var p = {}; p[x[0]] = !on; self.mvSet(p); } };
+      }),
+      sndOn: seg([[true, 'Activado'], [false, 'Silencio']], !!(mv.snd && mv.snd.on), function (v) { self.sndSet({ on: v }); }),
+      sndVol: seg([['bajo', 'Bajo'], ['medio', 'Medio'], ['alto', 'Alto']], (mv.snd && mv.snd.vol) || 'bajo', function (v) { self.sndSet({ vol: v }); setTimeout(function () { TRZ.sound('click'); }, 30); }),
+      sndToggles: [['click', 'Botones y pestañas'], ['ok', 'Guardar y completar'], ['panel', 'Abrir y cerrar paneles'], ['alert', 'Avisos y errores']].map(function (x) {
+        var on = !(mv.snd && mv.snd[x[0]] === false);
+        return { label: x[1], cls: on ? 'on' : '', on: on, pick: function () { var p = {}; p[x[0]] = !on; self.sndSet(p); } };
       }),
       mvHint: mv.level === 'desactivado' ? 'Sin animaciones.' : mv.level === 'reducido' ? 'Solo fundidos cortos, sin desplazamientos.' : mv.level === 'equilibrado' ? 'Transiciones, números y gráficas animadas.' : 'Todos los efectos, con resortes y gráficas que crecen al entrar.'
     };

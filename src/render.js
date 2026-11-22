@@ -88,10 +88,16 @@ Object.assign(Component.prototype, {
     }
     if (b.type === 'kpi') {
       bv.isKpi = true;
-      var rk = rowsFor(false);
-      tag(rk.st);
+      var isSrcK = !!(xf && xf.kpi === b.id);
+      var rk = rowsFor(isSrcK);
+      tag(rk.st === 'source' ? 'none' : rk.st);
       bv.kpi = this.kpiData(s, T, this.applyFilters(s, T, rk.rows, b.filters, v), b);
       if ((b.filters || []).length) bv.kpi.caption += ' · ' + b.filters.length + (b.filters.length === 1 ? ' condición' : ' condiciones');
+      var hasKf = (b.filters || []).length > 0, kName = b.title || 'Indicador';
+      bv.kpi.on = isSrcK; bv.kpi.onCls = isSrcK ? 'kpi-on' : '';
+      bv.kpi.press = function () { if (hasKf) self.setXf(pid, { table: T.id, kpi: b.id, filters: clone(b.filters), label: 'Indicador: ' + kName }); else self.openKd(pid, b.id); };
+      bv.kpi.aria = hasKf ? (isSrcK ? kName + ': filtro activo. Pulsa para quitarlo.' : kName + ': pulsa para filtrar el resto del panel con este indicador.') : kName + ': pulsa para ver los registros.';
+      bv.expand = function () { self.openKd(pid, b.id); }; bv.expandAria = 'Ver detalle de ' + kName;
       return bv;
     }
     if (b.type === 'slicer') {
@@ -116,6 +122,7 @@ Object.assign(Component.prototype, {
     }
     if (b.type === 'chart') {
       bv.isChart = true;
+      bv.expand = function () { self.openKd(pid, b.id); }; bv.expandAria = 'Ver detalle de ' + (b.title || 'el gráfico');
       var isSrcC = !!(xf && xf.table === T.id && xf.prop === b.by);
       var rc = rowsFor(isSrcC);
       tag(rc.st);
